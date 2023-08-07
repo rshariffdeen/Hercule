@@ -1,14 +1,8 @@
-import requests
 from bs4 import BeautifulSoup
-from scholarly import ProxyGenerator, scholarly
 import requests
-from typing import Optional
-import re
-import PyPDF2
-from pathlib import Path
 import csv
 import ssl
-import os
+from typing import Any
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -16,18 +10,17 @@ package_list = ["pandas", "numpy", "beautifulsoup", "scipy", "matplotlib",
                 "requests", "tensorflow", "pytorch",
                 "scipy", "scrapy", "pyqt", "sympy"]
 
+def write_as_csv(data: Any, output_file_path: str):
+    with open(output_file_path, "w", encoding="UTF8") as f:
+        writer = csv.writer(f)
+        for output in data:
+            writer.writerow(output)
+
 
 def get_html(url):
     page = requests.get(url)
     soup = BeautifulSoup(page.content, "html.parser", from_encoding="iso-8859-1")
     return soup
-
-
-def download_file(file_url, file_path):
-    response = requests.get(file_url)
-    with open(file_path, 'wb') as f:
-        f.write(response.content)
-    return
 
 
 def get_distributor_list(html_soup, package_name):
@@ -105,13 +98,26 @@ def get_download_links(html_soup, package_name):
 def run():
     global package_list
     output_content = []
+    output_file_path = "anaconda.csv"
     for package_name in package_list:
         search_url = f"https://anaconda.org/search?q={package_name}&sort=ndownloads&reverse=true"
         print(f"querying for {package_name} in {search_url}")
         html_soup = get_html(search_url)
         url_list = get_distributor_list(html_soup, package_name)
         print(f"found {len(url_list)} distributors")
-
+        output_content.append((
+            "package-name",
+            "distribution_url",
+            "home-page",
+            "source-page",
+            "download-count",
+            "last-updated",
+            "package-version",
+            "os-version",
+            "python-version",
+            "download-link",
+            "file-name"
+        ))
         for distro_web_url in url_list:
             print(f"extracting info from {distro_web_url}")
             profile_soup = get_html(distro_web_url)
@@ -139,10 +145,7 @@ def run():
         break
 
     if output_content:
-        with open(f'anaconda.csv', 'w', encoding='UTF8') as f:
-            writer = csv.writer(f)
-            for output in output_content:
-                writer.writerow(output)
+        write_as_csv(output_content, output_file_path)
 
 
 if __name__ == "__main__":
