@@ -27,8 +27,10 @@ def run_bandit(dir_path):
     curr_dir = os.getcwd()
     dir_name = dir_path.split("/")[-1]
     os.chdir(os.path.dirname(dir_path))
-    os.system(f"bandit -r {dir_name} -lll -f json -o {dir_name}.json")
-    analysis_data = read_json(f"{dir_name}.json")
+    report_file = f"{dir_name}.json"
+    if not os.path.isfile(report_file):
+        os.system(f"bandit -r {dir_name} -lll -f json -o {dir_name}.json")
+    analysis_data = read_json(report_file)
     no_errors = 0
     if analysis_data["errors"]:
         no_errors = len(analysis_data["errors"])
