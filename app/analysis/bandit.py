@@ -63,13 +63,14 @@ def run(sym_args):
             try:
                 if file_extension in ["json"]:
                     continue
-                if os.path.isdir(dir_path):
-                    continue
-                if file_extension in ["conda", "whl"]:
-                    os.system(f"unzip {file_path} -d {dir_path}")
-                if file_extension in ["gz", "bz2"]:
-                    os.system(f"mkdir -p {dir_path}")
-                    os.system(f"tar -xf {file_path} -C {dir_path}")
+                is_exist = os.path.isdir(dir_path)
+                dir_size = len(os.listdir(dir_path)) if is_exist else 0
+                if not is_exist or dir_size == 0:
+                    if file_extension in ["conda", "whl"]:
+                        os.system(f"unzip {file_path} -d {dir_path}")
+                    if file_extension in ["gz", "bz2"]:
+                        os.system(f"mkdir -p {dir_path}")
+                        os.system(f"tar -xf {file_path} -C {dir_path}")
             except Exception as ex:
                 print("not supported archive", file_extension, f_name)
                 continue
