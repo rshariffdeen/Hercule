@@ -7,8 +7,8 @@ from typing import Any
 ssl._create_default_https_context = ssl._create_unverified_context
 
 package_list = ["pandas", "numpy", "beautifulsoup", "scipy", "matplotlib",
-                "requests", "tensorflow", "pytorch",
-                "scrapy", "pyqt", "sympy"]
+                "requests", "tensorflow", "pytorch", "beautifulsoup4",
+                "scrapy", "pyqt", "sympy", "dateutils", "urllib3", "setuptools"]
 
 def write_as_csv(data: Any, output_file_path: str):
     with open(output_file_path, "w", encoding="UTF8") as f:
