@@ -61,13 +61,15 @@ def run(sym_args):
             file_path = join(dir_pkg, f_name)
             file_extension = f_name.split(".")[-1]
             try:
+                if file_extension in ["json"]:
+                    continue
+                if os.path.isdir(dir_path):
+                    continue
                 if file_extension in ["conda", "whl"]:
                     os.system(f"unzip {file_path} -d {dir_path}")
                 if file_extension in ["gz", "bz2"]:
                     os.system(f"mkdir -p {dir_path}")
                     os.system(f"tar -xf {file_path} -C {dir_path}")
-                if file_extension in ["json"]:
-                    continue
             except Exception as ex:
                 print("not supported archive", file_extension, f_name)
                 continue
