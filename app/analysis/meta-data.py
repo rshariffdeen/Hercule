@@ -46,13 +46,13 @@ def run(sym_args):
         print("requires the path to the dir")
         exit(1)
     download_dir = sym_args[0]
-    output_content = []
     if not os.path.isdir(download_dir):
         print("path is invalid", download_dir)
         exit(1)
 
     list_packages = [d for d in os.listdir(download_dir) if os.path.isdir(join(download_dir, d))]
     for pkg_name in list_packages:
+        output_content = []
         dir_pkg = os.path.join(download_dir, pkg_name)
         file_list = [f for f in os.listdir(dir_pkg) if os.path.isfile(join(dir_pkg, f))]
         for f_name in file_list:
@@ -67,11 +67,13 @@ def run(sym_args):
                 if file_extension in ["gz", "bz2"]:
                     with tarfile.open(join(dir_pkg, f_name)) as archive:
                         file_count = sum(1 for member in archive if member.isreg())
+                if file_extension in ["json"]:
+                    continue
             except Exception as ex:
                 print("not supported extension", file_extension)
             output_content.append((f_name, pkg_v, py_v, os_v, file_extension, file_size, file_count))
-    if output_content:
-        write_as_csv(output_content, "meta-data.csv")
+        if output_content:
+            write_as_csv(output_content, f"{pkg_name}-meta-data.csv")
 
 if __name__ == "__main__":
     run(sys.argv[1:])
