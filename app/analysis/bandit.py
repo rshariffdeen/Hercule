@@ -66,6 +66,8 @@ def run(sym_args):
                 if file_extension in ["gz", "bz2"]:
                     os.system(f"mkdir -p {dir_path}")
                     os.system(f"tar -xf {file_path} -C {dir_path}")
+                if file_extension in ["json"]:
+                    continue
             except Exception as ex:
                 print("not supported archive", file_extension, f_name)
                 continue
