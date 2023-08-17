@@ -97,14 +97,14 @@ def get_download_links(html_soup, package_name):
 
 def run():
     global package_list
-    output_content = []
-    output_file_path = "anaconda.csv"
     for package_name in package_list:
+        output_file_path = f"{package_name}-anaconda.csv"
         search_url = f"https://anaconda.org/search?q={package_name}&sort=ndownloads&reverse=true"
         print(f"querying for {package_name} in {search_url}")
         html_soup = get_html(search_url)
         url_list = get_distributor_list(html_soup, package_name)
         print(f"found {len(url_list)} distributors")
+        output_content = []
         output_content.append((
             "package-name",
             "distribution_url",
