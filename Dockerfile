@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:20.04
 LABEL maintainer="Ridwan Shariffdeen <rshariffdeen@gmail.com>"
 
 RUN apt-get update && apt-get upgrade -y && apt-get autoremove -y
@@ -22,7 +22,9 @@ RUN pip3 --disable-pip-version-check --no-cache-dir install \
     slack_sdk  \
     discord \
     jsonschema \
-    filetype
+    filetype \
+    uncompyle6 \
+    decompyle3
 
 # copy src files of the tool
 COPY . /opt/spade/
