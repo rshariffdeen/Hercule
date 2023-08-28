@@ -12,7 +12,8 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     python3 \
     python3-pip \
     python3-dev \
-    unzip
+    unzip \
+    zstd
 
 # install python packages
 RUN pip3 --disable-pip-version-check --no-cache-dir install \
