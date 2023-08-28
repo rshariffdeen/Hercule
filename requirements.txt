@@ -1,0 +1,7 @@
+rich
+bandit
+slack_sdk
+discord
+jsonschema
+
+

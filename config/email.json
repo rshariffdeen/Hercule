@@ -1,0 +1,9 @@
+{
+    "enabled": false,
+    "username": "",
+    "password": "",
+    "host": "",
+    "port": 465,
+    "ssl_from_start": true,
+    "to": ""
+}
