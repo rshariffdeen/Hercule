@@ -3,10 +3,10 @@ from app.core import values, utilities, emitter
 
 
 def decompress_archive(archive_path, file_extension, dir_path):
+    emitter.normal("\t\tdecompressing file")
     emitter.highlight(f"\t\t\tFile Path: {archive_path}")
     emitter.highlight(f"\t\t\t\tFile Extension: {file_extension}")
     emitter.highlight(f"\t\t\t\tTarget Dir: {dir_path}")
-    emitter.normal("\t\t\tdecompressing file")
     try:
         if file_extension in ["conda", "whl"]:
             utilities.execute_command(f"unzip -o {archive_path} -d {dir_path}")
@@ -22,7 +22,7 @@ def decompress_archive(archive_path, file_extension, dir_path):
 
 
 def find_compressed(dir_path):
-    emitter.normal("\t\t\tsearching for compressed files")
+    emitter.normal("\t\tsearching for compressed files")
     file_list = utilities.list_dir(dir_path)
     archive_list = []
     for f_path in file_list:
