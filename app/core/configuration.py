@@ -59,39 +59,6 @@ class Configurations:
     def read_arg_list(self, arg_list: Namespace):
         emitter.normal("\t[framework] reading configuration values from arguments")
         flat_map = lambda f, xs: (y for ys in xs for y in f(ys))
-        self.__runtime_config_values["task-type"] = arg_list.task_type
-
-        if arg_list.docker_host:
-            self.__runtime_config_values["docker-host"] = arg_list.docker_host
-
-        if arg_list.benchmark:
-            self.__runtime_config_values["benchmark-name"] = arg_list.benchmark
-
-        if arg_list.tool:
-            self.__runtime_config_values["tool-list"] = [arg_list.tool]
-        elif arg_list.tool_list:
-            self.__runtime_config_values["tool-list"] = arg_list.tool_list
-
-        if arg_list.subject:
-            self.__runtime_config_values["subject-name"] = arg_list.subject
-
-        if arg_list.tool_param:
-            self.__runtime_config_values["tool-params"] = arg_list.tool_param
-
-        if arg_list.tool_tag:
-            self.__runtime_config_values["tool-tag"] = arg_list.tool_tag
-
-        if arg_list.rebuild_all:
-            self.__runtime_config_values["rebuild-all"] = True
-
-        if arg_list.rebuild_base:
-            self.__runtime_config_values["rebuild-base"] = True
-
-        if arg_list.config_file:
-            self.__runtime_config_values["has-config-file"] = True
-
-        if arg_list.secure_hash:
-            self.__runtime_config_values["secure-hash"] = True
 
         if arg_list.debug:
             self.__runtime_config_values["is-debug"] = True
@@ -100,67 +67,15 @@ class Configurations:
             self.__runtime_config_values["use-cache"] = True
         if arg_list.purge:
             self.__runtime_config_values["use-purge"] = True
-        if arg_list.only_analyse:
-            self.__runtime_config_values["only-analyse"] = True
-        if not arg_list.use_container or arg_list.use_local:
-            self.__runtime_config_values["use-container"] = False
 
         if arg_list.data_dir:
             self.__runtime_config_values["dir-data"] = arg_list.data_dir
 
-        if arg_list.only_setup:
-            self.__runtime_config_values["only-setup"] = True
-
-        if arg_list.use_latest_image:
-            self.__runtime_config_values["use-latest-image"] = True
-
-        if arg_list.parallel:
-            self.__runtime_config_values["parallel"] = True
-
-        if arg_list.bug_index:
-            self.__runtime_config_values["bug-index-list"] = [arg_list.bug_index]
-        if arg_list.bug_index_list:
-            self.__runtime_config_values["bug-index-list"] = list(
-                flat_map(
-                    self.convert_range,
-                    str(arg_list.bug_index_list).split(","),
-                )
-            )
-        if arg_list.runs:
-            self.__runtime_config_values["runs"] = arg_list.runs
         if arg_list.cpu_count:
             self.__runtime_config_values["cpu-count"] = arg_list.cpu_count
 
-        if arg_list.bug_id:
-            self.__runtime_config_values["bug-id-list"] = [arg_list.bug_id]
-        if arg_list.bug_id_list:
-            self.__runtime_config_values["bug-id-list"] = arg_list.bug_id_list
-
-        if arg_list.start_index:
-            self.__runtime_config_values["start-index"] = int(arg_list.start_index)
-        if arg_list.end_index:
-            self.__runtime_config_values["end-index"] = int(arg_list.end_index)
-
-        if arg_list.skip_index_list:
-            self.__runtime_config_values["skip-index-list"] = str(
-                arg_list.skip_index_list
-            ).split(",")
-
-        if arg_list.compact_results:
-            self.__runtime_config_values["compact-results"] = arg_list.compact_results
-
         if arg_list.use_gpu:
             self.__runtime_config_values["use-gpu"] = arg_list.use_gpu
-
-        if arg_list.repair_profile_id_list:
-            self.__runtime_config_values[
-                "repair-profile-id-list"
-            ] = arg_list.repair_profile_id_list
-
-        if arg_list.container_profile_id_list:
-            self.__runtime_config_values[
-                "container-profile-id-list"
-            ] = arg_list.container_profile_id_list
 
     def read_slack_config_file(self):
         slack_config_info = {}
