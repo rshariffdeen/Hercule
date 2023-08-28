@@ -69,9 +69,8 @@ def run(parsed_args):
     package_path = parsed_args.file
     emitter.sub_title("Extracting Files")
     emitter.sub_sub_title("extracting original compressed file")
-    emitter.highlight(f"File Path: {package_path}")
-    emitter.normal("decompressing file")
-    archives.decompress_archive(package_path)
+    emitter.highlight(f"\t\t\tFile Path: {package_path.name}")
+    archives.decompress_archive(str(package_path.name))
 
 
 def main():

@@ -1,17 +1,20 @@
 import os.path
-from app.core import values, utilities
+from app.core import values, utilities, emitter
 
 
 def decompress_archive(archive_path):
+    emitter.normal("\t\t\tdecompressing file")
     archive_name = str(archive_path).split("/")[-1]
     file_extension = archive_name.split(".")[-1]
     dir_path = f"{values.dir_experiments}/{archive_name}-dir"
+    emitter.highlight(f"\t\t\t\tFile Extension: {file_extension}")
+    emitter.highlight(f"\t\t\t\tTarget Dir: {dir_path}")
     try:
         if file_extension in ["conda", "whl"]:
-            os.system(f"unzip {archive_path} -d {dir_path}")
+            utilities.execute_command(f"unzip {archive_path} -d {dir_path}")
         elif file_extension in ["gz", "bz2"]:
-            os.system(f"mkdir -p {dir_path}")
-            os.system(f"tar -xf {archive_path} -C {dir_path}")
+            utilities.execute_command(f"mkdir -p {dir_path}")
+            utilities.execute_command(f"tar -xf {archive_path} -C {dir_path}")
         else:
             utilities.error_exit(f"unknown archive type: {file_extension} in {archive_path}")
     except Exception as ex:
