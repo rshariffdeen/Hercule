@@ -87,7 +87,7 @@ def run(parsed_args):
     emitter.sub_title("Analysing File Types")
     emitter.sub_sub_title("extracting file type distribution")
     file_types = dict()
-    file_list = utilities.list_dir(dir_path)
+    file_list = utilities.get_file_list(dir_path)
     for f_p in file_list:
         kind = filetype.guess(f_p)
         if kind is None:

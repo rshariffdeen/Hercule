@@ -224,3 +224,10 @@ def get_file_info(file_path: str):
     file_command = f"file {file_path}"
     output = execute_command(file_command)[1]
     return str(output)
+
+
+def get_file_list(dir_path: str):
+    command = f"find {dir_path} -type f"
+    output = execute_command(command)[1]
+    return str(output).split("\n")
+
