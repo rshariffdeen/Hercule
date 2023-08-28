@@ -20,7 +20,8 @@ RUN pip3 --disable-pip-version-check --no-cache-dir install \
     bandit \
     slack_sdk  \
     discord \
-    jsonschema
+    jsonschema \
+    filetype
 
 # copy src files of the tool
 COPY . /opt/spade/

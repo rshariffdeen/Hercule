@@ -2,6 +2,7 @@ import os
 import signal
 import sys
 import time
+import filetype
 import traceback
 from argparse import Namespace
 from multiprocessing import set_start_method
@@ -80,10 +81,23 @@ def run(parsed_args):
     for a_f in archive_list:
         archive_name = str(a_f).split("/")[-1]
         file_extension = archive_name.split(".")[-1]
-        dir_path = f"{a_f}-dir"
-        archives.decompress_archive(str(a_f), file_extension, dir_path)
+        d_path = f"{a_f}-dir"
+        archives.decompress_archive(str(a_f), file_extension, d_path)
 
-
+    emitter.sub_title("Analysing File Types")
+    emitter.sub_sub_title("extracting file type distribution")
+    file_types = dict()
+    file_list = utilities.list_dir(dir_path)
+    for f_p in file_list:
+        kind = filetype.guess(f_p)
+        if kind is None:
+            kind = "unknown"
+        if kind not in file_types:
+            file_types[kind] = 0
+        file_types[kind] += 1
+    for kind in file_types:
+        count = file_types[kind]
+        emitter.highlight(f"\t\t\t{kind}:{count}")
 
 
 def main():
