@@ -5,11 +5,13 @@ RUN apt-get update && apt-get upgrade -y && apt-get autoremove -y
 
 # install experiment dependencies
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends  \
+    bzip2 \
     git \
     nano \
     python3 \
     python3-pip \
-    python3-dev
+    python3-dev \
+    unzip
 
 # install python packages
 RUN pip3 --disable-pip-version-check --no-cache-dir install \
