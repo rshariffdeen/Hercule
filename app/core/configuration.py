@@ -146,9 +146,6 @@ class Configurations:
 
     def update_configuration(self):
         emitter.normal("\t[framework] updating configuration values")
-        values.benchmark_name = self.__runtime_config_values["benchmark-name"]
-        values.subject_name = self.__runtime_config_values["subject-name"]
-        values.use_parallel = self.__runtime_config_values["parallel"]
         values.use_cache = self.__runtime_config_values["use-cache"]
         values.cpus = max(
             1,
@@ -159,5 +156,5 @@ class Configurations:
         )
 
         values.debug = self.__runtime_config_values["is-debug"]
-        values.secure_hash = self.__runtime_config_values["secure-hash"]
+        values.use_purge = self.__runtime_config_values["use-purge"]
         sys.setrecursionlimit(values.default_stack_size)
