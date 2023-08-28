@@ -88,6 +88,8 @@ def run(parsed_args):
     emitter.sub_sub_title("extracting file type distribution")
     file_types = dict()
     file_list = utilities.get_file_list(dir_path)
+    compiled_python2_list = []
+    compiled_python3_list = []
     for f_p in file_list:
         file_name = str(f_p).split("/")[-1]
         if not f_p:
@@ -97,12 +99,34 @@ def run(parsed_args):
             kind = utilities.execute_command(f"file --brief {f_p}")[1].decode().split(",")[0].strip()
         else:
             kind = kind.extension
+        if "python2" in kind and "byte-compiled" in kind:
+            compiled_python2_list.append(f_p)
+        if "python3" in kind and "byte-compiled" in kind:
+            compiled_python3_list.append(f_p)
         if kind not in file_types:
             file_types[kind] = 0
         file_types[kind] += 1
     for kind in file_types:
         count = file_types[kind]
         emitter.highlight(f"\t\t\t{kind}:{count}")
+
+    emitter.sub_title("Decompile PYC")
+    emitter.sub_sub_title("decompiling python2 versions")
+    for p_f in compiled_python2_list:
+        p_f_rel = p_f.replace(values.dir_main, "")
+        emitter.normal(f"\t\t{p_f_rel}")
+        decompiled_file = p_f.replace(".pyc", ".py2.py")
+        decompile_command = f"uncompyle6 -o {decompiled_file} {p_f}"
+        utilities.execute_command(decompile_command)
+
+    emitter.sub_sub_title("decompiling python3 versions")
+    for p_f in compiled_python3_list:
+        p_f_rel = p_f.replace(values.dir_main, "")
+        emitter.normal(f"\t\t{p_f_rel}")
+        decompiled_file = p_f.replace(".pyc", ".py3.py")
+        decompile_command = f"decompyle3 -o {decompiled_file} {p_f}"
+        utilities.execute_command(decompile_command)
+
 
 
 def main():
