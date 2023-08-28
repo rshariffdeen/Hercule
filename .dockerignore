@@ -1,2 +1,5 @@
 logs/*
 output/*
+analyzed/*
+downloads/*
+crawled/*
