@@ -92,12 +92,11 @@ def run(parsed_args):
         file_name = str(f_p).split("/")[-1]
         if not f_p:
             continue
-        kind = filetype.guess(f_p).extension
+        kind = filetype.guess(f_p)
         if kind is None:
-            if "." in file_name:
-                kind = str(file_name).split(".")[-1]
-            else:
-                kind = utilities.execute_command(f"file --brief {f_p}")[1].decode()
+            kind = utilities.execute_command(f"file --brief {f_p}")[1].decode().split(",")[0].strip()
+        else:
+            kind = kind.extension
         if kind not in file_types:
             file_types[kind] = 0
         file_types[kind] += 1
