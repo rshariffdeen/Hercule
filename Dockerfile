@@ -23,6 +23,8 @@ RUN git remote add origin https://github.com/rshariffdeen/spade.git
 RUN pip3 install -r /opt/spade/requirements.txt
 
 
+# set paths
+ENV PATH /opt/spade/bin/spade${PATH}
 
 
 
