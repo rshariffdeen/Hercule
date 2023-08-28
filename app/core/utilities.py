@@ -70,7 +70,7 @@ def execute_command(command: str, show_output=True, env=dict(), directory=None):
 
 
 def error_exit(*arg_list: Any) -> NoReturn:
-    emitter.error(f"Task {values.task_type.get()} failed")
+    emitter.error(f"Analysis Failed")
     notification.error_exit()
     for arg in arg_list:
         emitter.error(str(arg))

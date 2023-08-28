@@ -115,6 +115,5 @@ def main():
         # Final running time and exit message
         # os.system("ps -aux | grep 'python' | awk '{print $2}' | xargs kill -9")
         total_duration = format((time.time() - start_time) / 60, ".3f")
-        if not parsed_args.parallel:
-            notification.end(total_duration, is_error)
+        notification.end(total_duration, is_error)
         emitter.end(total_duration, iteration, is_error)
