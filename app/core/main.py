@@ -69,8 +69,21 @@ def run(parsed_args):
     package_path = parsed_args.file
     emitter.sub_title("Extracting Files")
     emitter.sub_sub_title("extracting original compressed file")
-    emitter.highlight(f"\t\t\tFile Path: {package_path.name}")
-    archives.decompress_archive(str(package_path.name))
+    archive_path = str(package_path.name)
+    archive_name = str(archive_path).split("/")[-1]
+    file_extension = archive_name.split(".")[-1]
+    dir_path = f"{values.dir_experiments}/{archive_name}-dir"
+    extract_dir = archives.decompress_archive(archive_path, file_extension, dir_path)
+    emitter.sub_sub_title("extracting internally compressed file(s)")
+    archive_list = archives.find_compressed(extract_dir)
+    emitter.highlight(f"\t\t\tArchive File Count: {len(archive_list)}")
+    for a_f in archive_list:
+        archive_name = str(a_f).split("/")[-1]
+        file_extension = archive_name.split(".")[-1]
+        dir_path = f"{a_f}-dir"
+        archives.decompress_archive(a_f, file_extension, dir_path)
+
+
 
 
 def main():
