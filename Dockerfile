@@ -6,6 +6,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get autoremove -y
 # install experiment dependencies
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends  \
     bzip2 \
+    file \
     git \
     nano \
     python3 \
