@@ -5,6 +5,11 @@ KEY_SUBJECT = "subject"
 KEY_LANGUAGE = "language"
 KEY_ENABLED = "enabled"
 
+ARG_CPU_COUNT = "--cpu-count"
+ARG_USE_GPU = "--use-gpu"
+ARG_CACHE = "--cache"
+ARG_DATA_PATH = "--dir-data"
 ARG_DEBUG_MODE = "--debug"
+ARG_PURGE = "--purge"
 ARG_PACKAGE_FILE = "--file"
 
