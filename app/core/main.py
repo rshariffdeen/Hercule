@@ -89,9 +89,15 @@ def run(parsed_args):
     file_types = dict()
     file_list = utilities.get_file_list(dir_path)
     for f_p in file_list:
-        kind = filetype.guess(f_p)
+        file_name = str(f_p).split("/")[-1]
+        if not f_p:
+            continue
+        kind = filetype.guess(f_p).extension
         if kind is None:
-            kind = "unknown"
+            if "." in file_name:
+                kind = str(file_name).split(".")[-1]
+            else:
+                kind = utilities.execute_command(f"file --brief {f_p}")[1].decode()
         if kind not in file_types:
             file_types[kind] = 0
         file_types[kind] += 1

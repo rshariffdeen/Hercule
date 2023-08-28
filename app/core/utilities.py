@@ -228,6 +228,6 @@ def get_file_info(file_path: str):
 
 def get_file_list(dir_path: str):
     command = f"find {dir_path} -type f"
-    output = execute_command(command)[1]
+    output = execute_command(command)[1].decode()
     return str(output).split("\n")
 
