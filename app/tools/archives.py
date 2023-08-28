@@ -9,11 +9,11 @@ def decompress_archive(archive_path, file_extension, dir_path):
     emitter.normal("\t\t\tdecompressing file")
     try:
         if file_extension in ["conda", "whl"]:
-            utilities.execute_command(f"unzip {archive_path} -d {dir_path}")
+            utilities.execute_command(f"unzip -o {archive_path} -d {dir_path}")
         elif file_extension in ["gz", "bz2", "zst"]:
             if dir_path:
                 utilities.execute_command(f"mkdir -p {dir_path}")
-                utilities.execute_command(f"tar -xf {archive_path} -C {dir_path}")
+                utilities.execute_command(f"tar --overwrite -xf {archive_path} -C {dir_path}")
         else:
             utilities.error_exit(f"unknown archive type: {file_extension} in {archive_path}")
     except Exception as ex:

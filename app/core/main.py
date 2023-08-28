@@ -81,7 +81,7 @@ def run(parsed_args):
         archive_name = str(a_f).split("/")[-1]
         file_extension = archive_name.split(".")[-1]
         dir_path = f"{a_f}-dir"
-        archives.decompress_archive(a_f, file_extension, dir_path)
+        archives.decompress_archive(str(a_f), file_extension, dir_path)
 
 
 
