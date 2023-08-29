@@ -141,9 +141,9 @@ def run(parsed_args):
                     meta_info = utilities.read_file(abs_path)
                     for l in meta_info:
                         if "Name: " in l:
-                            package_name = l.split(": ")[-1]
+                            package_name = l.split(": ")[-1].strip()
                         elif "Version: " in l:
-                            package_version = l.split(": ")[-1]
+                            package_version = l.split(": ")[-1].strip()
                         elif "Home-page:" in l:
                             home_url = l.split(": ")[-1]
                             if "github.com" in home_url:
@@ -179,11 +179,12 @@ def run(parsed_args):
             emitter.sub_sub_title("cloning from github")
             emitter.normal("\t\tfetching code")
             repo = Repo.clone_from(github_page, dir_src)
+            emitter.highlight(f"\t\t\t fetched dir: {dir_src}")
             tag_list = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
             emitter.normal("\t\tfinding release tag")
             release_tag = None
             for t in tag_list:
-                if package_version.lower() in str(t).lower():
+                if package_version.lower() in str(t).strip().lower():
                     release_tag = t
                     break
             emitter.highlight(f"\t\t\t release tag: {release_tag}")
