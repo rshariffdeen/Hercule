@@ -24,7 +24,8 @@ RUN pip3 --disable-pip-version-check --no-cache-dir install \
     jsonschema \
     filetype \
     uncompyle6 \
-    decompyle3
+    decompyle3 \
+    requests
 
 # copy src files of the tool
 COPY . /opt/spade/

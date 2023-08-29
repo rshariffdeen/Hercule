@@ -3,5 +3,5 @@ bandit
 slack_sdk
 discord
 jsonschema
-
+requests
 
