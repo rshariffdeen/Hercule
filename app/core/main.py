@@ -106,8 +106,8 @@ def run(parsed_args):
                     if "source" in meta_data:
                         source_url = meta_data["source"]["url"]
                     if "package" in meta_data:
-                        package_name = meta_data["package"]["name"]
-                        package_version = meta_data["package"]["version"]
+                        package_name = meta_data["package"]["name"].strip()
+                        package_version = meta_data["package"]["version"].strip()
                 elif "json" in f_name:
                     meta_data = utilities.read_json(abs_path)
                     meta_data_file = f_path
@@ -116,16 +116,16 @@ def run(parsed_args):
                         if "github.com" in home_url:
                             github_page = home_url
                     if "version" in meta_data:
-                        package_version = meta_data["version"]
+                        package_version = meta_data["version"].strip()
                     if "name" in meta_data:
                         package_name = meta_data["name"]
                 elif "PKG-INFO" in f_name:
                     meta_info = utilities.read_file(abs_path)
                     for l in meta_info:
                         if "Name: " in l:
-                            package_name = l.split(": ")[-1]
+                            package_name = l.split(": ")[-1].strip()
                         elif "Version: " in l:
-                            package_version = l.split(": ")[-1]
+                            package_version = l.split(": ")[-1].strip()
                         elif "Home-page:" in l:
                             home_url = l.split(": ")[-1]
                             if "github.com" in home_url:
@@ -184,7 +184,7 @@ def run(parsed_args):
             emitter.normal("\t\tfinding release tag")
             release_tag = None
             for t in tag_list:
-                if package_version.lower() in str(t).strip().lower():
+                if package_version.strip().lower() in str(t).strip().lower():
                     release_tag = t
                     break
             emitter.highlight(f"\t\t\t release tag: {release_tag}")
