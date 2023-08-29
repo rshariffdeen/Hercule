@@ -19,10 +19,12 @@ from rich import get_console
 
 from app.core import configuration
 from app.core import definitions
+from app.core import decompile
 from app.core import emitter
 from app.core import logger
 from app.core import utilities
 from app.core import values
+from app.core import analysis
 from app.tools import archives
 from app.core.args import parse_args
 from app.core.configuration import Configurations
@@ -74,8 +76,8 @@ def run(parsed_args):
     archive_path = str(package_path.name)
     archive_name = str(archive_path).split("/")[-1]
     file_extension = archive_name.split(".")[-1]
-    dir_path = f"{values.dir_experiments}/{archive_name}-dir"
-    extract_dir = archives.decompress_archive(archive_path, file_extension, dir_path)
+    dir_pkg = f"{values.dir_experiments}/{archive_name}-dir"
+    extract_dir = archives.decompress_archive(archive_path, file_extension, dir_pkg)
     emitter.sub_sub_title("extracting internally compressed file(s)")
     archive_list = archives.find_compressed(extract_dir)
     emitter.highlight(f"\t\t\tArchive File Count: {len(archive_list)}")
@@ -93,13 +95,13 @@ def run(parsed_args):
     package_name = None
     github_page = None
     for f_name in meta_data_files:
-        result_list = utilities.find_file(dir_path, f_name)
+        result_list = utilities.find_file(dir_pkg, f_name)
         if result_list:
             for f_path in result_list:
                 if not f_path:
                     continue
                 emitter.normal(f"\t\t found {f_path}")
-                abs_path = join(dir_path, f_path)
+                abs_path = join(dir_pkg, f_path)
                 if "yaml" in f_name:
                     meta_data = utilities.read_yaml(abs_path)
                     meta_data_file = f_path
@@ -164,7 +166,7 @@ def run(parsed_args):
     emitter.highlight(f"\t\t\t package github: {github_page}")
 
     emitter.sub_title("Fetching Source")
-    dir_src = dir_path.replace("-dir", "-src")
+    dir_src = dir_pkg.replace("-dir", "-src")
     if not os.path.isdir(dir_src):
         if source_url:
             emitter.sub_sub_title("downloading from URL")
@@ -192,49 +194,8 @@ def run(parsed_args):
     else:
         emitter.normal("\t\tcache found, skipping fetch")
 
-
-    emitter.sub_title("Analysing Package File Types")
-    emitter.sub_sub_title("extracting file type distribution")
-    file_types = dict()
-    file_list = utilities.get_file_list(dir_path)
-    compiled_python2_list = []
-    compiled_python3_list = []
-    for f_p in file_list:
-        file_name = str(f_p).split("/")[-1]
-        if not f_p:
-            continue
-        kind = filetype.guess(f_p)
-        if kind is None:
-            kind = utilities.execute_command(f"file --brief {f_p}")[1].decode().split(",")[0].strip()
-        else:
-            kind = kind.extension
-        if "python 2" in kind and "byte-compiled" in kind:
-            compiled_python2_list.append(f_p)
-        if "python 3" in kind and "byte-compiled" in kind:
-            compiled_python3_list.append(f_p)
-        if kind not in file_types:
-            file_types[kind] = 0
-        file_types[kind] += 1
-    for kind in file_types:
-        count = file_types[kind]
-        emitter.highlight(f"\t\t\t{kind}: {count}")
-
-    emitter.sub_title("Decompile PYC")
-    emitter.sub_sub_title("decompiling python2 versions")
-    for p_f in compiled_python2_list:
-        p_f_rel = p_f.replace(values.dir_main, "")
-        emitter.highlight(f"\t\t{p_f_rel}")
-        decompiled_file = p_f.replace(".pyc", ".py2.py")
-        decompile_command = f"uncompyle6 -o {decompiled_file} {p_f}"
-        utilities.execute_command(decompile_command)
-
-    emitter.sub_sub_title("decompiling python3 versions")
-    for p_f in compiled_python3_list:
-        p_f_rel = p_f.replace(values.dir_main, "")
-        emitter.highlight(f"\t\t{p_f_rel}")
-        decompiled_file = p_f.replace(".pyc", ".py3.py")
-        decompile_command = f"decompyle3 -o {decompiled_file} {p_f}"
-        utilities.execute_command(decompile_command)
+    analysis.analyze_file_types(dir_pkg, dir_src)
+    decompile.decompile_python_files(dir_pkg, dir_src)
 
 
 def main():
