@@ -31,8 +31,9 @@ def analyze_file_types(dir_pkg, dir_src):
         if f_type in src_file_types:
             src_files = src_file_types[f_type]
         extra_count = len(pkg_files) - len(src_files)
-        if extra_count:
+        if extra_count > 0:
             emitter.error(f"\t\t\t {f_type}: + {extra_count}")
+        interested_files[f_type] = dict()
         interested_files[f_type]["src"] = src_files
         interested_files[f_type]["pkg"] = pkg_files
     return interested_files
