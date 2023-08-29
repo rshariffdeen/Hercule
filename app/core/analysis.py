@@ -16,12 +16,13 @@ def analyze_file_types(dir_pkg, dir_src):
 
     interested_types_short = ["python", "shell", "DOS"]
     interested_types_long = []
-    all_file_types = list(set((list(src_file_types.keys())) + list(pkg_file_types.key())))
+    all_file_types = list(set((list(src_file_types.keys())) + list(pkg_file_types.keys())))
     for f_type in all_file_types:
         if any(_type in str(f_type).lower() for _type in interested_types_short):
             interested_types_long.append(f_type)
 
     emitter.sub_sub_title("analysing differences")
+    interested_files = dict()
     for f_type in interested_types_long:
         pkg_files = []
         src_files = []
@@ -29,11 +30,13 @@ def analyze_file_types(dir_pkg, dir_src):
             pkg_files = pkg_file_types[f_type]
         if f_type in src_file_types:
             src_files = src_file_types[f_type]
-        extra_files = pkg_files - src_files
-        if extra_files:
-            emitter.error(f"\t\t\t {f_type}: + {len(extra_files)}")
-            for _f in extra_files:
-                emitter.error(f"\t\t\t\t {_f}")
+        extra_count = len(pkg_files) - len(src_files)
+        if extra_count:
+            emitter.error(f"\t\t\t {f_type}: + {extra_count}")
+        interested_files[f_type]["src"] = src_files
+        interested_files[f_type]["pkg"] = pkg_files
+    return interested_files
+
 
 
 

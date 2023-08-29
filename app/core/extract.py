@@ -15,7 +15,7 @@ def extract_file_types(dir_path):
             kind = kind.extension
         if kind not in file_types:
             file_types[kind] = list()
-        file_types[kind].append(f_p)
+        file_types[kind].append(str(f_p).replace(dir_path, ""))
     return file_types
 
 
