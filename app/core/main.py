@@ -152,7 +152,7 @@ def run(parsed_args):
             if not file_type:
                 utilities.error_exit(f"unknown release file type {release_file}")
             file_ext = file_type.extension
-            archives.decompress_archive(archive_path, file_ext, dir_src)
+            archives.decompress_archive(release_file, file_ext, dir_src)
     else:
         emitter.normal("\t\tcache found, skipping fetch")
 
