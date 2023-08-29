@@ -7,7 +7,7 @@ import signal
 import subprocess
 import pathlib
 import json
-import csv
+import yaml
 from typing import Any
 from typing import List
 from typing import Optional
@@ -185,6 +185,10 @@ def read_json(file_path: str, encoding="utf-8"):
     return json_data
 
 
+def read_yaml(file_path: str):
+    yaml_data = yaml.safe_load(open(file_path))
+    return yaml_data
+
 def append_file(content: List[str], file_path: str):
     with open(file_path, "a") as f:
         for line in content:
@@ -228,6 +232,12 @@ def get_file_info(file_path: str):
 
 def get_file_list(dir_path: str):
     command = f"find {dir_path} -type f"
+    output = execute_command(command)[1].decode()
+    return str(output).split("\n")
+
+
+def find_file(dir_path: str, f_name: str):
+    command = f"find {dir_path} -type f -name \"{f_name}\""
     output = execute_command(command)[1].decode()
     return str(output).split("\n")
 

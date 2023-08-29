@@ -9,8 +9,9 @@ from multiprocessing import set_start_method
 from typing import Any
 from typing import Dict
 from typing import List
-
+from os.path import join
 import rich.traceback
+import yaml
 from rich import get_console
 
 from app.core import configuration
@@ -63,9 +64,6 @@ def bootstrap(arg_list: Namespace):
     config.print_configuration()
 
 
-iteration = 0
-
-
 def run(parsed_args):
     package_path = parsed_args.file
     emitter.sub_title("Extracting Files")
@@ -83,6 +81,64 @@ def run(parsed_args):
         file_extension = archive_name.split(".")[-1]
         d_path = f"{a_f}-dir"
         archives.decompress_archive(str(a_f), file_extension, d_path)
+
+    emitter.sub_title("Searching Meta Data")
+    emitter.sub_sub_title("finding for meta-data files")
+    meta_data_files = ["meta.yaml", "METADATA", "about.json", "index.json"]
+    source_url = None
+    package_version = None
+    package_name = None
+    github_page = None
+    for f_name in meta_data_files:
+        result_list = utilities.find_file(dir_path, f_name)
+        if result_list:
+            for f_path in result_list:
+                emitter.normal(f"\t\t found {f_path}")
+                abs_path = join(dir_path, f_path)
+                if "yaml" in f_name:
+                    meta_data = utilities.read_yaml(abs_path)
+                    meta_data_file = f_path
+                    if "source" in meta_data:
+                        source_url = meta_data["source"]["url"]
+                    if "package" in meta_data:
+                        package_name = meta_data["package"]["name"]
+                        package_version = meta_data["package"]["version"]
+                elif "json" in f_name:
+                    meta_data = utilities.read_json(abs_path)
+                    meta_data_file = f_path
+                    if "home" in meta_data:
+                        home_url = meta_data["home"]
+                        if "github.com" in home_url:
+                            github_page = home_url
+                    if "version" in meta_data:
+                        package_version = meta_data["version"]
+                    if "name" in meta_data:
+                        package_name = meta_data["name"]
+                else:
+                    meta_info = utilities.read_file(abs_path)
+                    for l in meta_info:
+                        if "Name: " in l:
+                            package_name = l.split(": ")[-1]
+                        elif "Version: " in l:
+                            package_version = l.split(": ")[-1]
+                        elif "Home-page:" in l:
+                            home_url = l.split(": ")[-1]
+                            if "github.com" in home_url:
+                                github_page = home_url
+
+                if source_url and package_version and package_name:
+                    break
+                if github_page and package_name and package_version:
+                    break
+
+    if not source_url:
+        utilities.error_exit("failed to identify source URL")
+
+    emitter.highlight(f"\t\t\t package name: {package_name}")
+    emitter.highlight(f"\t\t\t package version: {package_name}")
+    emitter.highlight(f"\t\t\t package source: {source_url}")
+    emitter.highlight(f"\t\t\t package github: {github_page}")
+
 
     emitter.sub_title("Analysing File Types")
     emitter.sub_sub_title("extracting file type distribution")
@@ -108,7 +164,7 @@ def run(parsed_args):
         file_types[kind] += 1
     for kind in file_types:
         count = file_types[kind]
-        emitter.highlight(f"\t\t\t{kind}:{count}")
+        emitter.highlight(f"\t\t\t{kind}: {count}")
 
     emitter.sub_title("Decompile PYC")
     emitter.sub_sub_title("decompiling python2 versions")
@@ -128,9 +184,7 @@ def run(parsed_args):
         utilities.execute_command(decompile_command)
 
 
-
 def main():
-    global iteration
     if not sys.warnoptions:
         import warnings
 
@@ -171,4 +225,4 @@ def main():
         # os.system("ps -aux | grep 'python' | awk '{print $2}' | xargs kill -9")
         total_duration = format((time.time() - start_time) / 60, ".3f")
         notification.end(total_duration, is_error)
-        emitter.end(total_duration, iteration, is_error)
+        emitter.end(total_duration, is_error)

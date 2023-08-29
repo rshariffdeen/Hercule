@@ -197,7 +197,7 @@ def configuration(setting, value):
     logger.configuration(setting + ":" + str(value))
 
 
-def end(time_total, experiments_executed, is_error=False):
+def end(time_total, is_error=False):
     if values.is_arg_valid:
         action = error if is_error else success
         text = "exited with an error" if is_error else "finished successfully"
