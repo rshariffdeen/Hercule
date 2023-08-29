@@ -141,6 +141,24 @@ def run(parsed_args):
     emitter.highlight(f"\t\t\t package source: {source_url}")
     emitter.highlight(f"\t\t\t package github: {github_page}")
 
+    emitter.sub_title("Fetching Source")
+    dir_src = dir_path.replace("-dir", "-src")
+    if not os.path.isdir(dir_src):
+        if source_url:
+            emitter.sub_sub_title("downloading from URL")
+            release_file = os.path.dirname(dir_src) + "/src-archive"
+            utilities.download_file(source_url, release_file)
+            file_type = filetype.guess(release_file)
+            if not file_type:
+                utilities.error_exit(f"unknown release file type {release_file}")
+            file_ext = file_type.extension
+            archives.decompress_archive(archive_path, file_ext, dir_src)
+    else:
+        emitter.normal("\t\tcache found, skipping fetch")
+
+
+
+
 
     emitter.sub_title("Analysing File Types")
     emitter.sub_sub_title("extracting file type distribution")

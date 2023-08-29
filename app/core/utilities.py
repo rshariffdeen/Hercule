@@ -8,6 +8,7 @@ import subprocess
 import pathlib
 import json
 import yaml
+import requests
 from typing import Any
 from typing import List
 from typing import Optional
@@ -240,4 +241,16 @@ def find_file(dir_path: str, f_name: str):
     command = f"find {dir_path} -type f -name \"{f_name}\""
     output = execute_command(command)[1].decode()
     return str(output).split("\n")
+
+
+def download_file(file_url, file_path):
+    response = requests.get(file_url)
+    if os.path.isfile(file_path):
+        print("duplicate file found", file_path)
+    dir_path = os.path.dirname(file_path)
+    if not os.path.isdir(dir_path):
+        os.makedirs(dir_path)
+    with open(file_path, 'wb') as f:
+        f.write(response.content)
+    return
 
