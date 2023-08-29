@@ -93,6 +93,8 @@ def run(parsed_args):
         result_list = utilities.find_file(dir_path, f_name)
         if result_list:
             for f_path in result_list:
+                if not f_path:
+                    continue
                 emitter.normal(f"\t\t found {f_path}")
                 abs_path = join(dir_path, f_path)
                 if "yaml" in f_name:
@@ -126,16 +128,16 @@ def run(parsed_args):
                             if "github.com" in home_url:
                                 github_page = home_url
 
-                if source_url and package_version and package_name:
-                    break
-                if github_page and package_name and package_version:
-                    break
+            if source_url and package_version and package_name:
+                break
+            if github_page and package_name and package_version:
+                break
 
     if not source_url:
         utilities.error_exit("failed to identify source URL")
 
     emitter.highlight(f"\t\t\t package name: {package_name}")
-    emitter.highlight(f"\t\t\t package version: {package_name}")
+    emitter.highlight(f"\t\t\t package version: {package_version}")
     emitter.highlight(f"\t\t\t package source: {source_url}")
     emitter.highlight(f"\t\t\t package github: {github_page}")
 
