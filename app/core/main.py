@@ -1,4 +1,5 @@
 import os
+import re
 import signal
 import sys
 import time
@@ -84,7 +85,7 @@ def run(parsed_args):
 
     emitter.sub_title("Searching Meta Data")
     emitter.sub_sub_title("finding for meta-data files")
-    meta_data_files = ["meta.yaml", "METADATA", "about.json", "index.json"]
+    meta_data_files = ["meta.yaml", "METADATA", "about.json", "index.json", "PKG-INFO"]
     source_url = None
     package_version = None
     package_name = None
@@ -116,6 +117,22 @@ def run(parsed_args):
                         package_version = meta_data["version"]
                     if "name" in meta_data:
                         package_name = meta_data["name"]
+                elif "PKG-INFO" in f_name:
+                    meta_info = utilities.read_file(abs_path)
+                    for l in meta_info:
+                        if "Name: " in l:
+                            package_name = l.split(": ")[-1]
+                        elif "Version: " in l:
+                            package_version = l.split(": ")[-1]
+                        elif "Home-page:" in l:
+                            home_url = l.split(": ")[-1]
+                            if "github.com" in home_url:
+                                github_page = home_url
+                                break
+                        elif "github.com" in l:
+                            github_repo = re.search(r"//(.*?).git", l).group(1)
+                            github_page = f"https://{github_repo}.git"
+                            break
                 else:
                     meta_info = utilities.read_file(abs_path)
                     for l in meta_info:
@@ -127,6 +144,7 @@ def run(parsed_args):
                             home_url = l.split(": ")[-1]
                             if "github.com" in home_url:
                                 github_page = home_url
+                                break
 
             if source_url and package_version and package_name:
                 break
@@ -157,10 +175,7 @@ def run(parsed_args):
         emitter.normal("\t\tcache found, skipping fetch")
 
 
-
-
-
-    emitter.sub_title("Analysing File Types")
+    emitter.sub_title("Analysing Package File Types")
     emitter.sub_sub_title("extracting file type distribution")
     file_types = dict()
     file_list = utilities.get_file_list(dir_path)
