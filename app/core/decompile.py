@@ -12,7 +12,7 @@ def decompile_py2_files(py2_list):
 
 
 def decompile_py3_files(py3_list):
-    emitter.sub_sub_title("\t\tdecompiling python3 versions")
+    emitter.normal("\t\tdecompiling python3 versions")
     for p_f in py3_list:
         p_f_rel = p_f.replace(values.dir_main, "")
         emitter.highlight(f"\t\t{p_f_rel}")
