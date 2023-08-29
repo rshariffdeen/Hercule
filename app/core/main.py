@@ -7,6 +7,8 @@ import filetype
 import traceback
 from argparse import Namespace
 from multiprocessing import set_start_method
+from git import Repo
+
 from typing import Any
 from typing import Dict
 from typing import List
@@ -130,9 +132,11 @@ def run(parsed_args):
                                 github_page = home_url
                                 break
                         elif "github.com" in l:
-                            github_repo = re.search(r"//(.*?).git", l).group(1)
-                            github_page = f"https://{github_repo}.git"
-                            break
+                            result = re.search(r"//(.*?).git", l)
+                            if result:
+                                github_repo = result.group(1)
+                                github_page = f"https://{github_repo}.git"
+                                break
                 else:
                     meta_info = utilities.read_file(abs_path)
                     for l in meta_info:
@@ -151,8 +155,8 @@ def run(parsed_args):
             if github_page and package_name and package_version:
                 break
 
-    if not source_url:
-        utilities.error_exit("failed to identify source URL")
+    if not source_url and not github_page:
+        utilities.error_exit("failed to identify source")
 
     emitter.highlight(f"\t\t\t package name: {package_name}")
     emitter.highlight(f"\t\t\t package version: {package_version}")
@@ -171,6 +175,19 @@ def run(parsed_args):
                 utilities.error_exit(f"unknown release file type {release_file}")
             file_ext = file_type.extension
             archives.decompress_archive(release_file, file_ext, dir_src)
+        elif github_page:
+            emitter.sub_sub_title("cloning from github")
+            emitter.normal("\t\tfetching code")
+            repo = Repo.clone_from(github_page, dir_src)
+            tag_list = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
+            emitter.normal("\t\tfinding release tag")
+            release_tag = None
+            for t in tag_list:
+                if package_version.lower() in str(t).lower():
+                    release_tag = t
+                    break
+            emitter.highlight(f"\t\t\t release tag: {release_tag}")
+            repo.git.checkout(release_tag)
     else:
         emitter.normal("\t\tcache found, skipping fetch")
 
