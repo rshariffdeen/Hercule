@@ -48,8 +48,8 @@ def detect_new_files(interested_files):
         pkg_files = interested_files[f_type]["pkg"]
         prefix_pkg = extract.extract_path_prefix(pkg_files)
         prefix_src = extract.extract_path_prefix(src_files)
-        rel_path_list_pkg = [str(p).replace(prefix_pkg, "") for p in pkg_files]
-        rel_path_list_src = [str(p).replace(prefix_src, "") for p in src_files]
+        rel_path_list_pkg = [str(p).replace(prefix_pkg, "", 1) for p in pkg_files]
+        rel_path_list_src = [str(p).replace(prefix_src, "", 1) for p in src_files]
         extra_file_count = 0
         for f_path in rel_path_list_pkg:
             if f_path not in rel_path_list_src:
