@@ -76,8 +76,8 @@ def run(parsed_args):
     dir_src = dir_pkg.replace("-dir", "-src")
     extract.extract_source(source_url, github_page, dir_src, package_version)
     analysis.analyze_file_types(dir_pkg, dir_src)
-    decompile.decompile_python_files(dir_pkg, dir_src)
-
+    interested_files = decompile.decompile_python_files(dir_pkg, dir_src)
+    analysis.analyze_files(interested_files)
 
 
 def main():
