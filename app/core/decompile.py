@@ -27,10 +27,13 @@ def decompile_python_files(dir_pkg, dir_src):
     pkg_py2_list, pkg_py3_list = extract.extract_compiled_python(dir_pkg)
     decompile_py2_files(pkg_py2_list)
     decompile_py3_files(pkg_py3_list)
+    pkg_pyc_list = pkg_py2_list + pkg_py3_list
     emitter.sub_sub_title("decompiling in source directory")
     src_py2_list, src_py3_list = extract.extract_compiled_python(dir_src)
     decompile_py2_files(src_py2_list)
     decompile_py3_files(src_py3_list)
+    src_pyc_list = src_py2_list + src_py3_list
+    return src_pyc_list, pkg_pyc_list
 
 
 

@@ -75,8 +75,9 @@ def run(parsed_args):
     package_name, package_version, source_url, github_page = extract.extract_meta_data(dir_pkg)
     dir_src = dir_pkg.replace("-dir", "-src")
     extract.extract_source(source_url, github_page, dir_src, package_version)
-    analysis.analyze_file_types(dir_pkg, dir_src)
-    interested_files = decompile.decompile_python_files(dir_pkg, dir_src)
+    interested_files = analysis.analyze_file_types(dir_pkg, dir_src)
+    src_pyc_list, pkg_pyc_list = decompile.decompile_python_files(dir_pkg, dir_src)
+    interested_files["decompiled pyc"] = {"src": src_pyc_list, "pkg": pkg_pyc_list}
     analysis.analyze_files(interested_files)
 
 
