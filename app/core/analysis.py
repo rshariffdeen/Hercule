@@ -44,6 +44,7 @@ def analyze_file_types(dir_pkg, dir_src):
 def detect_new_files(interested_files):
     emitter.sub_sub_title("detecting new files")
     for f_type in interested_files:
+        emitter.normal(f"\t\t{f_type}")
         src_files = interested_files[f_type]["src"]
         pkg_files = interested_files[f_type]["pkg"]
         prefix_pkg = extract.extract_path_prefix(pkg_files)
