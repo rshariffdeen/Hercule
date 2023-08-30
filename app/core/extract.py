@@ -3,7 +3,7 @@ import os
 import re
 from os.path import join
 from git import Repo
-from app.core import utilities, emitter, values
+from app.core import utilities, emitter, values, compute
 from app.tools import archives
 
 
@@ -174,3 +174,12 @@ def extract_archive(pkg_path):
         d_path = f"{a_f}-dir"
         archives.decompress_archive(str(a_f), file_extension, d_path)
     return dir_pkg
+
+
+def extract_path_prefix(path_list):
+    lcs = path_list[0]
+    for f_path in path_list[1:]:
+        n_path = len(f_path)
+        n_lcs = len(lcs)
+        lcs = compute.LCSubStr(lcs, f_path, n_lcs, n_path)
+    return lcs

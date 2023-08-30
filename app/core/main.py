@@ -79,6 +79,7 @@ def run(parsed_args):
     decompile.decompile_python_files(dir_pkg, dir_src)
 
 
+
 def main():
     if not sys.warnoptions:
         import warnings

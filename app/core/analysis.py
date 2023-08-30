@@ -41,6 +41,29 @@ def analyze_file_types(dir_pkg, dir_src):
     return interested_files
 
 
+def detect_new_files(interested_files):
+    emitter.sub_sub_title("detecting new files")
+    for f_type in interested_files:
+        src_files = interested_files[f_type]["src"]
+        pkg_files = interested_files[f_type]["pkg"]
+        prefix_pkg = extract.extract_path_prefix(pkg_files)
+        prefix_src = extract.extract_path_prefix(src_files)
+        rel_path_list_pkg = [str(p).replace(prefix_pkg, "") for p in pkg_files]
+        rel_path_list_src = [str(p).replace(prefix_src, "") for p in src_files]
+        extra_file_count = 0
+        for f_path in rel_path_list_pkg:
+            if f_path not in rel_path_list_src:
+                extra_file_count += 1
+                emitter.error(f"\t\t\t {f_path}")
+        if extra_file_count == 0:
+            emitter.success("\t\t\tno extra file detected")
+
+
+def analyze_files(interested_files):
+    emitter.sub_title("Analysing Files")
+    detect_new_files(interested_files)
+
+
 
 
 
