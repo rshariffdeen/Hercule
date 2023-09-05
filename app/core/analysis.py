@@ -1,4 +1,4 @@
-from app.core import emitter, extract
+from app.core import emitter, extract, decompile, utilities
 
 
 def analyze_file_types(dir_pkg, dir_src):
@@ -41,8 +41,37 @@ def analyze_file_types(dir_pkg, dir_src):
     return interested_files
 
 
+def detect_modified_source_files(interested_files, dir_src, dir_pkg):
+    emitter.sub_sub_title("detecting modified source files")
+    modified_file_list = []
+    for f_type in interested_files:
+        if "decompiled pyc" in f_type:
+            continue
+        if "python script" not in f_type.lower():
+            continue
+        src_files = interested_files[f_type]["src"]
+        pkg_files = interested_files[f_type]["pkg"]
+        prefix_pkg = extract.extract_path_prefix(pkg_files)
+        prefix_src = extract.extract_path_prefix(src_files)
+        for f_rel_pkg in pkg_files:
+            f_rel = f_rel_pkg.replace(prefix_pkg, "")
+            f_rel_src = f"{prefix_src}{f_rel}"
+            if f_rel_src not in src_files:
+                continue
+            f_path_src = f"{dir_src}{f_rel_src}"
+            f_path_pkg = f"{dir_pkg}{f_rel_pkg}"
+            diff_command = f"diff -q {f_path_src} {f_path_pkg}"
+            status, _, _ = utilities.execute_command(diff_command)
+            if int(status) != 0:
+                modified_file_list.append((f_rel, f_path_pkg, f_path_src))
+    for f in modified_file_list:
+        emitter.normal(f"\t\t\t{f[0]}")
+    return modified_file_list
+
+
 def detect_new_files(interested_files):
     emitter.sub_sub_title("detecting new files")
+
     for f_type in interested_files:
         emitter.normal(f"\t\t{f_type}")
         src_files = interested_files[f_type]["src"]
@@ -60,9 +89,13 @@ def detect_new_files(interested_files):
             emitter.success("\t\t\tno extra file detected")
 
 
-def analyze_files(interested_files):
+def analyze_files(dir_pkg, dir_src):
     emitter.sub_title("Analysing Files")
+    interested_files = analyze_file_types(dir_pkg, dir_src)
+    src_pyc_list, pkg_pyc_list = decompile.decompile_python_files(dir_pkg, dir_src)
+    interested_files["decompiled pyc"] = {"src": src_pyc_list, "pkg": pkg_pyc_list}
     detect_new_files(interested_files)
+    mod_list = detect_modified_source_files(interested_files, dir_src, dir_pkg)
 
 
 
