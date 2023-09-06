@@ -118,7 +118,7 @@ def extract_meta_data(dir_pkg):
                         elif "Version: " in l:
                             package_version = l.split(": ")[-1].strip()
                         elif "Home-page:" in l:
-                            home_url = l.split(": ")[-1]
+                            home_url = l.split(": ")[-1].strip()
                             if "github.com" in home_url:
                                 github_page = home_url
                                 break
@@ -136,7 +136,7 @@ def extract_meta_data(dir_pkg):
                         elif "Version: " in l:
                             package_version = l.split(": ")[-1].strip()
                         elif "Home-page:" in l:
-                            home_url = l.split(": ")[-1]
+                            home_url = l.split(": ")[-1].strip()
                             if "github.com" in home_url:
                                 github_page = home_url
                                 break
