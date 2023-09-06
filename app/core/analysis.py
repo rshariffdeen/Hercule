@@ -1,4 +1,4 @@
-from app.core import emitter, extract, decompile, utilities
+from app.core import emitter, extract, decompile, utilities, transform, oracle
 
 
 def analyze_file_types(dir_pkg, dir_src):
@@ -89,6 +89,51 @@ def detect_new_files(interested_files):
             emitter.success("\t\t\tno extra file detected")
 
 
+def detect_suspicious_modifications(mod_files):
+    emitter.sub_sub_title("detecting suspicious modifications")
+    suspicious_file_list = []
+    for mod_f in mod_files:
+        rel_f, f_pkg, f_src = mod_f
+        status_pkg = transform.upgrade_python_3(f_pkg)
+        status_src = transform.upgrade_python_3(f_src)
+        if int(status_src) != 0 or int(status_pkg) != 0:
+            utilities.error_exit(f"python upgrade failed {f_pkg}, {f_src}")
+        status_pkg = transform.refactor_python(f_pkg)
+        status_src = transform.refactor_python(f_src)
+        if int(status_src) != 0 or int(status_pkg) != 0:
+            utilities.error_exit(f"python refactoring failed {f_pkg}, {f_src}")
+
+        parsed_pkg, _ = transform.parse_ast(f_pkg)
+        parsed_src, _ = transform.parse_ast(f_src)
+        if not parsed_pkg or not parsed_src:
+            utilities.error_exit(f"python parsing failed {f_pkg}, {f_src}")
+
+        ast_diff_script = transform.generate_ast_diff(f_src, f_pkg)
+        action_cluster_list = []
+        action_cluster = []
+        with open(ast_diff_script, 'r') as script_file:
+            diff_command_list = script_file.readlines()
+            for l in diff_command_list:
+                if "New cluster" in l:
+                    if action_cluster:
+                        action_cluster_list.append(action_cluster)
+                    action_cluster = []
+                elif any(f in l for f in ["cluster type", "===", "------"]):
+                    continue
+                else:
+                    action_cluster.append(l)
+            action_cluster_list.append(action_cluster)
+
+        for action_cluster in action_cluster_list:
+            action_type = None
+            is_suspicious = oracle.is_cluster_suspicious(action_cluster)
+            if is_suspicious:
+                if f_pkg not in suspicious_file_list:
+                    suspicious_file_list.append(f_pkg)
+
+    return suspicious_file_list
+
+
 def analyze_files(dir_pkg, dir_src):
     emitter.sub_title("Analysing Files")
     interested_files = analyze_file_types(dir_pkg, dir_src)
@@ -96,6 +141,11 @@ def analyze_files(dir_pkg, dir_src):
     interested_files["decompiled pyc"] = {"src": src_pyc_list, "pkg": pkg_pyc_list}
     detect_new_files(interested_files)
     mod_list = detect_modified_source_files(interested_files, dir_src, dir_pkg)
+    suspicious_files = detect_suspicious_modifications(mod_list)
+
+    for f in suspicious_files:
+        emitter.error(f"\t\t{f}")
+
 
 
 
