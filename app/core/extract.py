@@ -7,7 +7,6 @@ from app.core import utilities, emitter, values, compute
 from app.tools import archives
 
 
-
 def extract_file_types(dir_path):
     file_types = dict()
     file_list = utilities.get_file_list(dir_path)
@@ -123,10 +122,10 @@ def extract_meta_data(dir_pkg):
                                 github_page = home_url
                                 break
                         elif "github.com" in l:
-                            result = re.search(r"//(.*?).git", l)
+                            result = re.search(r"github[.]com/[\w-]+/?/[\w-]+", l)
                             if result:
-                                github_repo = result.group(1)
-                                github_page = f"https://{github_repo}.git"
+                                github_repo = result.group(0)
+                                github_page = f"https://{github_repo}"
                                 break
                 else:
                     meta_info = utilities.read_file(abs_path)
