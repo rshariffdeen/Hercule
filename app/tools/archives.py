@@ -8,7 +8,7 @@ def decompress_archive(archive_path, file_extension, dir_path):
     emitter.highlight(f"\t\t\t\tFile Extension: {file_extension}")
     emitter.highlight(f"\t\t\t\tTarget Dir: {dir_path}")
     try:
-        if file_extension in ["conda", "whl"]:
+        if file_extension in ["conda", "whl", "zip"]:
             utilities.execute_command(f"unzip -o {archive_path} -d {dir_path}")
         elif file_extension in ["gz", "bz2", "zst", "tgz"]:
             if dir_path:
