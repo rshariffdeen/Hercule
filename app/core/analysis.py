@@ -69,7 +69,7 @@ def detect_modified_source_files(interested_files, dir_src, dir_pkg):
     return modified_file_list
 
 
-def detect_new_files(interested_files):
+def detect_new_files(interested_files, dir_pkg):
     emitter.sub_sub_title("detecting new files")
     new_list = []
     for f_type in interested_files:
@@ -84,7 +84,7 @@ def detect_new_files(interested_files):
         for f_path in rel_path_list_pkg:
             if f_path not in rel_path_list_src:
                 extra_file_count += 1
-                new_list.append(f"{prefix_pkg}{f_path}")
+                new_list.append(f"{dir_pkg}{prefix_pkg}{f_path}")
                 emitter.error(f"\t\t\t {f_path}")
         if extra_file_count == 0:
             emitter.success("\t\t\tno extra file detected")
@@ -99,16 +99,16 @@ def detect_suspicious_modifications(mod_files):
         status_pkg = transform.upgrade_python_3(f_pkg)
         status_src = transform.upgrade_python_3(f_src)
         if int(status_src) != 0 or int(status_pkg) != 0:
-            utilities.error_exit(f"python upgrade failed {f_pkg}, {f_src}")
+            emitter.error(f"\t\tpython upgrade failed {f_pkg}, {f_src}")
         status_pkg = transform.refactor_python(f_pkg)
         status_src = transform.refactor_python(f_src)
         if int(status_src) != 0 or int(status_pkg) != 0:
-            utilities.error_exit(f"python refactoring failed {f_pkg}, {f_src}")
+            emitter.error(f"\t\tpython refactoring failed {f_pkg}, {f_src}")
 
         parsed_pkg, _ = transform.parse_ast(f_pkg)
         parsed_src, _ = transform.parse_ast(f_src)
         if not parsed_pkg or not parsed_src:
-            utilities.error_exit(f"python parsing failed {f_pkg}, {f_src}")
+            emitter.error(f"\t\tpython parsing failed {f_pkg}, {f_src}")
 
         ast_diff_script = transform.generate_ast_diff(f_src, f_pkg)
         action_cluster_list = []
@@ -166,7 +166,7 @@ def analyze_files(dir_pkg, dir_src):
     interested_files = analyze_file_types(dir_pkg, dir_src)
     src_pyc_list, pkg_pyc_list = decompile.decompile_python_files(dir_pkg, dir_src)
     interested_files["decompiled pyc"] = {"src": src_pyc_list, "pkg": pkg_pyc_list}
-    new_list = detect_new_files(interested_files)
+    new_list = detect_new_files(interested_files, dir_pkg)
     mod_list = detect_modified_source_files(interested_files, dir_src, dir_pkg)
     suspicious_new_files = detect_suspicious_additions(new_list)
     suspicious_mod_files = detect_suspicious_modifications(mod_list)
