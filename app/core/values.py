@@ -33,6 +33,7 @@ debug = False
 is_arg_valid = False
 use_purge = False
 use_parallel = False
+gumtree_cmd = "java -jar /opt/gumtree-modified/dist/build/libs/gumtree.jar" 
 
 default_stack_size = 600000
 default_disk_space = 5  # 5GB
