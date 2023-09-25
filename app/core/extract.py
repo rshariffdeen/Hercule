@@ -1,6 +1,7 @@
 import filetype
 import os
 import re
+import git
 from os.path import join
 from git import Repo
 from app.core import utilities, emitter, values, compute
@@ -46,6 +47,7 @@ def extract_compiled_python(dir_path):
 
 def extract_source(source_url, github_page, dir_src, pkg_version):
     emitter.sub_title("Extracting Source")
+    is_success = False
     if not os.path.isdir(dir_src):
         if source_url:
             emitter.sub_sub_title("downloading from URL")
@@ -56,22 +58,30 @@ def extract_source(source_url, github_page, dir_src, pkg_version):
                 utilities.error_exit(f"unknown release file type {release_file}")
             file_ext = file_type.extension
             archives.decompress_archive(release_file, file_ext, dir_src)
+            is_success = True
         elif github_page:
             emitter.sub_sub_title("cloning from github")
             emitter.normal("\t\tfetching code")
-            repo = Repo.clone_from(github_page, dir_src)
-            emitter.highlight(f"\t\t\t fetched dir: {dir_src}")
-            tag_list = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
-            emitter.normal("\t\tfinding release tag")
-            release_tag = None
-            for t in tag_list:
-                if pkg_version.strip().lower() in str(t).strip().lower():
-                    release_tag = t
-                    break
-            emitter.highlight(f"\t\t\t release tag: {release_tag}")
-            repo.git.checkout(release_tag)
+            try:
+                github_page = github_page.replace("github.com", "null:null@github.com")
+                repo = Repo.clone_from(github_page, dir_src)
+                emitter.highlight(f"\t\t\t fetched dir: {dir_src}")
+                tag_list = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
+                emitter.normal("\t\tfinding release tag")
+                release_tag = None
+                for t in tag_list:
+                    if pkg_version.strip().lower() in str(t).strip().lower():
+                        release_tag = t
+                        break
+                emitter.highlight(f"\t\t\t release tag: {release_tag}")
+                repo.git.checkout(release_tag)
+                is_success = True
+            except git.exc.GitError:
+                emitter.error("\t\terror in fetching github source")
     else:
         emitter.normal("\t\tcache found, skipping fetch")
+        is_success = True
+    return is_success
 
 
 def extract_meta_data(dir_pkg):

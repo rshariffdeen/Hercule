@@ -80,8 +80,9 @@ def scan_package(package_path):
     values.result["github-page"] = github_page
     dir_src = dir_pkg.replace("-dir", "-src")
     if github_page or source_url:
-        extract.extract_source(source_url, github_page, dir_src, package_version)
-        analysis.analyze_files(dir_pkg, dir_src)
+        is_success = extract.extract_source(source_url, github_page, dir_src, package_version)
+        if is_success:
+            analysis.analyze_files(dir_pkg, dir_src)
     result_file_name = join(values.dir_results, f"{distribution_name}.json")
     writer.write_as_json(values.result, result_file_name)
 
