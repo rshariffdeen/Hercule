@@ -54,3 +54,5 @@ email_configuration = {
     "to": "",
 }
 discord_configuration = {"enabled": False, "hook_url": ""}
+result = dict()
+

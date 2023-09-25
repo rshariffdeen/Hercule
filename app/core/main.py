@@ -19,7 +19,7 @@ from rich import get_console
 
 from app.core import configuration
 from app.core import extract
-from app.core import decompile
+from app.core import writer
 from app.core import emitter
 from app.core import logger
 from app.core import utilities
@@ -73,9 +73,17 @@ def run(parsed_args):
     package_path = parsed_args.file
     dir_pkg = extract.extract_archive(package_path.name)
     package_name, package_version, source_url, github_page = extract.extract_meta_data(dir_pkg)
+    distribution_name = dir_pkg.split("/")[-1]
+    values.result["package-name"] = package_name
+    values.result["file-name"] = distribution_name
+    values.result["version"] = package_version
+    values.result["source-url"] = source_url
+    values.result["github-page"] = github_page
     dir_src = dir_pkg.replace("-dir", "-src")
     extract.extract_source(source_url, github_page, dir_src, package_version)
     analysis.analyze_files(dir_pkg, dir_src)
+    result_file_name = join(values.dir_results, f"{distribution_name}.json")
+    writer.write_as_json(values.result, result_file_name)
 
 
 def main():
@@ -120,3 +128,4 @@ def main():
         total_duration = format((time.time() - start_time) / 60, ".3f")
         notification.end(total_duration, is_error)
         emitter.end(total_duration, is_error)
+

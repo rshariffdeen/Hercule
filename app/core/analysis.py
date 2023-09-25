@@ -1,10 +1,19 @@
-from app.core import emitter, extract, decompile, utilities, transform, oracle
+from app.core import emitter, extract, decompile, utilities, transform, oracle, values
 
 
 def analyze_file_types(dir_pkg, dir_src):
     emitter.sub_title("Analysing File Types")
     emitter.sub_sub_title("analysing package files")
     pkg_file_types = extract.extract_file_types(dir_pkg)
+    values.result["general"] = dict()
+    values.result["general"]["total-files"] = sum(len(pkg_file_types[x]) for x in pkg_file_types)
+    values.result["general"]["total-python-files"] = sum(len(pkg_file_types[x])
+                                                         for x in pkg_file_types
+                                                         if "python script" in x.lower())
+    values.result["general"]["total-file-types"] = len(pkg_file_types)
+    values.result["file-types"] = dict()
+    for _type in pkg_file_types:
+        values.result["file-types"][_type] = len(pkg_file_types[_type])
     for kind in pkg_file_types:
         count = len(pkg_file_types[kind])
         emitter.highlight(f"\t\t\t{kind}: {count}")
@@ -83,6 +92,8 @@ def detect_new_files(interested_files, dir_pkg):
         extra_file_count = 0
         for f_path in rel_path_list_pkg:
             if f_path not in rel_path_list_src:
+                if any(_type in f_path for _type in [".bak", ".ast"]):
+                    continue
                 extra_file_count += 1
                 new_list.append(f"{dir_pkg}{prefix_pkg}{f_path}")
                 emitter.error(f"\t\t\t {f_path}")
@@ -132,7 +143,8 @@ def detect_suspicious_modifications(mod_files):
             if is_suspicious:
                 if f_pkg not in suspicious_file_list:
                     suspicious_file_list.append(f_pkg)
-
+    for f in suspicious_file_list:
+        emitter.error(f"\t\t{f}")
     return suspicious_file_list
 
 
@@ -157,7 +169,8 @@ def detect_suspicious_additions(new_files):
         if is_suspicious:
             if f_pkg not in suspicious_file_list:
                 suspicious_file_list.append(f_pkg)
-
+    for f in suspicious_file_list:
+        emitter.error(f"\t\t{f}")
     return suspicious_file_list
 
 
@@ -171,9 +184,16 @@ def analyze_files(dir_pkg, dir_src):
     suspicious_new_files = detect_suspicious_additions(new_list)
     suspicious_mod_files = detect_suspicious_modifications(mod_list)
     suspicious_files = suspicious_mod_files + suspicious_new_files
+    values.result["general"]["total-suspicious-files"] = len(suspicious_files)
+    values.result["suspicious-files"] = suspicious_files
+    is_suspicious = False
+    if suspicious_files:
+        is_suspicious = True
+    values.result["is-suspicious"] = is_suspicious
 
-    for f in suspicious_files:
-        emitter.error(f"\t\t{f}")
+
+
+
 
 
 
