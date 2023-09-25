@@ -4,6 +4,7 @@ from argparse import HelpFormatter
 from operator import attrgetter
 from app.core import definitions
 from app.core import values
+import pathlib
 
 
 class SortingHelpFormatter(HelpFormatter):
@@ -19,8 +20,9 @@ def parse_args():
         formatter_class=SortingHelpFormatter,
     )
     parser._action_groups.pop()
-    required = parser.add_argument_group("Required arguments")
+    required = parser.add_mutually_exclusive_group(required=True)
     required.add_argument("--file", "-F", help="path to package", type=open)
+    required.add_argument("--dir", "-D", help="directory to packages", type=pathlib.Path)
     optional = parser.add_argument_group("Optional arguments")
     optional.add_argument(
         definitions.ARG_DEBUG_MODE,
@@ -65,7 +67,6 @@ def parse_args():
         action="store_true",
         default=False,
     )
-
 
     args = parser.parse_args()
     return args

@@ -3,7 +3,7 @@ import re
 import signal
 import sys
 import time
-import filetype
+import pathlib
 import traceback
 from argparse import Namespace
 from multiprocessing import set_start_method
@@ -69,9 +69,8 @@ def bootstrap(arg_list: Namespace):
     config.print_configuration()
 
 
-def run(parsed_args):
-    package_path = parsed_args.file
-    dir_pkg = extract.extract_archive(package_path.name)
+def scan_package(package_path):
+    dir_pkg = extract.extract_archive(package_path)
     package_name, package_version, source_url, github_page = extract.extract_meta_data(dir_pkg)
     distribution_name = dir_pkg.split("/")[-1]
     values.result["package-name"] = package_name
@@ -80,10 +79,22 @@ def run(parsed_args):
     values.result["source-url"] = source_url
     values.result["github-page"] = github_page
     dir_src = dir_pkg.replace("-dir", "-src")
-    extract.extract_source(source_url, github_page, dir_src, package_version)
-    analysis.analyze_files(dir_pkg, dir_src)
+    if github_page or source_url:
+        extract.extract_source(source_url, github_page, dir_src, package_version)
+        analysis.analyze_files(dir_pkg, dir_src)
     result_file_name = join(values.dir_results, f"{distribution_name}.json")
     writer.write_as_json(values.result, result_file_name)
+
+
+def run(parsed_args):
+    if parsed_args.file:
+        package_path = parsed_args.file.name
+        scan_package(package_path)
+    elif parsed_args.dir:
+        list_packages = utilities.list_dir(parsed_args.dir)
+        for _pkg in list_packages:
+            if os.path.isfile(_pkg):
+                scan_package(_pkg)
 
 
 def main():
@@ -107,7 +118,7 @@ def main():
         emitter.title(
             "Starting {} (Supply Chain Detector) ".format(values.tool_name)
         )
-        if not parsed_args.file:
+        if not parsed_args.file and not parsed_args.dir:
             utilities.error_exit(
                 "Package was not found. Please make sure file exist"
             )

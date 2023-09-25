@@ -145,9 +145,6 @@ def extract_meta_data(dir_pkg):
             if github_page and package_name and package_version:
                 break
 
-    if not source_url and not github_page:
-        utilities.error_exit("failed to identify source")
-
     emitter.highlight(f"\t\t\t package name: {package_name}")
     emitter.highlight(f"\t\t\t package version: {package_version}")
     emitter.highlight(f"\t\t\t package source: {source_url}")
