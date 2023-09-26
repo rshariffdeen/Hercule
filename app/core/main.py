@@ -75,7 +75,7 @@ def scan_package(package_path):
     values.result["general"] = dict()
     dir_pkg = extract.extract_archive(package_path)
     package_name, package_version, source_url, github_page = extract.extract_meta_data(dir_pkg)
-    distribution_name = dir_pkg.split("/")[-1]
+    distribution_name = dir_pkg.split("/")[-1].replace("-dir", "")
     values.result["package-name"] = package_name
     values.result["file-name"] = distribution_name
     values.result["version"] = package_version
