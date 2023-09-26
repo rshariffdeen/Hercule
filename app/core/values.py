@@ -3,7 +3,7 @@ from os.path import dirname
 from os.path import join
 
 
-tool_name = "Spade"
+tool_name = "Hercule"
 dir_main = dirname(dirname(dirname(os.path.realpath(__file__))))
 dir_app = join(dir_main, "app", "")
 dir_log_base = join(dir_main, "logs")

@@ -31,20 +31,20 @@ RUN pip3 --disable-pip-version-check --no-cache-dir install \
     requests
 
 # copy src files of the tool
-COPY . /opt/spade/
+COPY . /opt/hercule/
 COPY gumtree-modified /opt/gumtree-modified
 COPY pythonparser /opt/pythonparser
 
 # set git url
-WORKDIR /opt/spade/
+WORKDIR /opt/hercule/
 RUN git remote rm origin
-RUN git remote add origin https://github.com/rshariffdeen/spade.git
+RUN git remote add origin https://github.com/rshariffdeen/hercule.git
 
 WORKDIR /opt/gumtree-modified/
 RUN ./gradlew clean build shadowjar
 
 # set paths
-ENV PATH /opt/spade/bin:${PATH}
+ENV PATH /opt/hercule/bin:${PATH}
 ENV PATH /opt/pythonparser:${PATH}
 
 

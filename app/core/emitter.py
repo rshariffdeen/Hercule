@@ -209,7 +209,7 @@ def end(time_total, is_error=False):
 def emit_help():
     max_length = 2
     write(
-        f"Usage: spade [OPTIONS] --file=PACKAGE_PATH ",
+        f"Usage: hercule [OPTIONS] --file=PACKAGE_PATH | --dir=DIR_PATH ",
         COLOR.WHITE,
     )
     write("Options are:", COLOR.WHITE)
