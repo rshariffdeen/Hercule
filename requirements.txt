@@ -3,5 +3,9 @@ bandit
 slack_sdk
 discord
 jsonschema
+filetype
+uncompyle6
+decompyle3
 requests
-
+future
+black

@@ -19,16 +19,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     gradle
 
 # install python packages
-RUN pip3 --disable-pip-version-check --no-cache-dir install \
-    rich \
-    bandit \
-    slack_sdk  \
-    discord \
-    jsonschema \
-    filetype \
-    uncompyle6 \
-    decompyle3 \
-    requests
+RUN pip3 --disable-pip-version-check --no-cache-dir install -r /opt/hercule/requirements.txt
 
 # copy src files of the tool
 COPY . /opt/hercule/
