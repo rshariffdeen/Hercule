@@ -70,6 +70,7 @@ def bootstrap(arg_list: Namespace):
 
 
 def scan_package(package_path):
+    start_time = time.time()
     dir_pkg = extract.extract_archive(package_path)
     package_name, package_version, source_url, github_page = extract.extract_meta_data(dir_pkg)
     distribution_name = dir_pkg.split("/")[-1]
@@ -83,6 +84,8 @@ def scan_package(package_path):
         is_success = extract.extract_source(source_url, github_page, dir_src, package_version)
         if is_success:
             analysis.analyze_files(dir_pkg, dir_src)
+    time_duration = format((time.time() - start_time) / 60, ".3f")
+    values.result["scan-duration"] = time_duration
     result_file_name = join(values.dir_results, f"{distribution_name}.json")
     writer.write_as_json(values.result, result_file_name)
 
@@ -101,9 +104,7 @@ def run(parsed_args):
 def main():
     if not sys.warnoptions:
         import warnings
-
         warnings.simplefilter("ignore")
-
     rich.traceback.install(show_locals=True)
     parsed_args = parse_args()
     is_error = False

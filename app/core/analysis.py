@@ -11,9 +11,9 @@ def analyze_file_types(dir_pkg, dir_src):
                                                          for x in pkg_file_types
                                                          if "python script" in x.lower())
     values.result["general"]["total-file-types"] = len(pkg_file_types)
-    values.result["file-types"] = dict()
-    for _type in pkg_file_types:
-        values.result["file-types"][_type] = len(pkg_file_types[_type])
+    # values.result["file-types"] = dict()
+    # for _type in pkg_file_types:
+    #     values.result["file-types"][_type] = len(pkg_file_types[_type])
     for kind in pkg_file_types:
         count = len(pkg_file_types[kind])
         emitter.highlight(f"\t\t\t{kind}: {count}")
