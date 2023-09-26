@@ -5,7 +5,6 @@ def analyze_file_types(dir_pkg, dir_src):
     emitter.sub_title("Analysing File Types")
     emitter.sub_sub_title("analysing package files")
     pkg_file_types = extract.extract_file_types(dir_pkg)
-    values.result["general"] = dict()
     values.result["general"]["total-files"] = sum(len(pkg_file_types[x]) for x in pkg_file_types)
     values.result["general"]["total-python-files"] = sum(len(pkg_file_types[x])
                                                          for x in pkg_file_types
