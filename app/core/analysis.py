@@ -104,6 +104,7 @@ def detect_new_files(interested_files, dir_pkg):
 def detect_suspicious_modifications(mod_files):
     emitter.sub_sub_title("detecting suspicious modifications")
     suspicious_file_list = []
+    suspicious_loc_list = []
     for mod_f in mod_files:
         rel_f, f_pkg, f_src = mod_f
         status_pkg = transform.upgrade_python_3(f_pkg)
@@ -137,14 +138,33 @@ def detect_suspicious_modifications(mod_files):
             action_cluster_list.append(action_cluster)
 
         for action_cluster in action_cluster_list:
-            action_type = None
-            is_suspicious = oracle.is_cluster_suspicious(action_cluster)
-            if is_suspicious:
-                if f_pkg not in suspicious_file_list:
-                    suspicious_file_list.append(f_pkg)
+            if action_cluster:
+                is_suspicious, action_type = oracle.is_cluster_suspicious(action_cluster)
+                if is_suspicious:
+                    if f_pkg not in suspicious_file_list:
+                        suspicious_file_list.append(f_pkg)
+                    import_line_list = extract.extract_import_lines(action_cluster)
+                    for line in import_line_list:
+                        alert = f"{f_pkg}:{line} - {action_type}:import packages"
+                        suspicious_loc_list.append(alert)
+                    func_call_list = extract.extract_function_call_lines(action_cluster)
+                    for (line, call) in func_call_list:
+                        alert = f"{f_pkg}:{line} - {action_type}: function call: {call}"
+                        suspicious_loc_list.append(alert)
+
+    emitter.normal("\t\tsuspicious modified files")
     for f in suspicious_file_list:
-        emitter.error(f"\t\t{f}")
-    return suspicious_file_list
+        emitter.error(f"\t\t\t{f}")
+    if not suspicious_file_list:
+        emitter.error(f"\t\t\t-none-")
+
+    emitter.normal("\t\tsuspicious locations and reasons")
+    for f in suspicious_loc_list:
+        emitter.error(f"\t\t\t{f}")
+    if not suspicious_loc_list:
+        emitter.error(f"\t\t\t-none-")
+
+    return suspicious_file_list, suspicious_loc_list
 
 
 def detect_suspicious_additions(new_files):
@@ -168,8 +188,12 @@ def detect_suspicious_additions(new_files):
         if is_suspicious:
             if f_pkg not in suspicious_file_list:
                 suspicious_file_list.append(f_pkg)
+
+    emitter.normal("\t\tsuspicious additions")
     for f in suspicious_file_list:
-        emitter.error(f"\t\t{f}")
+        emitter.error(f"\t\t\t{f}")
+    if not suspicious_file_list:
+        emitter.error(f"\t\t\t-none-")
     return suspicious_file_list
 
 
@@ -181,10 +205,12 @@ def analyze_files(dir_pkg, dir_src):
     new_list = detect_new_files(interested_files, dir_pkg)
     mod_list = detect_modified_source_files(interested_files, dir_src, dir_pkg)
     suspicious_new_files = detect_suspicious_additions(new_list)
-    suspicious_mod_files = detect_suspicious_modifications(mod_list)
+    suspicious_mod_files, suspicious_mod_locs = detect_suspicious_modifications(mod_list)
     suspicious_files = suspicious_mod_files + suspicious_new_files
     values.result["general"]["total-suspicious-files"] = len(suspicious_files)
-    values.result["suspicious-files"] = suspicious_files
+    values.result["general"]["total-suspicious-modifications"] = len(suspicious_mod_locs)
+    values.result["suspicious-files"] = ",".join(suspicious_files)
+    values.result["suspicious-modifications"] = ",".join(suspicious_files)
     is_suspicious = False
     if suspicious_files:
         is_suspicious = True

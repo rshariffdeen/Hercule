@@ -22,7 +22,7 @@ def has_import(ast_block):
 
 
 def has_func_call(ast_block):
-    any_func_call = any("functional_call" in _l for _l in ast_block)
+    any_func_call = any("function_call" in _l for _l in ast_block)
     return any_func_call
 
 

@@ -192,3 +192,24 @@ def extract_path_prefix(path_list):
         lcs_len = compute.LCSubStr(lcs, f_path, n_lcs, n_path)
         lcs = lcs[:lcs_len]
     return lcs
+
+
+def extract_import_lines(ast_cluster):
+    import_line_list = []
+    for action in ast_cluster:
+        if "import_from" in action:
+            line_number = action.strip().split(",")[-2]
+            import_line_list.append(line_number)
+    return import_line_list
+
+
+def extract_function_call_lines(ast_cluster):
+    func_call_list = []
+    for action in ast_cluster:
+        if "function_call" in action:
+            func_call_str = action.split("[")[0].split(":")[-1].strip()
+            line_number = action.strip().split(",")[-2]
+            func_call_list.append((line_number, func_call_str))
+    return func_call_list
+
+
