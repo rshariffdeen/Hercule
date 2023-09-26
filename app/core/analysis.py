@@ -204,9 +204,12 @@ def analyze_files(dir_pkg, dir_src):
     interested_files["decompiled pyc"] = {"src": src_pyc_list, "pkg": pkg_pyc_list}
     new_list = detect_new_files(interested_files, dir_pkg)
     mod_list = detect_modified_source_files(interested_files, dir_src, dir_pkg)
+    values.result["general"]["total-modified-files"] = len(mod_list)
+    values.result["general"]["total-new-files"] = len(new_list)
     suspicious_new_files = detect_suspicious_additions(new_list)
     suspicious_mod_files, suspicious_mod_locs = detect_suspicious_modifications(mod_list)
     suspicious_files = suspicious_mod_files + suspicious_new_files
+    values.result["general"]["total-suspicious-modified-files"] = len(suspicious_mod_files)
     values.result["general"]["total-suspicious-files"] = len(suspicious_files)
     values.result["general"]["total-suspicious-modifications"] = len(suspicious_mod_locs)
     values.result["suspicious-files"] = ",".join(suspicious_files)
