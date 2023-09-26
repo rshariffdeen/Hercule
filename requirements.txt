@@ -9,3 +9,4 @@ decompyle3
 requests
 future
 black
+parso
