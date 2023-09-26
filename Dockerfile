@@ -33,7 +33,7 @@ RUN pip3 --disable-pip-version-check --no-cache-dir install \
 # copy src files of the tool
 COPY . /opt/hercule/
 COPY gumtree-modified /opt/gumtree-modified
-COPY pythonparser /opt/pythonparser
+COPY pythonparser-modified /opt/pythonparser
 
 # set git url
 WORKDIR /opt/hercule/
