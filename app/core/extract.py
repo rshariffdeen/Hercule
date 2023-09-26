@@ -185,8 +185,9 @@ def extract_archive(pkg_path):
 def extract_path_prefix(path_list):
     if not path_list:
         return ""
-    lcs = path_list[0]
+    lcs = "/".join(path_list[0].split("/")[:-1]) + "/"
     for f_path in path_list[1:]:
+        f_path = "/".join(f_path.split("/")[:-1]) + "/"
         n_path = len(f_path)
         n_lcs = len(lcs)
         lcs_len = compute.LCSubStr(lcs, f_path, n_lcs, n_path)
