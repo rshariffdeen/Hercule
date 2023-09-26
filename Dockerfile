@@ -46,5 +46,5 @@ RUN ./gradlew clean build shadowjar
 # set paths
 ENV PATH /opt/hercule/bin:${PATH}
 ENV PATH /opt/pythonparser:${PATH}
-
+WORKDIR /opt/hercule/
 
