@@ -210,7 +210,7 @@ def analyze_files(dir_pkg, dir_src):
     values.result["general"]["total-suspicious-files"] = len(suspicious_files)
     values.result["general"]["total-suspicious-modifications"] = len(suspicious_mod_locs)
     values.result["suspicious-files"] = ",".join(suspicious_files)
-    values.result["suspicious-modifications"] = ",".join(suspicious_files)
+    values.result["suspicious-modifications"] = ",".join(suspicious_mod_locs)
     is_suspicious = False
     if suspicious_files:
         is_suspicious = True
