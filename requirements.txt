@@ -1,4 +1,6 @@
 rich
+gitpython
+pyyaml
 slack_sdk
 discord
 jsonschema
