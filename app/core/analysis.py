@@ -234,6 +234,8 @@ def analyze_files(dir_pkg, dir_src):
     hercule_alerts = []
     for f in suspicious_files:
         f_result = bandit.generate_bandit_source_report(f)
+        if not f_result:
+            continue
         f_locs = []
         if f in suspicious_mod_files:
             for loc in suspicious_mod_locs:
