@@ -92,8 +92,11 @@ def scan_package(package_path):
     result_file_name = join(values.dir_results, f"{distribution_name}.json")
     min_result_file_name = join(values.dir_results, f"{distribution_name}.min.json")
     writer.write_as_json(values.result, result_file_name)
-    del values.result["bandit-analysis"]["hercule-report"]
-    del values.result["suspicious-modifications"]
+    if "bandit-analysis" in values.result:
+        if "hercule-report" in values.result["bandit-analysis"]:
+            del values.result["bandit-analysis"]["hercule-report"]
+    if "suspicious-modifications" in values.result:
+        del values.result["suspicious-modifications"]
     writer.write_as_json(values.result, min_result_file_name)
 
 
