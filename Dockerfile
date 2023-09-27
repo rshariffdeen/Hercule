@@ -30,6 +30,7 @@ RUN pip3 --disable-pip-version-check --no-cache-dir install -r /opt/hercule/requ
 # install bandit4mal
 RUN git clone https://github.com/rshariffdeen/bandit4mal /opt/bandit4mal
 RUN cd /opt/bandit4mal && python3 setup.py install
+RUN pip3 --disable-pip-version-check --no-cache-dir install -r /opt/bandit4mal/requirements.txt
 
 # set git url
 WORKDIR /opt/hercule/
