@@ -246,7 +246,7 @@ def analyze_files(dir_pkg, dir_src):
         else:
             hercule_alerts += f_result["results"]
 
-    is_malware = True
+    is_malware = False
     if hercule_alerts:
         is_malware = True
     values.result["is-malware"] = is_malware
