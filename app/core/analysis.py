@@ -52,26 +52,28 @@ def analyze_file_types(dir_pkg, dir_src):
 def detect_modified_source_files(interested_files, dir_src, dir_pkg):
     emitter.sub_sub_title("detecting modified source files")
     modified_file_list = []
+    src_files = []
+    pkg_files = []
     for f_type in interested_files:
-        if f_type in ["decompiled pyc", "POSIX shell script"]:
+        if f_type in ["POSIX shell script"]:
             continue
-        src_files = interested_files[f_type]["src"]
-        pkg_files = interested_files[f_type]["pkg"]
-        prefix_pkg = extract.extract_path_prefix(pkg_files)
-        prefix_src = extract.extract_path_prefix(src_files)
-        for f_rel_pkg in pkg_files:
-            f_rel = f_rel_pkg.replace(prefix_pkg, "")
-            f_rel_src = f"{prefix_src}{f_rel}"
-            if ".py" not in f_rel:
-                continue
-            if f_rel_src not in src_files:
-                continue
-            f_path_src = f"{dir_src}{f_rel_src}"
-            f_path_pkg = f"{dir_pkg}{f_rel_pkg}"
-            diff_command = f"diff -q {f_path_src} {f_path_pkg}"
-            status, _, _ = utilities.execute_command(diff_command)
-            if int(status) != 0:
-                modified_file_list.append((f_rel, f_path_pkg, f_path_src))
+        src_files += interested_files[f_type]["src"]
+        pkg_files += interested_files[f_type]["pkg"]
+    prefix_pkg = extract.extract_path_prefix(pkg_files)
+    prefix_src = extract.extract_path_prefix(src_files)
+    for f_rel_pkg in pkg_files:
+        f_rel = f_rel_pkg.replace(prefix_pkg, "")
+        f_rel_src = f"{prefix_src}{f_rel}"
+        if ".py" not in f_rel:
+            continue
+        if f_rel_src not in src_files:
+            continue
+        f_path_src = f"{dir_src}{f_rel_src}"
+        f_path_pkg = f"{dir_pkg}{f_rel_pkg}"
+        diff_command = f"diff -q {f_path_src} {f_path_pkg}"
+        status, _, _ = utilities.execute_command(diff_command)
+        if int(status) != 0:
+            modified_file_list.append((f_rel, f_path_pkg, f_path_src))
     for f in modified_file_list:
         emitter.normal(f"\t\t\t{f[0]}")
     return modified_file_list
@@ -80,24 +82,28 @@ def detect_modified_source_files(interested_files, dir_src, dir_pkg):
 def detect_new_files(interested_files, dir_pkg):
     emitter.sub_sub_title("detecting new files")
     new_list = []
+    src_files = []
+    pkg_files = []
     for f_type in interested_files:
-        emitter.normal(f"\t\t{f_type}")
-        src_files = interested_files[f_type]["src"]
-        pkg_files = interested_files[f_type]["pkg"]
-        prefix_pkg = extract.extract_path_prefix(pkg_files)
-        prefix_src = extract.extract_path_prefix(src_files)
-        rel_path_list_pkg = [str(p).replace(prefix_pkg, "", 1) for p in pkg_files]
-        rel_path_list_src = [str(p).replace(prefix_src, "", 1) for p in src_files]
-        extra_file_count = 0
-        for f_path in rel_path_list_pkg:
-            if f_path not in rel_path_list_src:
-                if any(_type in f_path for _type in [".bak", ".ast"]):
-                    continue
-                extra_file_count += 1
-                new_list.append(f"{dir_pkg}{prefix_pkg}{f_path}")
-                emitter.error(f"\t\t\t {f_path}")
-        if extra_file_count == 0:
-            emitter.success("\t\t\tno extra file detected")
+        src_files += interested_files[f_type]["src"]
+        pkg_files += interested_files[f_type]["pkg"]
+    prefix_pkg = extract.extract_path_prefix(pkg_files)
+    prefix_src = extract.extract_path_prefix(src_files)
+    rel_path_list_pkg = [str(p).replace(prefix_pkg, "", 1) for p in pkg_files]
+    rel_path_list_src = [str(p).replace(prefix_src, "", 1) for p in src_files]
+    extra_file_count = 0
+    for f_path in rel_path_list_pkg:
+        if f_path not in rel_path_list_src:
+            if any(_type in f_path for _type in [".bak", ".ast"]):
+                continue
+            similar_files = sum(f_path in s for s in rel_path_list_src)
+            if similar_files > 0:
+                continue
+            extra_file_count += 1
+            new_list.append(f"{dir_pkg}{prefix_pkg}{f_path}")
+            emitter.error(f"\t\t\t {f_path}")
+    if extra_file_count == 0:
+        emitter.success("\t\t\tno extra file detected")
     return new_list
 
 

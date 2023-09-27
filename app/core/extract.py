@@ -191,7 +191,11 @@ def extract_path_prefix(path_list):
         n_path = len(f_path)
         n_lcs = len(lcs)
         lcs_len = compute.LCSubStr(lcs, f_path, n_lcs, n_path)
-        lcs = lcs[:lcs_len]
+        if f_path[:lcs_len] != lcs[:lcs_len]:
+            lcs = "/"
+            break
+        else:
+            lcs = lcs[:lcs_len]
     return lcs
 
 
