@@ -46,7 +46,7 @@ def extract_compiled_python(dir_path):
 
 
 def extract_source(source_url, github_page, dir_src, pkg_version):
-    emitter.sub_title("Extracting Source")
+    emitter.sub_sub_title("extracting source")
     is_success = False
     if not os.path.isdir(dir_src):
         if source_url:
@@ -85,7 +85,6 @@ def extract_source(source_url, github_page, dir_src, pkg_version):
 
 
 def extract_meta_data(dir_pkg):
-    emitter.sub_title("Searching Meta Data")
     emitter.sub_sub_title("finding for meta-data files")
     meta_data_files = ["meta.yaml", "METADATA", "about.json", "index.json", "PKG-INFO"]
     source_url = None
@@ -164,7 +163,6 @@ def extract_meta_data(dir_pkg):
 
 
 def extract_archive(pkg_path):
-    emitter.sub_title("Extracting Files")
     emitter.sub_sub_title("extracting original compressed file")
     archive_path = str(pkg_path)
     archive_name = str(archive_path).split("/")[-1]

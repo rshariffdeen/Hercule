@@ -70,6 +70,7 @@ def bootstrap(arg_list: Namespace):
 
 
 def scan_package(package_path):
+    emitter.sub_title(package_path)
     start_time = time.time()
     values.result = dict()
     values.result["general"] = dict()

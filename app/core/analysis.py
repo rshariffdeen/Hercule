@@ -1,8 +1,14 @@
-from app.core import emitter, extract, decompile, utilities, transform, oracle, values
+from app.core import values
+from app.core import emitter
+from app.core import extract
+from app.core import decompile
+from app.core import utilities
+from app.core import transform
+from app.core import oracle
+from app.tools import bandit
 
 
 def analyze_file_types(dir_pkg, dir_src):
-    emitter.sub_title("Analysing File Types")
     emitter.sub_sub_title("analysing package files")
     pkg_file_types = extract.extract_file_types(dir_pkg)
     values.result["general"]["total-files"] = sum(len(pkg_file_types[x]) for x in pkg_file_types)
@@ -154,8 +160,8 @@ def detect_suspicious_modifications(mod_files):
                         alert = f"{f_pkg}:{line} - {action_type}:import packages"
                         suspicious_loc_list.append(alert)
                     func_call_list = extract.extract_function_call_lines(action_cluster)
-                    for (line, call) in func_call_list:
-                        alert = f"{f_pkg}:{line} - {action_type}: function call: {call}"
+                    for (line, _) in func_call_list:
+                        alert = f"{f_pkg}:{line} - {action_type}: function call"
                         suspicious_loc_list.append(alert)
 
     emitter.normal("\t\tsuspicious modified files")
@@ -204,7 +210,6 @@ def detect_suspicious_additions(new_files):
 
 
 def analyze_files(dir_pkg, dir_src):
-    emitter.sub_title("Analysing Files")
     interested_files = analyze_file_types(dir_pkg, dir_src)
     src_pyc_list, pkg_pyc_list = decompile.decompile_python_files(dir_pkg, dir_src)
     interested_files["decompiled pyc"] = {"src": src_pyc_list, "pkg": pkg_pyc_list}
@@ -220,10 +225,53 @@ def analyze_files(dir_pkg, dir_src):
     values.result["general"]["total-suspicious-modifications"] = len(suspicious_mod_locs)
     values.result["suspicious-files"] = ",".join(suspicious_files)
     values.result["suspicious-modifications"] = ",".join(suspicious_mod_locs)
-    is_suspicious = False
+    is_faithful = True
     if suspicious_files:
-        is_suspicious = True
-    values.result["is-suspicious"] = is_suspicious
+        is_faithful = False
+    values.result["is-faithful"] = is_faithful
+    whole_pkg_alerts = bandit.generate_bandit_dir_report(dir_pkg)
+    whole_src_alerts = bandit.generate_bandit_dir_report(dir_src)
+    hercule_alerts = []
+    for f in suspicious_files:
+        f_result = bandit.generate_bandit_source_report(f)
+        f_locs = []
+        if f in suspicious_mod_files:
+            for loc in suspicious_mod_locs:
+                if f in loc:
+                    f_locs.append(loc)
+            f_result_filtered = bandit.filter_alerts(f_result, f_locs)
+            hercule_alerts += f_result_filtered
+        else:
+            hercule_alerts += f_result["results"]
+
+    is_malware = True
+    if hercule_alerts:
+        is_malware = True
+    values.result["is-malware"] = is_malware
+    values.result["bandit-analysis"] = dict()
+    values.result["bandit-analysis"]["whole-pkg-alerts"] = len(whole_pkg_alerts["results"])
+    values.result["bandit-analysis"]["whole-src-alerts"] = len(whole_src_alerts["results"])
+    values.result["bandit-analysis"]["hercule-alerts"] = len(hercule_alerts)
+    values.result["bandit-analysis"]["hercule-report"] = hercule_alerts
+
+    emitter.sub_sub_title("Analysis Results")
+    emitter.normal("\t\tFaithfulness")
+    emitter.highlight(f"\t\t\tis-faithful: {is_faithful}")
+    emitter.highlight(f"\t\t\tsuspicious source file additions: {len(suspicious_new_files)}")
+    emitter.highlight(f"\t\t\tsuspicious source file modifications: {len(suspicious_mod_files)}")
+    emitter.highlight(f"\t\t\tsuspicious source location modifications: {len(suspicious_mod_locs)}")
+
+    emitter.normal("\t\tMaliciousness")
+    emitter.highlight(f"\t\t\tis-benign: {not is_malware}")
+    emitter.highlight(f"\t\t\tpkg bandit alerts: {len(whole_pkg_alerts['results'])}")
+    emitter.highlight(f"\t\t\tsrc bandit alerts: {len(whole_src_alerts['results'])}")
+    emitter.highlight(f"\t\t\thercule pkg alerts: {len(hercule_alerts)}")
+
+
+
+
+
+
 
 
 

@@ -22,7 +22,6 @@ def decompile_py3_files(py3_list):
 
 
 def decompile_python_files(dir_pkg, dir_src):
-    emitter.sub_title("Decompile PYC")
     emitter.sub_sub_title("decompiling in package directory")
     pkg_py2_list, pkg_py3_list = extract.extract_compiled_python(dir_pkg)
     decompile_py2_files(pkg_py2_list)
