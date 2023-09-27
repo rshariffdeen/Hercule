@@ -26,7 +26,7 @@ def generate_bandit_base_dir_report(dir_pkg, baseline):
 def filter_alerts(bandit_result, suspicious_locs):
     filtered_results = []
     original_results = bandit_result["results"]
-    suspicious_lines = [int(x.split("-")[0].split(":")[-1].strip()) for x in suspicious_locs]
+    suspicious_lines = [int(x.split(" - ")[0].split(":")[-1].strip()) for x in suspicious_locs]
     for result in original_results:
         if int(result["line_number"]) in suspicious_lines:
             filtered_results.append(result)
