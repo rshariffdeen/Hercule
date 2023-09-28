@@ -73,7 +73,10 @@ def detect_modified_source_files(interested_files, dir_src, dir_pkg):
         if ".py" not in f_rel:
             continue
         if f_rel_src not in src_files:
-            continue
+            f_rel_src = find_matching_file(f_rel, src_files)
+            if f_rel_src is None:
+                continue
+
         f_path_src = f"{dir_src}{f_rel_src}"
         f_path_pkg = f"{dir_pkg}{f_rel_pkg}"
         diff_command = f"diff -q \"{f_path_src}\" \"{f_path_pkg}\""
@@ -83,6 +86,21 @@ def detect_modified_source_files(interested_files, dir_src, dir_pkg):
     for f in modified_file_list:
         emitter.normal(f"\t\t\t{f[0]}")
     return modified_file_list
+
+
+def find_matching_file(src_file, search_list):
+    file_name = str(src_file).split("/")[-1]
+    exact_name_list = [x for x in search_list if file_name in x]
+    if not exact_name_list:
+        return None
+    if len(exact_name_list) == 1:
+        return exact_name_list[0]
+    similar_list = []
+    for _f in exact_name_list:
+        _f_dist = utilities.levenshtein_distance(_f, src_file)
+        similar_list.append((_f, _f_dist))
+    sorted_list = sorted(similar_list, key=lambda x:x[1])
+    return sorted_list[0]
 
 
 def detect_new_files(interested_files, dir_pkg):
@@ -102,8 +120,8 @@ def detect_new_files(interested_files, dir_pkg):
         if f_path not in rel_path_list_src:
             if any(_type in f_path for _type in [".bak", ".ast"]):
                 continue
-            similar_files = sum(f_path in s for s in rel_path_list_src)
-            if similar_files > 0:
+            matching_file = find_matching_file(f_path, rel_path_list_src)
+            if matching_file:
                 continue
             extra_file_count += 1
             new_list.append(f"{dir_pkg}{prefix_pkg}{f_path}")
