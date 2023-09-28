@@ -66,7 +66,7 @@ def extract_source(source_url, github_page, dir_src, pkg_version):
                 github_page = github_page.replace("github.com", "null:null@github.com")
                 repo = Repo.clone_from(github_page, dir_src)
                 emitter.highlight(f"\t\t\t fetched dir: {dir_src}")
-                tag_list = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
+                tag_list = sorted(repo.tags, key=lambda t: t.commit.committed_datetime, reverse=True)
                 emitter.normal("\t\tfinding release tag")
                 release_tag = None
                 edit_distance = []
