@@ -17,7 +17,7 @@ def decompile_py3_files(py3_list):
         p_f_rel = p_f.replace(values.dir_main, "")
         emitter.highlight(f"\t\t{p_f_rel}")
         decompiled_file = p_f.replace(".pyc", ".py3.py")
-        decompile_command = f"decompyle3 -o {decompiled_file} {p_f}"
+        decompile_command = f"decompyle3 -o \"{decompiled_file}\" \"{p_f}\""
         utilities.execute_command(decompile_command)
 
 
