@@ -11,3 +11,4 @@ requests
 future
 black
 parso
+bs4
