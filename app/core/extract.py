@@ -69,10 +69,12 @@ def extract_source(source_url, github_page, dir_src, pkg_version):
                 tag_list = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
                 emitter.normal("\t\tfinding release tag")
                 release_tag = None
+                edit_distance = []
                 for t in tag_list:
-                    if pkg_version.strip().lower() in str(t).strip().lower():
-                        release_tag = t
-                        break
+                    t_distance = utilities.levenshtein_distance(str(t).lower(), str(pkg_version).lower())
+                    edit_distance.append((t, t_distance))
+                sorted_tags = sorted(edit_distance, key=lambda x: x[1])
+                release_tag = sorted_tags[0][0]
                 emitter.highlight(f"\t\t\t release tag: {release_tag}")
                 repo.git.checkout(release_tag)
                 is_success = True
