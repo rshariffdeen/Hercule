@@ -76,7 +76,7 @@ def detect_modified_source_files(interested_files, dir_src, dir_pkg):
             continue
         f_path_src = f"{dir_src}{f_rel_src}"
         f_path_pkg = f"{dir_pkg}{f_rel_pkg}"
-        diff_command = f"diff -q {f_path_src} {f_path_pkg}"
+        diff_command = f"diff -q \"{f_path_src}\" \"{f_path_pkg}\""
         status, _, _ = utilities.execute_command(diff_command)
         if int(status) != 0:
             modified_file_list.append((f_rel, f_path_pkg, f_path_src))

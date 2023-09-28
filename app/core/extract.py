@@ -16,7 +16,7 @@ def extract_file_types(dir_path):
             continue
         kind = filetype.guess(f_p)
         if kind is None:
-            kind = utilities.execute_command(f"file --brief {f_p}")[1].decode().split(",")[0].strip()
+            kind = utilities.execute_command(f"file --brief \"{f_p}\"")[1].decode().split(",")[0].strip()
         else:
             kind = kind.extension
         if kind not in file_types:
@@ -35,7 +35,7 @@ def extract_compiled_python(dir_path):
             continue
         kind = filetype.guess(f_p)
         if kind is None:
-            kind = utilities.execute_command(f"file --brief {f_p}")[1].decode().split(",")[0].strip()
+            kind = utilities.execute_command(f"file --brief \"{f_p}\"")[1].decode().split(",")[0].strip()
         else:
             kind = kind.extension
         if "python 2" in kind and "byte-compiled" in kind:
@@ -77,6 +77,8 @@ def extract_source(source_url, github_page, dir_src, pkg_version):
                 release_tag = sorted_tags[0][0]
                 emitter.highlight(f"\t\t\t release tag: {release_tag}")
                 repo.git.checkout(release_tag)
+                submd_command = "git submodule update --init"
+                utilities.execute_command(submd_command, directory=dir_src)
                 is_success = True
             except git.exc.GitError:
                 emitter.error("\t\terror in fetching github source")

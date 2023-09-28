@@ -7,7 +7,7 @@ def decompile_py2_files(py2_list):
         p_f_rel = p_f.replace(values.dir_main, "")
         emitter.highlight(f"\t\t{p_f_rel}")
         decompiled_file = p_f.replace(".pyc", ".py2.py")
-        decompile_command = f"uncompyle6 -o {decompiled_file} {p_f}"
+        decompile_command = f"uncompyle6 -o \"{decompiled_file}\" \"{p_f}\""
         utilities.execute_command(decompile_command)
 
 

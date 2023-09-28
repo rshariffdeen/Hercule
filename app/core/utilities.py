@@ -226,8 +226,10 @@ def is_file(file_path: str):
 
 
 def get_file_info(file_path: str):
-    file_command = f"file {file_path}"
-    output = execute_command(file_command)[1]
+    output = ""
+    if os.path.isfile(file_path):
+        file_command = f"file \"{file_path}\""
+        output = execute_command(file_command)[1]
     return str(output)
 
 
