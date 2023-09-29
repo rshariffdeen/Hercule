@@ -30,7 +30,7 @@ def find_compressed(dir_path):
     archive_list = []
     for f_path in file_list:
         f_info = utilities.get_file_info(f_path)
-        if " compressed " in f_info:
+        if any(s in f_info for s in [" compressed ", " archive "]):
             archive_list.append(f_path)
     return archive_list
 
