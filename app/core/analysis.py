@@ -100,7 +100,7 @@ def find_matching_file(src_file, search_list):
         _f_dist = utilities.levenshtein_distance(_f, src_file)
         similar_list.append((_f, _f_dist))
     sorted_list = sorted(similar_list, key=lambda x:x[1])
-    return sorted_list[0]
+    return sorted_list[0][0]
 
 
 def detect_new_files(interested_files, dir_pkg):
