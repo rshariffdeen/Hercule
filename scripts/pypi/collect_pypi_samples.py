@@ -1,3 +1,5 @@
+import sys
+
 from bs4 import BeautifulSoup
 import requests
 import os
@@ -11,6 +13,12 @@ package_list = ["boto3", "botocore", "certifi", "charset-normalizer",
                 "importlib-metadata", "numpy", "packaging", "python-dateutil",
                 "pytz", "pyyaml", "requests", "s3transfer", "setuptools", "six",
                 "typing-extensions", "urllib3", "wheel"]
+
+
+def read_file(file_path):
+    with open(file_path, "w") as f:
+        content = f.readlines()
+        return content
 
 
 def get_html(url):
@@ -38,16 +46,26 @@ def download_file(file_url, file_path):
         f.write(response.content)
     return
 
-def run():
+
+def run(args):
+    global package_list
+    if args:
+        filepath = args[0]
+        package_list = read_file(filepath)
+
     for pkg in package_list:
         print(pkg)
-        pypi_url = f"https://pypi.org/simple/{pkg}"
+        pypi_url = f"https://pypi.org/simple/{pkg.strip()}"
         html_soup = get_html(pypi_url)
         download_list = get_download_links(html_soup)
+        if not download_list:
+            print("empty links", pkg)
+            continue
+        print("found links", pkg)
         latest_link = download_list[-1]
         file_name = str(latest_link).split("#")[0].split("/")[-1]
         download_file(latest_link, f"/data/benign/{file_name}")
 
 
 if __name__ == "__main__":
-    run()
+    run(sys.argv[1:])
