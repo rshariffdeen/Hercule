@@ -74,9 +74,10 @@ def extract_source(source_url, github_page, dir_src, pkg_version):
                     t_distance = utilities.levenshtein_distance(str(t).lower(), str(pkg_version).lower())
                     edit_distance.append((t, t_distance))
                 sorted_tags = sorted(edit_distance, key=lambda x: x[1])
-                release_tag = sorted_tags[0][0]
-                emitter.highlight(f"\t\t\t release tag: {release_tag}")
-                repo.git.checkout(release_tag)
+                if sorted_tags:
+                    release_tag = sorted_tags[0][0]
+                    emitter.highlight(f"\t\t\t release tag: {release_tag}")
+                    repo.git.checkout(release_tag)
                 submd_command = "git submodule update --init"
                 utilities.execute_command(submd_command, directory=dir_src)
                 is_success = True
