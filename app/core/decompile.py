@@ -4,9 +4,11 @@ from app.core import emitter, utilities, extract, values
 def decompile_py2_files(py2_list):
     emitter.normal("\t\tdecompiling python2 versions")
     for p_f in py2_list:
-        p_f_rel = p_f.replace(values.dir_main, "")
+        p_f_rel = p_f.replace(values.dir_main + "/", "")
         emitter.highlight(f"\t\t{p_f_rel}")
-        decompiled_file = p_f.replace(".pyc", ".py2.py")
+        decompiled_file = p_f.replace(".pyc", ".pyc.py")
+        touch_command = f"touch {decompiled_file}"
+        utilities.execute_command(touch_command)
         decompile_command = f"uncompyle6 -o \"{decompiled_file}\" \"{p_f}\""
         utilities.execute_command(decompile_command)
 
@@ -14,9 +16,11 @@ def decompile_py2_files(py2_list):
 def decompile_py3_files(py3_list):
     emitter.normal("\t\tdecompiling python3 versions")
     for p_f in py3_list:
-        p_f_rel = p_f.replace(values.dir_main, "")
+        p_f_rel = p_f.replace(values.dir_main + "/", "")
         emitter.highlight(f"\t\t{p_f_rel}")
-        decompiled_file = p_f.replace(".pyc", ".py3.py")
+        decompiled_file = p_f.replace(".pyc", ".pyc.py")
+        touch_command = f"touch {decompiled_file}"
+        utilities.execute_command(touch_command)
         decompile_command = f"decompyle3 -o \"{decompiled_file}\" \"{p_f}\""
         utilities.execute_command(decompile_command)
 

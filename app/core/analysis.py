@@ -1,3 +1,4 @@
+import os
 from app.core import values
 from app.core import emitter
 from app.core import extract
@@ -120,6 +121,11 @@ def detect_new_files(interested_files, dir_pkg):
         if f_path not in rel_path_list_src:
             if any(_type in f_path for _type in [".bak", ".ast"]):
                 continue
+            if ".pyc" in f_path:
+                f_path = f_path.replace(".pyc", ".pyc.py")
+                abs_path = f"{dir_pkg}{prefix_pkg}{f_path}"
+                if not os.path.isfile(abs_path):
+                    continue
             matching_file = find_matching_file(f_path, rel_path_list_src)
             if matching_file:
                 continue
