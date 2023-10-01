@@ -253,8 +253,10 @@ def analyze_files(dir_pkg, dir_src):
     if suspicious_files:
         is_faithful = False
     values.result["is-faithful"] = is_faithful
-    whole_pkg_alerts = bandit.generate_bandit_dir_report(dir_pkg)
-    whole_src_alerts = bandit.generate_bandit_dir_report(dir_src)
+    whole_pkg_res = bandit.generate_bandit_dir_report(dir_pkg)
+    whole_src_res = bandit.generate_bandit_dir_report(dir_src)
+    whole_pkg_alerts = whole_pkg_res.get("results", [])
+    whole_src_alerts = whole_src_res.get("results", [])
     hercule_alerts = []
     for f in suspicious_files:
         f_result = bandit.generate_bandit_source_report(f)
@@ -275,8 +277,8 @@ def analyze_files(dir_pkg, dir_src):
         is_malware = True
     values.result["is-malware"] = is_malware
     values.result["bandit-analysis"] = dict()
-    values.result["bandit-analysis"]["whole-pkg-alerts"] = len(whole_pkg_alerts["results"])
-    values.result["bandit-analysis"]["whole-src-alerts"] = len(whole_src_alerts["results"])
+    values.result["bandit-analysis"]["whole-pkg-alerts"] = len(whole_pkg_alerts)
+    values.result["bandit-analysis"]["whole-src-alerts"] = len(whole_src_alerts)
     values.result["bandit-analysis"]["hercule-alerts"] = len(hercule_alerts)
     values.result["bandit-analysis"]["hercule-report"] = hercule_alerts
 
@@ -289,8 +291,8 @@ def analyze_files(dir_pkg, dir_src):
 
     emitter.normal("\t\tMaliciousness")
     emitter.highlight(f"\t\t\tis-benign: {not is_malware}")
-    emitter.highlight(f"\t\t\tpkg bandit alerts: {len(whole_pkg_alerts['results'])}")
-    emitter.highlight(f"\t\t\tsrc bandit alerts: {len(whole_src_alerts['results'])}")
+    emitter.highlight(f"\t\t\tpkg bandit alerts: {len(whole_pkg_alerts)}")
+    emitter.highlight(f"\t\t\tsrc bandit alerts: {len(whole_src_alerts)}")
     emitter.highlight(f"\t\t\thercule pkg alerts: {len(hercule_alerts)}")
 
 

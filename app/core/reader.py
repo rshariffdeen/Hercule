@@ -9,7 +9,9 @@ def read_json(file_path: str):
     if os.path.isfile(file_path):
         with open(file_path, "r") as in_file:
             content = in_file.readlines()
-            if len(content) > 1:
+            if len(content) == 0:
+                content_str = "{}"
+            elif len(content) > 1:
                 content_str = " ".join([l.strip().replace("\n", "") for l in content])
             else:
                 content_str = content[0]
