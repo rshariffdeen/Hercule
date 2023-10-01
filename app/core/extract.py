@@ -205,7 +205,7 @@ def extract_path_prefix(path_list):
 def extract_import_lines(ast_cluster):
     import_line_list = []
     for action in ast_cluster:
-        if "import_from" in action:
+        if "import_from " in action:
             line_number = action.strip().split(",")[-2]
             import_line_list.append(line_number)
     return import_line_list
