@@ -107,6 +107,10 @@ def run(parsed_args):
     elif parsed_args.dir:
         list_packages = utilities.list_dir(parsed_args.dir)
         for _pkg in list_packages:
+            _pkg_name = _pkg.split("/")[-1]
+            result_file_name = join(values.dir_results, f"{_pkg_name}.json")
+            if os.path.isfile(result_file_name):
+                continue
             if os.path.isfile(_pkg):
                 scan_package(_pkg)
 
