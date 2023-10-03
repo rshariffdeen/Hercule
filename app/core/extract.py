@@ -45,6 +45,20 @@ def extract_compiled_python(dir_path):
     return compiled_python2_list, compiled_python3_list
 
 
+def find_tag(tag_list, pkg_version):
+    release_tag = None
+    edit_distance = []
+    for t in tag_list:
+        t_distance = utilities.levenshtein_distance(str(t).lower(), str(pkg_version).lower())
+        if str(pkg_version).lower() in str(t).lower():
+            t_distance = 0
+        edit_distance.append((t, t_distance))
+    sorted_tags = sorted(edit_distance, key=lambda x: x[1])
+    if sorted_tags:
+        release_tag = sorted_tags[0][0]
+    return release_tag
+
+
 def extract_source(source_url, github_page, dir_src, pkg_version):
     emitter.sub_sub_title("extracting source")
     is_success = False
@@ -68,14 +82,8 @@ def extract_source(source_url, github_page, dir_src, pkg_version):
                 emitter.highlight(f"\t\t\t fetched dir: {dir_src}")
                 tag_list = sorted(repo.tags, key=lambda t: t.commit.committed_datetime, reverse=True)
                 emitter.normal("\t\tfinding release tag")
-                release_tag = None
-                edit_distance = []
-                for t in tag_list:
-                    t_distance = utilities.levenshtein_distance(str(t).lower(), str(pkg_version).lower())
-                    edit_distance.append((t, t_distance))
-                sorted_tags = sorted(edit_distance, key=lambda x: x[1])
-                if sorted_tags:
-                    release_tag = sorted_tags[0][0]
+                release_tag = find_tag(tag_list, pkg_version)
+                if release_tag:
                     emitter.highlight(f"\t\t\t release tag: {release_tag}")
                     repo.git.checkout(release_tag)
                 submd_command = "git submodule update --init"
