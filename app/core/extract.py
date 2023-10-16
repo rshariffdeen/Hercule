@@ -117,10 +117,10 @@ def extract_meta_data(dir_pkg):
                     meta_data = utilities.read_yaml(abs_path)
                     meta_data_file = f_path
                     if "source" in meta_data:
-                        source_url = meta_data["source"]["url"]
+                        source_url = meta_data["source"].get("url", None)
                     if "package" in meta_data:
-                        package_name = meta_data["package"]["name"].strip()
-                        package_version = meta_data["package"]["version"].strip()
+                        package_name = meta_data["package"].get("name", "").strip()
+                        package_version = meta_data["package"].get("version", "").strip()
                 elif "json" in f_name:
                     meta_data = utilities.read_json(abs_path)
                     meta_data_file = f_path
