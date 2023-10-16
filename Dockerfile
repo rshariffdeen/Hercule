@@ -45,6 +45,12 @@ RUN ./gradlew clean build shadowjar
 # install cloc for loc computation
 RUN git clone https://github.com/AlDanial/cloc /opt/cloc
 
+# Download codeql v2.12.2
+WORKDIR /opt
+RUN wget https://github.com/github/codeql-cli-binaries/releases/download/v2.12.2/codeql-linux64.zip
+RUN unzip codeql-linux64.zip
+ENV PATH="${PATH}:/opt/codeql/"
+
 # set paths
 ENV PATH /opt/hercule/bin:/opt/cloc:${PATH}
 ENV PATH /opt/pythonparser:${PATH}
