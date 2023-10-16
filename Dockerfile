@@ -42,8 +42,11 @@ RUN git remote add origin https://github.com/rshariffdeen/hercule.git
 WORKDIR /opt/gumtree-modified/
 RUN ./gradlew clean build shadowjar
 
+# install cloc for loc computation
+RUN git clone https://github.com/AlDanial/cloc /opt/cloc
+
 # set paths
-ENV PATH /opt/hercule/bin:${PATH}
+ENV PATH /opt/hercule/bin:/opt/cloc:${PATH}
 ENV PATH /opt/pythonparser:${PATH}
 WORKDIR /opt/hercule/
 
