@@ -7,6 +7,7 @@ from app.core import utilities
 from app.core import transform
 from app.core import oracle
 from app.tools import bandit
+from app.core import reader
 
 
 def analyze_file_types(dir_pkg, dir_src):
@@ -233,8 +234,22 @@ def detect_suspicious_additions(new_files):
     return suspicious_file_list
 
 
+def analyze_loc(dir_pkg):
+    emitter.sub_sub_title("analysing lines of code")
+    cloc_info = dict()
+    cloc_command = f"cloc --json --out {dir_pkg}/cloc.json {dir_pkg}"
+    utilities.execute_command(cloc_command)
+    pkg_loc_info = reader.read_json(f"{dir_pkg}/cloc.json")
+    cloc_info["total-files"] = pkg_loc_info["header"]["n_files"]
+    cloc_info["total-lines"] = pkg_loc_info["header"]["n_lines"]
+    cloc_info["python-files"] = pkg_loc_info["Python"]["nFiles"]
+    cloc_info["python-lines"] = pkg_loc_info["Python"]["code"]
+    values.result["cloc"] = cloc_info
+
+
 def analyze_files(dir_pkg, dir_src):
     interested_files = analyze_file_types(dir_pkg, dir_src)
+    analyze_loc(dir_pkg)
     src_pyc_list, pkg_pyc_list = decompile.decompile_python_files(dir_pkg, dir_src)
     interested_files["decompiled pyc"] = {"src": src_pyc_list, "pkg": pkg_pyc_list}
     new_list = detect_new_files(interested_files, dir_pkg)
