@@ -296,11 +296,13 @@ def analyze_files(dir_pkg, dir_src):
     values.result["bandit-analysis"] = dict()
     values.result["bandit-analysis"]["whole-pkg-alerts"] = len(whole_pkg_alerts)
     values.result["bandit-analysis"]["whole-src-alerts"] = len(whole_src_alerts)
-    values.result["bandit-analysis"]["hercule-alerts"] = len(hercule_alerts)
     values.result["bandit-analysis"]["setup-pkg-alerts"] = len(setup_py_pkg_alerts)
     values.result["bandit-analysis"]["setup-src-alerts"] = len(setup_py_src_alerts)
-    values.result["bandit-analysis"]["setup-hercule-alerts"] = len(setup_py_hercule_alerts)
-    values.result["bandit-analysis"]["hercule-report"] = hercule_alerts
+    values.result["hercule-analysis"] = dict()
+    values.result["hercule-analysis"]["setup-hercule-alerts"] = len(setup_py_hercule_alerts)
+    values.result["hercule-analysis"]["hercule-alerts"] = len(hercule_alerts)
+    values.result["hercule-analysis"]["hercule-report"] = hercule_alerts
+
 
     emitter.sub_sub_title("Analysis Results")
     emitter.normal("\t\tFaithfulness")
