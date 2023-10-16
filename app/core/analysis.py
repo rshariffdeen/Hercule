@@ -272,6 +272,8 @@ def analyze_files(dir_pkg, dir_src):
     whole_src_res = bandit.generate_bandit_dir_report(dir_src)
     whole_pkg_alerts = whole_pkg_res.get("results", [])
     whole_src_alerts = whole_src_res.get("results", [])
+    setup_py_pkg_alerts = [x for x in whole_pkg_alerts if "setup.py" in x["filename"]]
+    setup_py_src_alerts = [x for x in whole_src_alerts if "setup.py" in x["filename"]]
     hercule_alerts = []
     for f in suspicious_files:
         f_result = bandit.generate_bandit_source_report(f)
@@ -286,7 +288,7 @@ def analyze_files(dir_pkg, dir_src):
             hercule_alerts += f_result_filtered
         else:
             hercule_alerts += f_result["results"]
-
+    setup_py_hercule_alerts = [x for x in hercule_alerts if "setup.py" in x["filename"]]
     is_malware = False
     if hercule_alerts:
         is_malware = True
@@ -295,6 +297,9 @@ def analyze_files(dir_pkg, dir_src):
     values.result["bandit-analysis"]["whole-pkg-alerts"] = len(whole_pkg_alerts)
     values.result["bandit-analysis"]["whole-src-alerts"] = len(whole_src_alerts)
     values.result["bandit-analysis"]["hercule-alerts"] = len(hercule_alerts)
+    values.result["bandit-analysis"]["setup-pkg-alerts"] = len(setup_py_pkg_alerts)
+    values.result["bandit-analysis"]["setup-src-alerts"] = len(setup_py_src_alerts)
+    values.result["bandit-analysis"]["setup-hercule-alerts"] = len(setup_py_hercule_alerts)
     values.result["bandit-analysis"]["hercule-report"] = hercule_alerts
 
     emitter.sub_sub_title("Analysis Results")
