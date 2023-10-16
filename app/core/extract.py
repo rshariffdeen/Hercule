@@ -100,7 +100,7 @@ def extract_source(source_url, github_page, dir_src, pkg_version):
 
 def extract_meta_data(dir_pkg):
     emitter.sub_sub_title("finding for meta-data files")
-    meta_data_files = ["meta.yaml", "METADATA", "about.json", "index.json", "PKG-INFO"]
+    meta_data_files = ["PKG-INFO", "meta.yaml", "METADATA", "about.json", "index.json"]
     source_url = None
     package_version = None
     package_name = None
