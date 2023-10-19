@@ -1,0 +1,7 @@
+
+name: efffix/codeql-cpp-queries
+version: 0.0.1
+dependencies:
+  # This uses the latest version of the codeql/cpp-all library.
+  # You may want to change to a more precise semver string.
+  codeql/cpp-all: "0.6.0"

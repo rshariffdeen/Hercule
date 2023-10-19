@@ -47,7 +47,7 @@ RUN git clone https://github.com/AlDanial/cloc /opt/cloc
 
 # Download codeql v2.12.2
 WORKDIR /opt
-RUN wget https://github.com/github/codeql-cli-binaries/releases/download/v2.12.2/codeql-linux64.zip
+RUN wget https://github.com/github/codeql-cli-binaries/releases/download/v2.15.0/codeql-linux64.zip
 RUN unzip codeql-linux64.zip
 ENV PATH="${PATH}:/opt/codeql/"
 
