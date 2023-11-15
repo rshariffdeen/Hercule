@@ -2,7 +2,7 @@ import csv
 import json
 import os
 import pickle
-
+import toml
 
 def read_json(file_path: str):
     json_data = None
@@ -18,6 +18,12 @@ def read_json(file_path: str):
             json_data = json.loads(content_str)
     return json_data
 
+def read_toml(file_path:str):
+    toml_data = None
+    if os.path.isfile(file_path):
+        with open(file_path,"r") as in_file:
+            toml_data = toml.load(in_file)
+    return toml_data
 
 def read_pickle(file_path: str):
     pickle_object = None

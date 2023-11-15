@@ -71,34 +71,48 @@ def bootstrap(arg_list: Namespace):
 
 def scan_package(package_path):
     emitter.sub_title(package_path)
+    
     start_time = time.time()
     values.result = dict()
     values.result["general"] = dict()
     dir_pkg = extract.extract_archive(package_path)
     package_name, package_version, source_url, github_page = extract.extract_meta_data(dir_pkg)
     distribution_name = dir_pkg.split("/")[-1].replace("-dir", "")
+    
     values.result["package-name"] = package_name
     values.result["file-name"] = distribution_name
     values.result["version"] = package_version
     values.result["source-url"] = source_url
     values.result["github-page"] = github_page
+    
+    
     dir_src = dir_pkg.replace("-dir", "-src")
     if github_page or source_url:
         is_success = extract.extract_source(source_url, github_page, dir_src, package_version)
         if is_success:
             analysis.analyze_files(dir_pkg, dir_src)
+    
+    # The integrity analysis updates to python 3
+    # analysis.generate_closure(dir_pkg)
+    
+    analysis.behaviour_analysis(dir_pkg)
+    
     time_duration = format((time.time() - start_time) / 60, ".3f")
     values.result["scan-duration"] = time_duration
     result_file_name = join(values.dir_results, f"{distribution_name}.json")
     min_result_file_name = join(values.dir_results, f"{distribution_name}.min.json")
+    
     writer.write_as_json(values.result, result_file_name)
+    
     if "bandit-analysis" in values.result:
         if "hercule-report" in values.result["bandit-analysis"]:
             del values.result["bandit-analysis"]["hercule-report"]
     if "suspicious-modifications" in values.result:
         del values.result["suspicious-modifications"]
+    if "codeql-analysis" in values.result:
+        del values.result["codeql-analysis"]
+        
     writer.write_as_json(values.result, min_result_file_name)
-
 
 def run(parsed_args):
     if parsed_args.file:

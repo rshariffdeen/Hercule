@@ -7,6 +7,8 @@ from app.core import utilities
 from app.core import transform
 from app.core import oracle
 from app.tools import bandit
+from app.tools import codeql
+from app.tools import depclosure
 from app.core import reader
 
 
@@ -247,6 +249,24 @@ def analyze_loc(dir_pkg):
     values.result["cloc"] = cloc_info
 
 
+def generate_closure(dir_pkg):
+    depclosure.generate_closure(dir_pkg)
+
+def behaviour_analysis(dir_pkg):
+    emitter.sub_sub_title("creating codeql database")
+    codeql.generate_codeql_database(dir_pkg)
+    
+    emitter.sub_sub_title("analyzing codeql database")
+    codeql_results = codeql.generate_codeql_query_report(dir_pkg)
+    
+    codeql.remove_database(dir_pkg)
+    
+    values.result["codeql-analysis"] = codeql_results
+    values.result["codeql-analysis-issues"] = codeql_results["runs"][0]["results"]
+    
+   
+    
+
 def analyze_files(dir_pkg, dir_src):
     interested_files = analyze_file_types(dir_pkg, dir_src)
     analyze_loc(dir_pkg)
@@ -293,6 +313,7 @@ def analyze_files(dir_pkg, dir_src):
     if hercule_alerts:
         is_malware = True
     values.result["is-malware"] = is_malware
+
     values.result["bandit-analysis"] = dict()
     values.result["bandit-analysis"]["whole-pkg-alerts"] = len(whole_pkg_alerts)
     values.result["bandit-analysis"]["whole-src-alerts"] = len(whole_src_alerts)

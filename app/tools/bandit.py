@@ -12,6 +12,7 @@ def generate_bandit_source_report(source_path):
 def generate_bandit_dir_report(dir_pkg):
     bandit_command = f"bandit -r -q -f json  -o {dir_pkg}.json {dir_pkg}"
     execute_command(bandit_command)
+    #print(f"{dir_pkg}.json")
     bandit_result = reader.read_json(f"{dir_pkg}.json")
     return bandit_result
 

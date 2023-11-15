@@ -84,7 +84,7 @@ def extract_source(source_url, github_page, dir_src, pkg_version):
                 emitter.normal("\t\tfinding release tag")
                 release_tag = find_tag(tag_list, pkg_version)
                 values.result["github-tag"] = str(release_tag)
-                if release_tag:
+                if release_tag:                    
                     emitter.highlight(f"\t\t\t release tag: {release_tag}")
                     repo.git.checkout(release_tag)
                 submd_command = "git submodule update --init"

@@ -187,7 +187,11 @@ def read_json(file_path: str, encoding="utf-8"):
 
 
 def read_yaml(file_path: str):
-    yaml_data = yaml.safe_load(open(file_path))
+    yaml_data = None
+    try:
+        yaml_data = yaml.safe_load(open(file_path))
+    except Exception as ex:
+        pass
     return yaml_data
 
 def append_file(content: List[str], file_path: str):
@@ -231,6 +235,7 @@ def get_file_info(file_path: str):
         file_command = f"file \"{file_path}\""
         output = execute_command(file_command)[1]
     return str(output)
+
 
 
 def get_file_list(dir_path: str):
