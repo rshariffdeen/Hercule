@@ -13,14 +13,9 @@ import python
 import semmle.python.dataflow.new.TaintTracking
 import semmle.python.ApiGraphs
 
-from DataFlow::CallCfgNode p
+from DataFlow::CallCfgNode p, string x
 where
-  (
-    p = API::builtin("compile").getACall() or
-    p = API::builtin("__import__").getACall() or
-    p = API::builtin("getattr").getACall() or
-    p = API::builtin("globals").getACall() or
-    p = API::builtin("vars").getACall()
-  ) and
+  p = API::builtin(x).getACall() and
+  x in ["compile", "__import__", "getattr", "globals", "vars"] and
   not p.getLocation().getFile().inStdlib()
-select p.getLocation(), "Found a read of a suspicious builtin " + p.getFunction().toString()
+select p.getLocation(), "Found a read of a suspicious builtin " + x

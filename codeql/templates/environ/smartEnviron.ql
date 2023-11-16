@@ -1,11 +1,11 @@
 /**
- * @name environ smarter
- * @description smth
+ * @name Global taint tracking usage of os.environ
+ * @description Checking the local environment is suspicious
  * @kind problem
  * @problem.severity warning
  * @security-severity 7.8
  * @precision high
- * @id py/pwuid
+ * @id py/environ-smart
  * @tags security
  */
 
@@ -32,8 +32,17 @@ module MyFlowConfiguration implements DataFlow::ConfigSig {
 
 module MyFlow = DataFlow::Global<MyFlowConfiguration>;
 
-from DataFlow::AttrRead read, DataFlow::Node p
+from DataFlow::AttrRead read, DataFlow::Node p, string key
 where
-  read.accesses(API::moduleImport("os").asSource(), "environ") and
-  (MyFlow::flow(read, p) or MyFlow::flow(p, read))
-select read.getLocation(), "flow between an environ and $@", p.getLocation(), "  "
+  (
+    read.accesses(API::moduleImport("os").getMember("environ").asSource(), key) and
+    MyFlow::flow(read, p)
+  )
+  or
+  (
+    read.accesses(API::moduleImport("os").getMember("environ").asSink(), key) and
+    MyFlow::flow(p, read)
+  ) 
+  and
+  not p.getLocation().getFile().inStdlib()
+select read.getLocation(), "Flow between os.environ and " + p.getLocation()

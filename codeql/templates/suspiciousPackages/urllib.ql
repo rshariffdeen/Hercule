@@ -1,11 +1,11 @@
 /**
  * @name Urlrlib invocation
- * @description Urlopen is suspicious
+ * @description Mentioning of urllib is suspicious
  * @kind problem
  * @problem.severity warning
  * @security-severity 7.8
  * @precision high
- * @id py/dunder-manipulation
+ * @id py/urlib-ref
  * @tags security
  */
 

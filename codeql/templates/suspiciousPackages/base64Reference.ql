@@ -15,4 +15,5 @@ import semmle.python.ApiGraphs
 from DataFlow::CallCfgNode p
 where
   p = API::moduleImport("base64").getAMember().getACall()
+  and not p.getLocation().getFile().inStdlib()
 select p.getLocation(), "Found a reference of base64"

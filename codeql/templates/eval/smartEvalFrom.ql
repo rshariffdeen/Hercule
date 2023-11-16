@@ -1,11 +1,11 @@
 /**
- * @name eval smarter issues from
- * @description smth
+ * @name Global tracking of eval and exec functions as source
+ * @description Tracking the eval and exec functions as malicious payload can be passed through them
  * @kind problem
  * @problem.severity warning
  * @security-severity 7.8
  * @precision high
- * @id py/pwuid
+ * @id py/eval-smart-from
  * @tags security
  */
 
@@ -50,4 +50,5 @@ where
     call = API::moduleImport("ast").getMember("literal_eval").getACall()
   ) and
   MyFlow::flow(call, p)
+  and not p.getLocation().getFile().inStdlib()
 select call, "Evaluation flows into ($@)", p, p.asExpr().toString()

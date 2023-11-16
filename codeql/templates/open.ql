@@ -5,7 +5,7 @@
  * @problem.severity warning
  * @security-severity 7.8
  * @precision high
- * @id py/open-issues
+ * @id py/os-open
  * @tags security
  */
 import python

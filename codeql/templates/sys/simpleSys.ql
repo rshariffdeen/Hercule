@@ -1,11 +1,11 @@
 /**
- * @name sys readings
+ * @name Simple readings of sys fields
  * @description smth
  * @kind problem
  * @problem.severity warning
  * @security-severity 7.8
  * @precision high
- * @id py/open-issues
+ * @id py/sys-ref
  * @tags security
  */
 
@@ -20,4 +20,5 @@ where
     read = API::moduleImport("sys").getAMember().getACall()
   ) and
   TaintTracking::localTaint(read.getALocalSource(), p)
-select read.getLocation(), "Found a call to a system field, which flows to $@", p.getLocation(), "."
+  and not p.getLocation().getFile().inStdlib()
+select read.getLocation(), "Found a call to a system field, which flows to "+ p.getLocation().toString()

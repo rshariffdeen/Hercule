@@ -5,7 +5,7 @@
  * @problem.severity warning
  * @security-severity 7.8
  * @precision high
- * @id py/httpxref
+ * @id py/httpx-ref
  * @tags security
  */
 import python

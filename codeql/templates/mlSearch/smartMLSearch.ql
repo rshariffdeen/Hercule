@@ -1,11 +1,11 @@
 /**
  * @name smartML search
- * @description Usage of suspcious strings with taint tracking
+ * @description Usage of suspcious strings with global taint tracking
  * @kind problem
  * @problem.severity warning
  * @security-severity 7.8
  * @precision high
- * @id py/pwuid
+ * @id py/ml-search-smart
  * @tags security
  */
 

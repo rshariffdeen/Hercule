@@ -1,11 +1,11 @@
 /**
  * @name eval and eval_literal from calls
- * @description smth
+ * @description Tracking flow from an eval to a value
  * @kind problem
  * @problem.severity warning
  * @security-severity 7.8
  * @precision high
- * @id py/open-issues
+ * @id py/eval-simple-from
  * @tags security
  */
 
@@ -23,4 +23,5 @@ from DataFlow::CallCfgNode call, DataFlow::ParameterNode p
 where
   isEvalCall(call) and
   TaintTracking::localTaint(call, p)
+  and not p.getLocation().getFile().inStdlib()
 select call, "Evaluation flows into ($@)", p, p.asExpr().toString()

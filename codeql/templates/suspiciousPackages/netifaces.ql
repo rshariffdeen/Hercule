@@ -5,7 +5,7 @@
  * @problem.severity warning
  * @security-severity 7.8
  * @precision high
- * @id py/netifacesref
+ * @id py/netifaces-ref
  * @tags security
  */
 import python

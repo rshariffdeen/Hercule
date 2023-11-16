@@ -5,7 +5,7 @@
  * @problem.severity warning
  * @security-severity 7.8
  * @precision high
- * @id py/dunder-manipulation
+ * @id py/file-overwrite
  * @tags security
  */
 
@@ -37,4 +37,4 @@ where
     (read.getLocation().getFile() != write.getLocation().getFile())
     or (read.getLocation().getStartLine() <= write.getLocation().getStartLine())
   )
-select p.getLocation(), "Found a read here ($@) and here ($@)" , read, "-", write, "."
+select p.getLocation(), "Found a read at " + read + " and a write at " + write

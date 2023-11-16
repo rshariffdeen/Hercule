@@ -5,7 +5,7 @@
  * @problem.severity warning
  * @security-severity 7.8
  * @precision high
- * @id py/pwuid
+ * @id py/pwuid-simple
  * @tags security
  */
 
@@ -23,4 +23,5 @@ where
   read.accesses(call, _) and
   TaintTracking::localTaint(read.getALocalSource(), p)
   and p instanceof DataFlow::CallCfgNode
+  and not p.getLocation().getFile().inStdlib()
 select call.getLocation(), "simple getPwuid data is used at $@", p.getLocation(), "."

@@ -1,11 +1,11 @@
 /**
- * @name eval and eval_literal to calls
- * @description smth
+ * @name eval and eval_literal from calls
+ * @description Tracking flow from an eval to a value
  * @kind problem
  * @problem.severity warning
  * @security-severity 7.8
  * @precision high
- * @id py/open-issues
+ * @id py/eval-simple-from
  * @tags security
  */
 

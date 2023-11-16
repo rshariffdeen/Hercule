@@ -3,7 +3,8 @@
  * @description The eval() function evaluates Python code represented as a string or masrhalled.
  * @author Fabian Froh
  * @kind problem
- * @id js/usage-of-eval
+ * @id py/usage-of-eval
+ * @problem.severity warning
  * @security-severity 5.0
  * @package-examples eslint-scope eslint-config-eslint 
  * @tags security 

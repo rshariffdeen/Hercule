@@ -5,7 +5,7 @@
  * @problem.severity warning
  * @security-severity 7.8
  * @precision high
- * @id py/dunder-manipulation
+ * @id py/ssl-ref
  * @tags security
  */
 import python

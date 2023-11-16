@@ -5,7 +5,7 @@
  * @problem.severity warning
  * @security-severity 7.8
  * @precision high
- * @id py/dunder-manipulation
+ * @id py/get-attr-dunder-file
  * @tags security
  */
 
@@ -17,5 +17,5 @@ from DataFlow::CallCfgNode p, DataFlow::CallCfgNode q
 where
   p = API::builtin("getattr").getACall() and
   q.asExpr().getAChildNode().(StringPart).getText() = "__file__" and
-  TaintTracking::localTaint(q.getALocalSource(), p.getArg(1))
+  TaintTracking::localTaint(q.getALocalSource(), p.getArg(_))
 select p.getLocation(), "Found a read of __file__"

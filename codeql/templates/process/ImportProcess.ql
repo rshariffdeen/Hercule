@@ -1,10 +1,11 @@
 /**
  * @name Require of child process
  * @description Detects if any child process is required as module
- * @author Fabian Froh
+ * @author Martin Mirchev
  * @kind problem
- * @id js/require-child-process
+ * @id py/require-child-process
  * @security-severity 3.0
+ * @problem.severity warning
  * @example-packages kraken-api
  * @tags security
  * child_process
@@ -20,4 +21,5 @@
 
  from Import r
  where r.getAnImportedModuleName().toString() = "subprocess" or r.getAnImportedModuleName().toString() = "os.system"
+ and not r.getLocation().getFile().inStdlib()
  select r, "Import of child_process module in file \"" + r.getLocation().getFile().getBaseName().toString() + "\""

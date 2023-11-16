@@ -1,11 +1,11 @@
 /**
- * @name Strings
+ * @name Machine learning strings
  * @description Usage of suspicious strings
  * @kind problem
  * @problem.severity warning
  * @security-severity 7.8
  * @precision high
- * @id py/open-issues
+ * @id py/ml-search-simple
  * @tags security
  */
 

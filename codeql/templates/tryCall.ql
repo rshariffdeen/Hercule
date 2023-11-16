@@ -1,6 +1,6 @@
 /**
  * @name Catch a try_call method
- * @description Replacement for apply
+ * @description A manually constructed replacement for apply, which is suspicious 
  * @kind problem
  * @problem.severity warning
  * @security-severity 7.8
@@ -21,4 +21,4 @@ where
     TaintTracking::localTaint(p, call.getArg(_)) or
     TaintTracking::localTaint(p, call.getArgByName(_))
   )
-select call, "Found a call to function try_call at ($@) with argument at ($@)", call.getLocation(), " ", p.getLocation() 
+select call, "Found a call to function try_call at ($@) with argument at ($@)", call.getLocation(), " ", p.getLocation() , "."

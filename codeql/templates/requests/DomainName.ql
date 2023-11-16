@@ -26,7 +26,6 @@
      "in|nl|edu|info|eu|ch|id|at|kr|cz|mx|be|tv|se|tr|tw|al|ua|ir|vn|cl|sk|ly|cc|to|no|fi|us|pt|dk|ar|hu|tk|" +
      "gr|il|news|ro|my|biz|ie|za|nz|sg|ee|th|io|xyz|pe|bg|hk|rs|lt|link|ph|club|si|site|mobi|by|cat|wiki|la|" +
      "ga|xxx|cf|hr|ng|jobs|online|kz|ug|gq|ae|is|lv|pro|fm|tips|ms|sa|app)") 
- 
  // Ignore all findings in import statements (that includes require)
  //and not s.getParentExpr() instanceof Import
  //and not s.getEnclosingStmt() instanceof Import

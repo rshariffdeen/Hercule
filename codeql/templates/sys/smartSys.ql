@@ -1,11 +1,11 @@
 /**
- * @name sys search
+ * @name Taint tracking of Sys field
  * @description smth
  * @kind problem
  * @problem.severity warning
  * @security-severity 7.8
  * @precision high
- * @id py/pwuid
+ * @id py/sys-smarter
  * @tags security
  */
 
@@ -36,9 +36,9 @@ module MyFlow = DataFlow::Global<MyFlowConfiguration>;
 from DataFlow::Node read, DataFlow::ParameterNode p
 where
   (
-    read = API::moduleImport("sys").getAMember().asSource()
+    API::moduleImport("sys").getAMember().asSource() = read
     or
     API::moduleImport("sys").getAMember().getACall() = read
   ) and
   MyFlow::flow(read, p)
-select read.getLocation(), "sys data is used at $@", p.getLocation(), "  "
+select read.getLocation(), "sys data is used at " + p.getLocation().toString()

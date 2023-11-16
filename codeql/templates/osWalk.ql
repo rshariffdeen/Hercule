@@ -5,7 +5,7 @@
  * @problem.severity warning
  * @security-severity 7.8
  * @precision high
- * @id py/open-issues
+ * @id py/os-walk
  * @tags security
  */
 import python
@@ -17,4 +17,4 @@ from DataFlow::CallCfgNode call, DataFlow::ParameterNode p
 where
   call = API::moduleImport("os").getMember("walk").getACall() and
   TaintTracking::localTaint(p, call.getArg(_)) or TaintTracking::localTaint(p,call.getArgByName(_))
-select call.getLocation(), "Found a call to open with a controlled argument"
+select call.getLocation(), "Found a call to os.walk"

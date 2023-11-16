@@ -5,7 +5,7 @@
  * @problem.severity warning
  * @security-severity 7.8
  * @precision high
- * @id py/open-issues
+ * @id py/marshal-reference
  * @tags security
  */
 
@@ -17,5 +17,5 @@
  where
    read.accesses(API::moduleImport("marshal").asSource(), _) and
    TaintTracking::localTaint(read.getALocalSource(), p)
- select read.getLocation(), "Found a call to a marshal field, which flows to $@", p.getLocation(), "."
+ select read.getLocation(), "Found a call to a marshal field, which flows to "+ p.getLocation().toString()
  
