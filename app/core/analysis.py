@@ -263,7 +263,11 @@ def behaviour_analysis(dir_pkg):
     codeql_results = codeql.generate_codeql_query_report(dir_pkg)
     codeql.remove_database(dir_pkg)
     # values.result["codeql-analysis"] = codeql_results
-    codeql_alerts = codeql_results["runs"][0]["results"]
+    codeql_alerts = []
+    if codeql_results:
+        if "runs" in codeql_results:
+            if codeql_results["runs"]:
+                codeql_alerts = codeql_results["runs"][0]["results"]
 
     setup_py_alerts = []
     malicious_files = set()
