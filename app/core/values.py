@@ -38,7 +38,7 @@ codeql_database_name = tool_name + "_codeql_database"
 
 codeql_output_format = "sarif-latest"
 codeql_output_name = tool_name + "_codeql_database_output." + codeql_output_format
-
+cpus = 0
 default_stack_size = 600000
 default_disk_space = 5  # 5GB
 

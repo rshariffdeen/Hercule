@@ -74,7 +74,7 @@ def scan_package(package_path):
     
     start_time = time.time()
     values.result = dict()
-    values.result["general"] = dict()
+
     dir_pkg = extract.extract_archive(package_path)
     package_name, package_version, source_url, github_page = extract.extract_meta_data(dir_pkg)
     distribution_name = dir_pkg.split("/")[-1].replace("-dir", "")
@@ -86,6 +86,21 @@ def scan_package(package_path):
     values.result["github-page"] = github_page
 
     dir_src = dir_pkg.replace("-dir", "-src")
+    # initialize values
+
+    values.result["has-integrity"] = False
+    values.result["has-malicious-code"] = False
+    values.result["has-malicious-behavior"] = False
+    values.result["bandit-analysis"] = dict()
+    values.result['bandit-analysis']['whole-pkg-alerts'] = 0
+    values.result['bandit-analysis']['whole-src-alerts'] = 0
+    values.result['bandit-analysis']['filtered-alerts'] = 0
+
+    values.result["general"] = dict()
+    values.result['general']['suspicious-new-files'] = 0
+    values.result['general']['suspicious-modified-files'] = 0
+    values.result['general']['total-suspicious-modifications'] = 0
+
     if github_page or source_url:
         is_success = extract.extract_source(source_url, github_page, dir_src, package_version)
         if is_success:
@@ -109,7 +124,8 @@ def scan_package(package_path):
     if "suspicious-modifications" in values.result:
         del values.result["suspicious-modifications"]
     if "codeql-analysis" in values.result:
-        del values.result["codeql-analysis"]
+        if "hercule-report" in values.result["codeql-analysis"]:
+            del values.result["codeql-analysis"]["hercule-report"]
         
     writer.write_as_json(values.result, min_result_file_name)
 

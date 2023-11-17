@@ -274,9 +274,9 @@ def behaviour_analysis(dir_pkg):
             if "setup.py" in _loc:
                 setup_py_alerts.append(_loc)
             malicious_files.add(_loc)
-    values.result["is-malicious-behavior"] = False
+
     if codeql_alerts:
-        values.result["is-malicious-behavior"] = True
+        values.result["has-malicious-behavior"] = True
 
     emitter.normal("\t\tmalicious files")
     if not malicious_files:
@@ -311,10 +311,8 @@ def analyze_files(dir_pkg, dir_src):
     values.result["general"]["total-suspicious-modifications"] = len(suspicious_mod_locs)
     values.result["suspicious-files"] = ",".join(suspicious_files)
     values.result["suspicious-modifications"] = ",".join(suspicious_mod_locs)
-    is_faithful = True
-    if suspicious_files:
-        is_faithful = False
-    values.result["is-faithful"] = is_faithful
+    if not suspicious_files:
+        values.result["has-integrity"] = True
     whole_pkg_res = bandit.generate_bandit_dir_report(dir_pkg)
     whole_src_res = bandit.generate_bandit_dir_report(dir_src)
     whole_pkg_alerts = whole_pkg_res.get("results", [])
@@ -336,37 +334,36 @@ def analyze_files(dir_pkg, dir_src):
         else:
             hercule_alerts += f_result["results"]
     setup_py_hercule_alerts = [x for x in hercule_alerts if "setup.py" in x["filename"]]
-    values.result["is-malicious-code"] = False
+    values.result["has-malicious-code"] = False
     if hercule_alerts:
-        values.result["is-malicious-code"] = True
+        values.result["has-malicious-code"] = True
 
-    values.result["bandit-analysis"] = dict()
     values.result["bandit-analysis"]["whole-pkg-alerts"] = len(whole_pkg_alerts)
     values.result["bandit-analysis"]["whole-src-alerts"] = len(whole_src_alerts)
     values.result["bandit-analysis"]["setup-pkg-alerts"] = len(setup_py_pkg_alerts)
     values.result["bandit-analysis"]["setup-src-alerts"] = len(setup_py_src_alerts)
-    values.result["hercule-analysis"] = dict()
-    values.result["hercule-analysis"]["setup-hercule-alerts"] = len(setup_py_hercule_alerts)
-    values.result["hercule-analysis"]["hercule-alerts"] = len(hercule_alerts)
-    values.result["hercule-analysis"]["hercule-report"] = hercule_alerts
+
+    values.result["bandit-analysis"]["filtered-setup-alerts"] = len(setup_py_hercule_alerts)
+    values.result["bandit-analysis"]["filtered-alerts"] = len(hercule_alerts)
+    values.result["bandit-analysis"]["filtered-report"] = hercule_alerts
 
 
 def final_result():
     emitter.sub_sub_title("Analysis Results")
     emitter.normal("\t\tIntegrity")
-    emitter.highlight(f"\t\t\thas-integrity: {values.result['is-faithful']}")
+    emitter.highlight(f"\t\t\thas-integrity: {values.result['has-integrity']}")
     emitter.highlight(f"\t\t\tsuspicious source file additions: {values.result['general']['suspicious-new-files']}")
     emitter.highlight(f"\t\t\tsuspicious source file modifications: { values.result['general']['suspicious-modified-files']}")
     emitter.highlight(f"\t\t\tsuspicious source location modifications: {values.result['general']['total-suspicious-modifications']}")
 
     emitter.normal("\t\tMalicious Code Segments (Bandit4Mal)")
-    emitter.highlight(f"\t\t\thas-malicious-code: {values.result['is-malicious-code']}")
+    emitter.highlight(f"\t\t\thas-malicious-code: {values.result['has-malicious-code']}")
     emitter.highlight(f"\t\t\tpackage alerts: {values.result['bandit-analysis']['whole-pkg-alerts']}")
     emitter.highlight(f"\t\t\tsource alerts: {values.result['bandit-analysis']['whole-src-alerts']}")
-    emitter.highlight(f"\t\t\tfiltered alerts: {values.result['hercule-analysis']['hercule-alerts']}")
+    emitter.highlight(f"\t\t\tfiltered alerts: {values.result['bandit-analysis']['filtered-alerts']}")
 
     emitter.normal("\t\tMalicious Code Segments (Code4QL)")
-    emitter.highlight(f"\t\t\thas-malicious-behavior: {values.result['is-malicious-behavior']}")
+    emitter.highlight(f"\t\t\thas-malicious-behavior: {values.result['has-malicious-behavior']}")
     emitter.highlight(f"\t\t\tmalicious behavior alerts: {values.result['codeql-analysis']['hercule-alerts']}")
     emitter.highlight(f"\t\t\tmalicious behavior files: { values.result['codeql-analysis']['malicious-file-count']}")
     emitter.highlight(f"\t\t\tmalicious alerts in setup: {values.result['codeql-analysis']['setup-hercule-alerts']}")
