@@ -140,7 +140,7 @@ def detect_new_files(interested_files, dir_pkg):
     return new_list
 
 
-def detect_suspicious_modifications(mod_files):
+def detect_suspicious_modifications(mod_files, dir_pkg):
     emitter.sub_sub_title("detecting suspicious modifications")
     suspicious_file_list = []
     suspicious_loc_list = []
@@ -199,7 +199,8 @@ def detect_suspicious_modifications(mod_files):
 
     emitter.normal("\t\tsuspicious locations and reasons")
     for f in suspicious_loc_list:
-        emitter.error(f"\t\t\t{f}")
+        _f = f.replace(dir_pkg, "")
+        emitter.error(f"\t\t\t{_f}")
     if not suspicious_loc_list:
         emitter.error(f"\t\t\t-none-")
 
@@ -252,20 +253,45 @@ def analyze_loc(dir_pkg):
 def generate_closure(dir_pkg):
     depclosure.generate_closure(dir_pkg)
 
+
 def behaviour_analysis(dir_pkg):
-    emitter.sub_sub_title("creating codeql database")
+    emitter.sub_sub_title("detecting malicious behavior")
+    emitter.normal("\t\tcreating codeql database")
     codeql.generate_codeql_database(dir_pkg)
-    
-    emitter.sub_sub_title("analyzing codeql database")
+
+    emitter.normal("\t\trunning queries against codeql database")
     codeql_results = codeql.generate_codeql_query_report(dir_pkg)
-    
     codeql.remove_database(dir_pkg)
-    
-    values.result["codeql-analysis"] = codeql_results
-    values.result["codeql-analysis-issues"] = codeql_results["runs"][0]["results"]
-    
-   
-    
+    # values.result["codeql-analysis"] = codeql_results
+    codeql_alerts = codeql_results["runs"][0]["results"]
+
+    setup_py_alerts = []
+    malicious_files = set()
+    for alert in codeql_alerts:
+        locations = alert["locations"]
+        for loc in locations:
+            _loc = loc["physicalLocation"]["artifactLocation"]["uri"]
+            if "setup.py" in _loc:
+                setup_py_alerts.append(_loc)
+            malicious_files.add(_loc)
+    values.result["is-malicious-behavior"] = False
+    if codeql_alerts:
+        values.result["is-malicious-behavior"] = True
+
+    emitter.normal("\t\tmalicious files")
+    if not malicious_files:
+        emitter.error(f"\t\t\t-none-")
+    for f in malicious_files:
+        _f = f.replace(dir_pkg, "")
+        emitter.error(f"\t\t\t{_f}")
+
+    values.result["codeql-analysis"] = dict()
+    values.result["codeql-analysis"]["setup-hercule-alerts"] = len(setup_py_alerts)
+    values.result["codeql-analysis"]["hercule-alerts"] = len(codeql_alerts)
+    values.result["codeql-analysis"]["hercule-report"] = codeql_alerts
+    values.result["codeql-analysis"]["malicious-file-count"] = len(malicious_files)
+    values.result["codeql-analysis"]["malicious-files"] = list(malicious_files)
+
 
 def analyze_files(dir_pkg, dir_src):
     interested_files = analyze_file_types(dir_pkg, dir_src)
@@ -277,9 +303,10 @@ def analyze_files(dir_pkg, dir_src):
     values.result["general"]["total-modified-files"] = len(mod_list)
     values.result["general"]["total-new-files"] = len(new_list)
     suspicious_new_files = detect_suspicious_additions(new_list)
-    suspicious_mod_files, suspicious_mod_locs = detect_suspicious_modifications(mod_list)
+    suspicious_mod_files, suspicious_mod_locs = detect_suspicious_modifications(mod_list, dir_pkg)
     suspicious_files = suspicious_mod_files + suspicious_new_files
-    values.result["general"]["total-suspicious-modified-files"] = len(suspicious_mod_files)
+    values.result["general"]["suspicious-modified-files"] = len(suspicious_mod_files)
+    values.result["general"]["suspicious-new-files"] = len(suspicious_new_files)
     values.result["general"]["total-suspicious-files"] = len(suspicious_files)
     values.result["general"]["total-suspicious-modifications"] = len(suspicious_mod_locs)
     values.result["suspicious-files"] = ",".join(suspicious_files)
@@ -309,10 +336,9 @@ def analyze_files(dir_pkg, dir_src):
         else:
             hercule_alerts += f_result["results"]
     setup_py_hercule_alerts = [x for x in hercule_alerts if "setup.py" in x["filename"]]
-    is_malware = False
+    values.result["is-malicious-code"] = False
     if hercule_alerts:
-        is_malware = True
-    values.result["is-malware"] = is_malware
+        values.result["is-malicious-code"] = True
 
     values.result["bandit-analysis"] = dict()
     values.result["bandit-analysis"]["whole-pkg-alerts"] = len(whole_pkg_alerts)
@@ -325,23 +351,25 @@ def analyze_files(dir_pkg, dir_src):
     values.result["hercule-analysis"]["hercule-report"] = hercule_alerts
 
 
+def final_result():
     emitter.sub_sub_title("Analysis Results")
-    emitter.normal("\t\tFaithfulness")
-    emitter.highlight(f"\t\t\tis-faithful: {is_faithful}")
-    emitter.highlight(f"\t\t\tsuspicious source file additions: {len(suspicious_new_files)}")
-    emitter.highlight(f"\t\t\tsuspicious source file modifications: {len(suspicious_mod_files)}")
-    emitter.highlight(f"\t\t\tsuspicious source location modifications: {len(suspicious_mod_locs)}")
+    emitter.normal("\t\tIntegrity")
+    emitter.highlight(f"\t\t\thas-integrity: {values.result['is-faithful']}")
+    emitter.highlight(f"\t\t\tsuspicious source file additions: {values.result['general']['suspicious-new-files']}")
+    emitter.highlight(f"\t\t\tsuspicious source file modifications: { values.result['general']['suspicious-modified-files']}")
+    emitter.highlight(f"\t\t\tsuspicious source location modifications: {values.result['general']['total-suspicious-modifications']}")
 
-    emitter.normal("\t\tMaliciousness")
-    emitter.highlight(f"\t\t\tis-benign: {not is_malware}")
-    emitter.highlight(f"\t\t\tpkg bandit alerts: {len(whole_pkg_alerts)}")
-    emitter.highlight(f"\t\t\tsrc bandit alerts: {len(whole_src_alerts)}")
-    emitter.highlight(f"\t\t\thercule pkg alerts: {len(hercule_alerts)}")
+    emitter.normal("\t\tMalicious Code Segments (Bandit4Mal)")
+    emitter.highlight(f"\t\t\thas-malicious-code: {values.result['is-malicious-code']}")
+    emitter.highlight(f"\t\t\tpackage alerts: {values.result['bandit-analysis']['whole-pkg-alerts']}")
+    emitter.highlight(f"\t\t\tsource alerts: {values.result['bandit-analysis']['whole-src-alerts']}")
+    emitter.highlight(f"\t\t\tfiltered alerts: {values.result['hercule-analysis']['hercule-alerts']}")
 
-
-
-
-
+    emitter.normal("\t\tMalicious Code Segments (Code4QL)")
+    emitter.highlight(f"\t\t\thas-malicious-behavior: {values.result['is-malicious-behavior']}")
+    emitter.highlight(f"\t\t\tmalicious behavior alerts: {values.result['codeql-analysis']['hercule-alerts']}")
+    emitter.highlight(f"\t\t\tmalicious behavior files: { values.result['codeql-analysis']['malicious-file-count']}")
+    emitter.highlight(f"\t\t\tmalicious alerts in setup: {values.result['codeql-analysis']['setup-hercule-alerts']}")
 
 
 

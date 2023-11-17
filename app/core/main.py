@@ -84,8 +84,7 @@ def scan_package(package_path):
     values.result["version"] = package_version
     values.result["source-url"] = source_url
     values.result["github-page"] = github_page
-    
-    
+
     dir_src = dir_pkg.replace("-dir", "-src")
     if github_page or source_url:
         is_success = extract.extract_source(source_url, github_page, dir_src, package_version)
@@ -96,7 +95,7 @@ def scan_package(package_path):
     # analysis.generate_closure(dir_pkg)
     
     analysis.behaviour_analysis(dir_pkg)
-    
+    analysis.final_result()
     time_duration = format((time.time() - start_time) / 60, ".3f")
     values.result["scan-duration"] = time_duration
     result_file_name = join(values.dir_results, f"{distribution_name}.json")
@@ -113,6 +112,7 @@ def scan_package(package_path):
         del values.result["codeql-analysis"]
         
     writer.write_as_json(values.result, min_result_file_name)
+
 
 def run(parsed_args):
     if parsed_args.file:
