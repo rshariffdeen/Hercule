@@ -116,6 +116,8 @@ def extract_meta_data(dir_pkg):
                 if "yaml" in f_name:
                     meta_data = utilities.read_yaml(abs_path)
                     meta_data_file = f_path
+                    if not meta_data:
+                        continue
                     if "source" in meta_data:
                         source_url = meta_data["source"].get("url", None)
                     if "package" in meta_data:
