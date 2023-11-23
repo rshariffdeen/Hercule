@@ -128,23 +128,24 @@ def scan_package(package_path):
     values.result["bandit-analysis"]["filtered-pkg-alerts"] = len(filtered_pkg_results)
     values.result["bandit-analysis"]["filtered-setup-alerts"] = len(filtered_setup_results)
     values.result["bandit-analysis"]["hercule-report"] = filtered_pkg_results
-    
-    codeql_alerts = analysis.behavior_analysis(dir_pkg)
-    codeql_alerts, setup_py_alerts, malicious_files = codeql_alerts
-    filtered_codeql_alerts = analysis.filter_codeql_results(suspicious_new_files,
-                                                            suspicious_mod_locs,
-                                                            codeql_alerts,
-                                                            dir_pkg)
-    f_codeql_alerts, f_setup_py_alerts, f_malicious_files = filtered_codeql_alerts
-    values.result["codeql-analysis"] = dict()
-    values.result["codeql-analysis"]["codeql-setup-alerts"] = len(setup_py_alerts)
-    values.result["codeql-analysis"]["codeql-alerts"] = len(codeql_alerts)
-    values.result["codeql-analysis"]["codeql-file-count"] = len(malicious_files)
-    values.result["codeql-analysis"]["hercule-setup-alerts"] = len(f_setup_py_alerts)
-    values.result["codeql-analysis"]["hercule-alerts"] = len(f_codeql_alerts)
-    values.result["codeql-analysis"]["hercule-file-count"] = len(f_malicious_files)
-    values.result["codeql-analysis"]["hercule-files"] = list(f_malicious_files)
-    values.result["codeql-analysis"]["hercule-report"] = filtered_codeql_alerts
+
+    if not values.is_lastpymile:
+        codeql_alerts = analysis.behavior_analysis(dir_pkg)
+        codeql_alerts, setup_py_alerts, malicious_files = codeql_alerts
+        filtered_codeql_alerts = analysis.filter_codeql_results(suspicious_new_files,
+                                                                suspicious_mod_locs,
+                                                                codeql_alerts,
+                                                                dir_pkg)
+        f_codeql_alerts, f_setup_py_alerts, f_malicious_files = filtered_codeql_alerts
+        values.result["codeql-analysis"] = dict()
+        values.result["codeql-analysis"]["codeql-setup-alerts"] = len(setup_py_alerts)
+        values.result["codeql-analysis"]["codeql-alerts"] = len(codeql_alerts)
+        values.result["codeql-analysis"]["codeql-file-count"] = len(malicious_files)
+        values.result["codeql-analysis"]["hercule-setup-alerts"] = len(f_setup_py_alerts)
+        values.result["codeql-analysis"]["hercule-alerts"] = len(f_codeql_alerts)
+        values.result["codeql-analysis"]["hercule-file-count"] = len(f_malicious_files)
+        values.result["codeql-analysis"]["hercule-files"] = list(f_malicious_files)
+        values.result["codeql-analysis"]["hercule-report"] = filtered_codeql_alerts
 
     analysis.final_result()
 

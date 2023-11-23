@@ -10,6 +10,8 @@ from app.tools import bandit
 from app.tools import codeql
 from app.tools import depclosure
 from app.core import reader
+from app.tools import lastpymile
+from git import Repo
 
 
 def analyze_file_types(dir_pkg, dir_src):
@@ -313,16 +315,21 @@ def ast_based_analysis(dir_pkg, dir_src):
     return suspicious_new_files, suspicious_mod_files, suspicious_mod_locs
 
 
-def hash_based_analysis(dir_pkg, dir_src):
-    suspicious_new_files = []
-    suspicious_mod_files = []
-    suspicious_mod_locs = []
-    return suspicious_new_files, suspicious_mod_files, suspicious_mod_locs
+def hash_based_analysis(dir_pkg):
+    phantom_files = []
+    pkg_hashes = lastpymile._scanPackage(dir_pkg)
+    src_hashes = lastpymile._scanSources(values.git_repo)
+    for release_hash in pkg_hashes:
+        rel_fd = pkg_hashes[release_hash]
+        file_name = rel_fd.getFileName()
+        if release_hash not in src_hashes:
+            phantom_files.append(file_name)
+    return phantom_files, [], []
 
 
 def analyze_files(dir_pkg, dir_src):
     if values.is_lastpymile:
-        file_analysis_results = hash_based_analysis(dir_pkg, dir_src)
+        file_analysis_results = hash_based_analysis(dir_pkg)
     else:
         file_analysis_results = ast_based_analysis(dir_pkg, dir_src)
     return file_analysis_results
@@ -379,18 +386,19 @@ def final_result():
     emitter.highlight(f"\t\t\tfiltered package alerts: {values.result['bandit-analysis']['filtered-pkg-alerts']}")
     emitter.highlight(f"\t\t\tfiltered setup alerts: {values.result['bandit-analysis']['filtered-setup-alerts']}")
 
-    emitter.normal("\t\tMalicious Code Segments (Code4QL)")
-    if values.result['has-malicious-behavior']:
-        emitter.error(f"\t\t\thas-malicious-code: {values.result['has-malicious-behavior']}")
-    else:
-        emitter.success(f"\t\t\thas-malicious-code: {values.result['has-malicious-behavior']}")
+    if not values.is_lastpymile:
+        emitter.normal("\t\tMalicious Code Segments (Code4QL)")
+        if values.result['has-malicious-behavior']:
+            emitter.error(f"\t\t\thas-malicious-code: {values.result['has-malicious-behavior']}")
+        else:
+            emitter.success(f"\t\t\thas-malicious-code: {values.result['has-malicious-behavior']}")
 
-    emitter.highlight(f"\t\t\tmalicious behavior alerts: {values.result['codeql-analysis']['codeql-alerts']}")
-    emitter.highlight(f"\t\t\tmalicious behavior files: { values.result['codeql-analysis']['codeql-file-count']}")
-    emitter.highlight(f"\t\t\tmalicious alerts in setup: {values.result['codeql-analysis']['codeql-setup-alerts']}")
-    emitter.highlight(f"\t\t\tfiltered behavior alerts: {values.result['codeql-analysis']['hercule-alerts']}")
-    emitter.highlight(f"\t\t\tfiltered behavior files: {values.result['codeql-analysis']['hercule-file-count']}")
-    emitter.highlight(f"\t\t\tfiltered alerts in setup: {values.result['codeql-analysis']['hercule-setup-alerts']}")
+        emitter.highlight(f"\t\t\tmalicious behavior alerts: {values.result['codeql-analysis']['codeql-alerts']}")
+        emitter.highlight(f"\t\t\tmalicious behavior files: { values.result['codeql-analysis']['codeql-file-count']}")
+        emitter.highlight(f"\t\t\tmalicious alerts in setup: {values.result['codeql-analysis']['codeql-setup-alerts']}")
+        emitter.highlight(f"\t\t\tfiltered behavior alerts: {values.result['codeql-analysis']['hercule-alerts']}")
+        emitter.highlight(f"\t\t\tfiltered behavior files: {values.result['codeql-analysis']['hercule-file-count']}")
+        emitter.highlight(f"\t\t\tfiltered alerts in setup: {values.result['codeql-analysis']['hercule-setup-alerts']}")
 
 
 
