@@ -66,7 +66,7 @@ class Configurations:
         if arg_list.debug:
             self.__runtime_config_values["is-debug"] = True
 
-        if arg_list.is_lastpymile:
+        if arg_list.lastpymile:
             self.__runtime_config_values["is-lastpymile"] = True
 
         if arg_list.cache:
