@@ -31,6 +31,7 @@ file_instrument_log = ""
 data_path = "/data"
 debug = False
 is_arg_valid = False
+is_lastpymile = False
 use_purge = False
 use_parallel = False
 gumtree_cmd = "java -jar /opt/gumtree-modified/dist/build/libs/gumtree.jar" 

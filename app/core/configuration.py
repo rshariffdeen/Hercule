@@ -39,6 +39,7 @@ class Configurations:
         "use-cache": False,
         "use-gpu": False,
         "is-debug": False,
+        "is-lastpymile": False,
         "use-purge": False,
         "parallel": False,
         "cpu-count": 1,
@@ -62,6 +63,9 @@ class Configurations:
 
         if arg_list.debug:
             self.__runtime_config_values["is-debug"] = True
+
+        if arg_list.is_lastpymile:
+            self.__runtime_config_values["is-lastpymile"] = True
 
         if arg_list.cache:
             self.__runtime_config_values["use-cache"] = True
@@ -154,7 +158,7 @@ class Configurations:
                 self.__runtime_config_values["cpu-count"],
             ),
         )
-
+        values.is_lastpymile = self.__runtime_config_values["is-lastpymile"]
         values.debug = self.__runtime_config_values["is-debug"]
         values.use_purge = self.__runtime_config_values["use-purge"]
         sys.setrecursionlimit(values.default_stack_size)

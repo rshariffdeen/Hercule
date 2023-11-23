@@ -92,25 +92,62 @@ def scan_package(package_path):
     values.result["has-malicious-code"] = False
     values.result["has-malicious-behavior"] = False
     values.result["bandit-analysis"] = dict()
-    values.result['bandit-analysis']['whole-pkg-alerts'] = 0
-    values.result['bandit-analysis']['whole-src-alerts'] = 0
-    values.result['bandit-analysis']['filtered-alerts'] = 0
+    values.result['bandit-analysis']['setup-alerts'] = 0
+    values.result['bandit-analysis']['filtered-setup-alerts'] = 0
+    values.result['bandit-analysis']['pkg-alerts'] = 0
+    values.result['bandit-analysis']['filtered-pkg-alerts'] = 0
 
     values.result["general"] = dict()
     values.result['general']['suspicious-new-files'] = 0
     values.result['general']['suspicious-modified-files'] = 0
     values.result['general']['total-suspicious-modifications'] = 0
-
+    file_analysis_results = ([], [], [])
     if github_page or source_url:
         is_success = extract.extract_source(source_url, github_page, dir_src, package_version)
         if is_success:
-            analysis.analyze_files(dir_pkg, dir_src)
+            file_analysis_results = analysis.analyze_files(dir_pkg, dir_src)
+    suspicious_new_files, suspicious_mod_files, suspicious_mod_locs = file_analysis_results
+    suspicious_files = suspicious_mod_files + suspicious_new_files
+    values.result["general"]["suspicious-modified-files"] = len(suspicious_mod_files)
+    values.result["general"]["suspicious-new-files"] = len(suspicious_new_files)
+    values.result["general"]["total-suspicious-files"] = len(suspicious_files)
+    values.result["general"]["total-suspicious-modifications"] = len(suspicious_mod_locs)
+    values.result["suspicious-files"] = ",".join(suspicious_files)
+    values.result["suspicious-modifications"] = ",".join(suspicious_mod_locs)
+    if not suspicious_files:
+        values.result["has-integrity"] = True
+
+    bandit_pkg_alerts = analysis.bandit_analysis(dir_pkg)
+    setup_py_pkg_alerts = [x for x in bandit_pkg_alerts if "setup.py" in x["filename"]]
+    values.result["bandit-analysis"]["pkg-alerts"] = len(bandit_pkg_alerts)
+    values.result["bandit-analysis"]["setup-alerts"] = len(setup_py_pkg_alerts)
+    filtered_pkg_results = analysis.filter_bandit_results(suspicious_new_files,
+                                                          suspicious_mod_locs,
+                                                          bandit_pkg_alerts)
+    filtered_setup_results = [x for x in filtered_pkg_results if "setup.py" in x["filename"]]
+    values.result["bandit-analysis"]["filtered-pkg-alerts"] = len(filtered_pkg_results)
+    values.result["bandit-analysis"]["filtered-setup-alerts"] = len(filtered_setup_results)
+    values.result["bandit-analysis"]["hercule-report"] = filtered_pkg_results
     
-    # The integrity analysis updates to python 3
-    # analysis.generate_closure(dir_pkg)
-    
-    analysis.behaviour_analysis(dir_pkg)
+    codeql_alerts = analysis.behavior_analysis(dir_pkg)
+    codeql_alerts, setup_py_alerts, malicious_files = codeql_alerts
+    filtered_codeql_alerts = analysis.filter_codeql_results(suspicious_new_files,
+                                                            suspicious_mod_locs,
+                                                            codeql_alerts,
+                                                            dir_pkg)
+    f_codeql_alerts, f_setup_py_alerts, f_malicious_files = filtered_codeql_alerts
+    values.result["codeql-analysis"] = dict()
+    values.result["codeql-analysis"]["codeql-setup-alerts"] = len(setup_py_alerts)
+    values.result["codeql-analysis"]["codeql-alerts"] = len(codeql_alerts)
+    values.result["codeql-analysis"]["codeql-file-count"] = len(malicious_files)
+    values.result["codeql-analysis"]["hercule-setup-alerts"] = len(f_setup_py_alerts)
+    values.result["codeql-analysis"]["hercule-alerts"] = len(f_codeql_alerts)
+    values.result["codeql-analysis"]["hercule-file-count"] = len(f_malicious_files)
+    values.result["codeql-analysis"]["hercule-files"] = list(f_malicious_files)
+    values.result["codeql-analysis"]["hercule-report"] = filtered_codeql_alerts
+
     analysis.final_result()
+
     time_duration = format((time.time() - start_time) / 60, ".3f")
     values.result["scan-duration"] = time_duration
     result_file_name = join(values.dir_results, f"{distribution_name}.json")
