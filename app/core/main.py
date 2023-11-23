@@ -96,7 +96,7 @@ def scan_package(package_path, malicious_packages=None):
     values.result['general']['suspicious-new-files'] = 0
     values.result['general']['suspicious-modified-files'] = 0
     values.result['general']['total-suspicious-modifications'] = 0
-    file_analysis_results = ([], [], [])
+    file_analysis_results = (utilities.list_dir(dir_pkg), [], [])
     is_source_avail = False
     if github_page or source_url:
         is_source_avail = extract.extract_source(source_url, github_page, dir_src, package_version)
