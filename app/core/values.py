@@ -1,3 +1,4 @@
+from contextvars import ContextVar
 import os
 from os.path import dirname
 from os.path import join
@@ -16,6 +17,7 @@ dir_config = join(dir_main, "config")
 dir_scripts = join(dir_main, "scripts")
 dir_output = ""
 dir_backup = join(dir_main, "backup")
+dir_queries = join(dir_main,'codeql','flows')
 
 file_main_log = ""
 file_error_log = dir_log_base + "/log-error"
@@ -29,6 +31,7 @@ file_instrument_log = ""
 
 
 data_path = "/data"
+malicious_samples = os.path.join(data_path,'pypi-samples')
 debug = False
 is_arg_valid = False
 is_lastpymile = False
@@ -37,9 +40,18 @@ use_parallel = False
 gumtree_cmd = "java -jar /opt/gumtree-modified/dist/build/libs/gumtree.jar" 
 codeql_database_name = tool_name + "_codeql_database"
 git_repo = None
+cpus = 20
 codeql_output_format = "sarif-latest"
 codeql_output_name = tool_name + "_codeql_database_output." + codeql_output_format
-cpus = 0
+
+experiment_status: ContextVar[str] = ContextVar(
+    "experiment_status", default="N/A"
+)
+job_identifier: ContextVar[str] = ContextVar("job_id", default="root")
+ui_active = False
+ui_mode = False
+track_dependencies = True
+
 default_stack_size = 600000
 default_disk_space = 5  # 5GB
 

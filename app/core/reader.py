@@ -3,7 +3,7 @@ import json
 import os
 import pickle
 import toml
-
+from setuptools.config import read_configuration
 def read_json(file_path: str):
     json_data = None
     if os.path.isfile(file_path):
@@ -32,6 +32,8 @@ def read_pickle(file_path: str):
             pickle_object = pickle.load(pickle_file)
     return pickle_object
 
+def read_cfgfile(file_path: str):
+    return read_configuration(file_path)
 
 def read_csv(file_path: str):
     csv_data = None

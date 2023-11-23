@@ -9,7 +9,7 @@ import rich
 from app.core import definitions
 from app.core import logger
 from app.core import values
-
+from app.ui import ui
 
 stty_info = os.popen("stty size", "r")
 rows, columns = tuple(map(int, stty_info.read().split()))
@@ -57,20 +57,31 @@ TEXTUALIZE_COLOR_MAP = {
 
 
 def write(print_message, print_color, new_line=True, prefix=None, indent_level=0):
-    message = "[bold {}]{}".format(
-        RICH_COLOR_MAP[print_color], str(print_message).replace("[", "\\[")
-    )
-    if prefix:
-        prefix = "[{}]{}".format(RICH_COLOR_MAP[print_color], prefix)
-        len_prefix = ((indent_level + 1) * 4) + len(prefix)
-        wrapper = textwrap.TextWrapper(
-            initial_indent=prefix,
-            subsequent_indent=" " * len_prefix,
-            width=int(columns),
+    if not values.ui_active:
+        message = "[bold {}]{}".format(
+            RICH_COLOR_MAP[print_color], str(print_message).replace("[", "\\[")
         )
-        message = wrapper.fill(message)
-    rich.print(message, end=("\n" if new_line else "\r"))
+        if prefix:
+            prefix = "[{}]{}".format(RICH_COLOR_MAP[print_color], prefix)
+            len_prefix = ((indent_level + 1) * 4) + len(prefix)
+            wrapper = textwrap.TextWrapper(
+                initial_indent=prefix,
+                subsequent_indent=" " * len_prefix,
+                width=int(columns),
+            )
+            message = wrapper.fill(message)
+        rich.print(message, end=("\n" if new_line else "\r"))
+    else:
+        if prefix:
+            print_message = prefix + str(print_message)
 
+        ui.post_write(
+            "[bold {}]{} {}".format(
+                TEXTUALIZE_COLOR_MAP[print_color],
+                values.job_identifier.get("Root"),
+                str(print_message).replace("[", "\\[").replace("\t", " "),
+            )
+        )
 
 
 

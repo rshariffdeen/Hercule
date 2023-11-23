@@ -38,10 +38,12 @@ class Configurations:
         "stack-size": 15000,
         "use-cache": False,
         "use-gpu": False,
+        "use-ui": False,
         "is-debug": False,
         "is-lastpymile": False,
         "use-purge": False,
         "parallel": False,
+        "no-dependencies": False,
         "cpu-count": 1,
         "directories": {"data": "/data"}
     }
@@ -80,6 +82,12 @@ class Configurations:
 
         if arg_list.use_gpu:
             self.__runtime_config_values["use-gpu"] = arg_list.use_gpu
+        
+        if arg_list.ui:
+            self.__runtime_config_values["use-ui"] = arg_list.ui
+            
+        if arg_list.no_dependencies:
+            self.__runtime_config_values["no-dependencies"] = arg_list.no_dependencies
 
     def read_slack_config_file(self):
         slack_config_info = {}
@@ -161,4 +169,6 @@ class Configurations:
         values.is_lastpymile = self.__runtime_config_values["is-lastpymile"]
         values.debug = self.__runtime_config_values["is-debug"]
         values.use_purge = self.__runtime_config_values["use-purge"]
+        values.ui_mode = self.__runtime_config_values["use-ui"]
+        values.track_dependencies = not self.__runtime_config_values["no-dependencies"] 
         sys.setrecursionlimit(values.default_stack_size)

@@ -252,8 +252,45 @@ def analyze_loc(dir_pkg):
     values.result["cloc"] = cloc_info
 
 
-def generate_closure(dir_pkg):
-    depclosure.generate_closure(dir_pkg)
+def analyze_closure(dir_pkg,malicious_packages = None):    
+    emitter.sub_sub_title("generating dependency closure")
+    #emitter.normal("\t\tcreating codeql database")
+    G = depclosure.generate_closure(dir_pkg)
+    
+    emitter.sub_sub_title("checking for known malicious packages in the dependency graph")
+    
+    values.result["malicious-packages"] = []
+    for pkg, pkg_data in G.nodes.items() :
+        if pkg in malicious_packages:
+            versions = malicious_packages[pkg]
+            for version in versions:
+                if version in pkg_data['constraint'].specifier and pkg_data['dependency_type'] != 'root':
+                    emitter.information(f"\t\tFound {pkg_data['dependency_type']} { 'directly referenced' if pkg_data['direct'] else 'transitively referenced' } package {pkg}-{version}, which is known to be malicious")
+                    values.result["malicious-packages"].append( (pkg,version))
+    
+    
+    
+def get_malicious_index():
+    emitter.sub_sub_title("generating known malicious package index")
+    malicious_packages = {}
+    if os.path.isdir(values.malicious_samples):
+        for dirpath, _, filenames  in os.walk(values.malicious_samples):
+            for file in filenames:
+                if os.path.isfile(os.path.join(dirpath,file)):
+                    args = file.split('-')
+                    if len(args) == 1:
+                        name = file.split('.')[0]
+                        version = ""
+                    else:
+                        name, version, *rest = args
+                    package_extensions = [".tar.gz",".whl", ".tgz"]
+                    for extension in package_extensions:
+                        if version.endswith(extension):
+                            version = version[:-len(extension)]
+                    if name not in malicious_packages:
+                        malicious_packages[name] = []
+                    malicious_packages[name].append(version)
+    return malicious_packages
 
 
 def behavior_analysis(dir_pkg):
@@ -270,6 +307,7 @@ def behavior_analysis(dir_pkg):
         if "runs" in codeql_results:
             if codeql_results["runs"]:
                 codeql_alerts = codeql_results["runs"][0]["results"]
+
 
     setup_py_alerts = []
     malicious_files = set()

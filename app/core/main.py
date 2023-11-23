@@ -29,7 +29,7 @@ from app.tools import archives
 from app.core.args import parse_args
 from app.core.configuration import Configurations
 from app.notification import notification
-
+from app.ui import ui
 
 def create_output_directories():
     dir_list = [
@@ -69,7 +69,7 @@ def bootstrap(arg_list: Namespace):
     config.print_configuration()
 
 
-def scan_package(package_path):
+def scan_package(package_path,malicious_packages = None):
     emitter.sub_title(package_path)
     
     start_time = time.time()
@@ -129,6 +129,9 @@ def scan_package(package_path):
     values.result["bandit-analysis"]["filtered-setup-alerts"] = len(filtered_setup_results)
     values.result["bandit-analysis"]["hercule-report"] = filtered_pkg_results
 
+    if values.track_dependencies:
+        analysis.analyze_closure(dir_pkg,malicious_packages)
+
     if not values.is_lastpymile:
         codeql_alerts = analysis.behavior_analysis(dir_pkg)
         codeql_alerts, setup_py_alerts, malicious_files = codeql_alerts
@@ -169,18 +172,22 @@ def scan_package(package_path):
 
 
 def run(parsed_args):
+    malicious_packages = analysis.get_malicious_index()
     if parsed_args.file:
         package_path = parsed_args.file.name
-        scan_package(package_path)
+        scan_package(package_path,malicious_packages)
     elif parsed_args.dir:
         list_packages = utilities.list_dir(parsed_args.dir)
-        for _pkg in list_packages:
-            _pkg_name = _pkg.split("/")[-1]
-            result_file_name = join(values.dir_results, f"{_pkg_name}.json")
-            if os.path.isfile(result_file_name):
-                continue
-            if os.path.isfile(_pkg):
-                scan_package(_pkg)
+        if values.ui_mode:
+            ui.setup_ui(list_packages,malicious_packages)
+        else:
+            for _pkg in list_packages:
+                _pkg_name = _pkg.split("/")[-1]
+                result_file_name = join(values.dir_results, f"{_pkg_name}.json")
+                if os.path.isfile(result_file_name):
+                    continue
+                if os.path.isfile(_pkg):
+                    scan_package(_pkg,malicious_packages)
 
 
 def main():

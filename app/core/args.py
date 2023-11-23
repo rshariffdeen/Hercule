@@ -63,9 +63,23 @@ def parse_args():
 
     optional.add_argument(
         definitions.ARG_CPU_COUNT,
-        help="max amount of CPU cores which can be used by Cerberus",
+        help="max amount of CPU cores which can be used by Hercule",
         type=int,
         default=max(1, multiprocessing.cpu_count() - 2),
+    )
+    
+    optional.add_argument(
+        definitions.ARG_UI,
+        help="run the UI module",
+        action="store_true",
+        default=False,
+    )
+    
+    optional.add_argument(
+        definitions.ARG_NO_DEPS,
+        help="track the dependencies of the project",
+        action="store_true",
+        default=False
     )
 
     optional.add_argument(
