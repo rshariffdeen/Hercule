@@ -54,7 +54,7 @@ class FindCall(ast.NodeVisitor):
                         emitter.information(f"Unexpected type {type(keyword.value)} for {keyword.arg}")
 
 def download_dependency(dir_pkg,constraints,pkg_map,dependency):
-    status,out,err = execute_command(f"pip download --no-cache '{ constraints.get(dependency,dependency) }' "
+    status,out,err = execute_command(f"pip download '{ constraints.get(dependency,dependency) }' "
                                         ,show_output=True
                                         ,directory=dir_pkg)
     if status == 0:
