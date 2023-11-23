@@ -1,6 +1,5 @@
 import os.path
-from app.core import values, utilities, emitter
-from app.core.utilities import execute_command
+from app.core import values, utilities
 from app.core import reader
 import shutil
 
@@ -15,7 +14,7 @@ def generate_codeql_database(dir_pkg):
     remove_database(dir_pkg)
     codeql_cmd = f"codeql database create  --language=python {values.codeql_database_name}"
     # print(codeql_cmd, " in ",dir_pkg)
-    status,out,err = execute_command(codeql_cmd,directory=dir_pkg)
+    status,out,err =  utilities.execute_command(codeql_cmd,directory=dir_pkg)
 
 
 def remove_database(dir_pkg):

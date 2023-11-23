@@ -1,12 +1,8 @@
 import os
-from app.core.utilities import execute_command
+from app.core import utilities
 from app.core import reader
-import toml
 from os.path import join,exists
-import json
 import validators
-import sys
-import platform
 import ast
 import pkginfo
 from app.core import emitter
@@ -15,9 +11,10 @@ import matplotlib.pyplot as plt
 from packaging.requirements import Requirement
 from app.core import values
 
+
 def get_imported_packages(dir_pkg):
     emitter.information(f"\t\tFinding all dependencies in {dir_pkg}")
-    status_code, out, err =  execute_command("pipreqs --print --mode no-pin",directory=dir_pkg)
+    status_code, out, err =  utilities.execute_command("pipreqs --print --mode no-pin",directory=dir_pkg)
     if status_code == 0:
         return set(out.decode().splitlines())
     else:
@@ -54,7 +51,8 @@ class FindCall(ast.NodeVisitor):
                         emitter.information(f"Unexpected type {type(keyword.value)} for {keyword.arg}")
 
 def download_dependency(dir_pkg,constraints,pkg_map,dependency):
-    status,out,err = execute_command(f"pip download '{ constraints.get(dependency,dependency) }' "
+    failed_dep = None
+    status,out,err =  utilities.execute_command(f"pip download '{ constraints.get(dependency,dependency) }' "
                                         ,show_output=True
                                         ,directory=dir_pkg)
     if status == 0:
@@ -68,16 +66,18 @@ def download_dependency(dir_pkg,constraints,pkg_map,dependency):
         #print(pkg)
         
         if pkg.endswith('.tar.gz'):
-            execute_command(f"tar -xzf {pkg}",directory=dir_pkg)
+            utilities.execute_command(f"tar -xzf {pkg}",directory=dir_pkg)
         elif pkg.endswith('.whl') or pkg.endswith('.zip'):
-            execute_command(f"unzip -n {pkg}",directory=dir_pkg)
+            utilities.execute_command(f"unzip -n {pkg}",directory=dir_pkg)
         elif os.path.isfile(os.path.join(dir_pkg,pkg)):
             emitter.warning(f"Package {dependency} has filename {pkg}, which is not supported")
     else:
-        values.result['package-download-fail'].append(str(constraints.get(dependency,dependency)))
+        failed_dep = str(constraints.get(dependency, dependency))
+    return failed_dep
+
 
 def generate_closure(dir_pkg):
-    values.result['package-download-fail'] = []
+    failed_deps = []
     visited = set()
     constraints = {}
     pkg_folder = [ x for x in os.listdir(dir_pkg) if os.path.isdir(join(dir_pkg,x)) ] [0]
@@ -108,7 +108,9 @@ def generate_closure(dir_pkg):
     
     for explicit_dependency in explicit_dependencies:
         emitter.debug(f"\t\tExplicit dependency {explicit_dependency}")
-        download_dependency(dir_pkg,constraints,pkg_map,explicit_dependency)
+        failed_dep = download_dependency(dir_pkg,constraints,pkg_map,explicit_dependency)
+        if failed_dep:
+            failed_deps.append(failed_dep)
         G.add_node(explicit_dependency, label = explicit_dependency, constraint=constraints.get(explicit_dependency,Requirement(explicit_dependency)), direct=True, dependency_type="explicit")
         G.add_edge(name,explicit_dependency)
 
@@ -116,7 +118,9 @@ def generate_closure(dir_pkg):
         emitter.debug(f"\t\tImplicit dependency {implicit_dependency}")
         G.add_node(implicit_dependency, label = implicit_dependency, constraint=Requirement(implicit_dependency), direct=True, dependency_type="implicit")
         G.add_edge(name,implicit_dependency)
-        download_dependency(dir_pkg,constraints,pkg_map,implicit_dependency)
+        failed_dep = download_dependency(dir_pkg,constraints,pkg_map,implicit_dependency)
+        if failed_dep:
+            failed_deps.append(failed_dep)
     
     saturated = False
     #print(pkg_map)
@@ -194,7 +198,7 @@ def generate_closure(dir_pkg):
              
     nx.draw(G,edgecolors='black',with_labels=True,node_size=100,node_color=node_map)
     plt.savefig(os.path.join(dir_pkg,'dependency_graph.pdf'))
-    return G
+    return G, failed_deps
 
 
 # def generate_closure_simple(dir_pkg):

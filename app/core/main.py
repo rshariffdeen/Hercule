@@ -7,14 +7,9 @@ import pathlib
 import traceback
 from argparse import Namespace
 from multiprocessing import set_start_method
-from git import Repo
-
-from typing import Any
-from typing import Dict
-from typing import List
+from app.tools import depclosure
 from os.path import join
 import rich.traceback
-import yaml
 from rich import get_console
 
 from app.core import configuration
@@ -25,7 +20,6 @@ from app.core import logger
 from app.core import utilities
 from app.core import values
 from app.core import analysis
-from app.tools import archives
 from app.core.args import parse_args
 from app.core.configuration import Configurations
 from app.notification import notification
@@ -69,7 +63,7 @@ def bootstrap(arg_list: Namespace):
     config.print_configuration()
 
 
-def scan_package(package_path,malicious_packages = None):
+def scan_package(package_path, malicious_packages=None):
     emitter.sub_title(package_path)
     
     start_time = time.time()
@@ -91,6 +85,7 @@ def scan_package(package_path,malicious_packages = None):
     values.result["has-integrity"] = False
     values.result["has-malicious-code"] = False
     values.result["has-malicious-behavior"] = False
+    values.result["is-compromised"] = False
     values.result["bandit-analysis"] = dict()
     values.result['bandit-analysis']['setup-alerts'] = 0
     values.result['bandit-analysis']['filtered-setup-alerts'] = 0
@@ -132,9 +127,13 @@ def scan_package(package_path,malicious_packages = None):
     values.result["bandit-analysis"]["filtered-setup-alerts"] = len(filtered_setup_results)
     values.result["bandit-analysis"]["hercule-report"] = filtered_pkg_results
 
+    values.result["dep-analysis"] = dict()
+    values.result["dep-analysis"]["failed-list"] = []
+    values.result["dep-analysis"]["malicious-list"] = []
+
     if not values.is_lastpymile:
-        if values.track_dependencies:
-            analysis.analyze_closure(dir_pkg, malicious_packages)
+        dep_graph, failed_deps = depclosure.generate_closure(dir_pkg)
+        values.result["dep-analysis"]["failed-list"] = failed_deps
         codeql_alerts = analysis.behavior_analysis(dir_pkg)
         codeql_alerts, setup_py_alerts, malicious_files = codeql_alerts
         filtered_codeql_alerts = analysis.filter_codeql_results(suspicious_new_files,
@@ -142,6 +141,14 @@ def scan_package(package_path,malicious_packages = None):
                                                                 codeql_alerts,
                                                                 dir_pkg)
         f_codeql_alerts, f_setup_py_alerts, f_malicious_files = filtered_codeql_alerts
+        if f_codeql_alerts:
+            values.result["has-malicious-behavior"] = True
+        emitter.normal("\t\tmalicious files")
+        if not f_malicious_files:
+            emitter.error(f"\t\t\t-none-")
+        for f in f_malicious_files:
+            _f = f.replace(dir_pkg, "")
+            emitter.error(f"\t\t\t{_f}")
         values.result["codeql-analysis"] = dict()
         values.result["codeql-analysis"]["codeql-setup-alerts"] = len(setup_py_alerts)
         values.result["codeql-analysis"]["codeql-alerts"] = len(codeql_alerts)
@@ -152,8 +159,13 @@ def scan_package(package_path,malicious_packages = None):
         values.result["codeql-analysis"]["hercule-files"] = list(f_malicious_files)
         values.result["codeql-analysis"]["hercule-report"] = filtered_codeql_alerts
 
-    analysis.final_result()
+        if not values.is_lastpymile and values.track_dependencies:
+            malicious_deps = analysis.analyze_closure(dep_graph, malicious_packages)
+            values.result["dep-analysis"]["malicious-list"] = malicious_deps
+            if malicious_deps:
+                values.result["is-compromised"] = True
 
+    analysis.final_result()
     time_duration = format((time.time() - start_time) / 60, ".3f")
     values.result["scan-duration"] = time_duration
     result_file_name = join(values.dir_results, f"{distribution_name}.json")

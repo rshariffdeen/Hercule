@@ -8,10 +8,9 @@ from app.core import transform
 from app.core import oracle
 from app.tools import bandit
 from app.tools import codeql
-from app.tools import depclosure
 from app.core import reader
 from app.tools import lastpymile
-from git import Repo
+
 
 
 def analyze_file_types(dir_pkg, dir_src):
@@ -254,21 +253,19 @@ def analyze_loc(dir_pkg):
     values.result["cloc"] = cloc_info
 
 
-def analyze_closure(dir_pkg,malicious_packages = None):    
-    emitter.sub_sub_title("generating dependency closure")
+def analyze_closure(dep_graph, malicious_packages=None):
+    emitter.sub_sub_title("transitive dependency analysis")
     #emitter.normal("\t\tcreating codeql database")
-    G = depclosure.generate_closure(dir_pkg)
-    
-    emitter.sub_sub_title("checking for known malicious packages in the dependency graph")
-    
-    values.result["malicious-packages"] = []
-    for pkg, pkg_data in G.nodes.items() :
+    emitter.normal("\t\tchecking for known malicious packages in the dependency graph")
+    malicious_deps = []
+    for pkg, pkg_data in dep_graph.nodes.items() :
         if pkg in malicious_packages:
             versions = malicious_packages[pkg]
             for version in versions:
                 if version in pkg_data['constraint'].specifier and pkg_data['dependency_type'] != 'root':
-                    emitter.information(f"\t\tFound {pkg_data['dependency_type']} { 'directly referenced' if pkg_data['direct'] else 'transitively referenced' } package {pkg}-{version}, which is known to be malicious")
-                    values.result["malicious-packages"].append( (pkg,version))
+                    emitter.information(f"\t\t\tFound {pkg_data['dependency_type']} { 'directly referenced' if pkg_data['direct'] else 'transitively referenced' } package {pkg}-{version}, which is known to be malicious")
+                    malicious_deps.append( (pkg,version))
+    return malicious_deps
     
     
     
@@ -321,15 +318,6 @@ def behavior_analysis(dir_pkg):
                 setup_py_alerts.append(_loc)
             malicious_files.add(_loc)
 
-    if codeql_alerts:
-        values.result["has-malicious-behavior"] = True
-
-    emitter.normal("\t\tmalicious files")
-    if not malicious_files:
-        emitter.error(f"\t\t\t-none-")
-    for f in malicious_files:
-        _f = f.replace(dir_pkg, "")
-        emitter.error(f"\t\t\t{_f}")
     return codeql_alerts, setup_py_alerts, malicious_files
 
 
@@ -433,9 +421,9 @@ def final_result():
     if not values.is_lastpymile:
         emitter.normal("\t\tMalicious Code Segments (Code4QL)")
         if values.result['has-malicious-behavior']:
-            emitter.error(f"\t\t\thas-malicious-code: {values.result['has-malicious-behavior']}")
+            emitter.error(f"\t\t\thas-malicious-behavior: {values.result['has-malicious-behavior']}")
         else:
-            emitter.success(f"\t\t\thas-malicious-code: {values.result['has-malicious-behavior']}")
+            emitter.success(f"\t\t\thas-malicious-behavior: {values.result['has-malicious-behavior']}")
 
         emitter.highlight(f"\t\t\tmalicious behavior alerts: {values.result['codeql-analysis']['codeql-alerts']}")
         emitter.highlight(f"\t\t\tmalicious behavior files: { values.result['codeql-analysis']['codeql-file-count']}")
@@ -444,6 +432,12 @@ def final_result():
         emitter.highlight(f"\t\t\tfiltered behavior files: {values.result['codeql-analysis']['hercule-file-count']}")
         emitter.highlight(f"\t\t\tfiltered alerts in setup: {values.result['codeql-analysis']['hercule-setup-alerts']}")
 
+        emitter.normal("\t\tTransitive Dependencies Analysis")
+        if values.result['is-compromised']:
+            emitter.error(f"\t\t\tis-compromised: {values.result['is-compromised']}")
+        else:
+            emitter.success(f"\t\t\tis-compromised: {values.result['is-compromised']}")
+        emitter.highlight(f"\t\t\tmalicious dependencies: {values.result['dep-analysis']['malicious-list']}")
 
 
 
