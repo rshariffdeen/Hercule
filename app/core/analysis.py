@@ -186,12 +186,14 @@ def detect_suspicious_modifications(mod_files, dir_pkg):
                         suspicious_file_list.append(f_pkg)
                     import_line_list = extract.extract_import_lines(action_cluster)
                     for line in import_line_list:
-                        alert = f"{f_pkg}:{line} - {action_type}:import packages"
-                        suspicious_loc_list.append(alert)
+                        # alert = f"{f_pkg}:{line} - {action_type}:import packages"
+                        loc = f"{f_pkg}:{line}"
+                        suspicious_loc_list.append(loc)
                     func_call_list = extract.extract_function_call_lines(action_cluster)
                     for (line, _) in func_call_list:
-                        alert = f"{f_pkg}:{line} - {action_type}: function call"
-                        suspicious_loc_list.append(alert)
+                        # alert = f"{f_pkg}:{line} - {action_type}: function call"
+                        loc = f"{f_pkg}:{line}"
+                        suspicious_loc_list.append(loc)
 
     emitter.normal("\t\tsuspicious modified files")
     for f in suspicious_file_list:
@@ -271,7 +273,7 @@ def analyze_closure(dir_pkg,malicious_packages = None):
     
     
 def get_malicious_index():
-    emitter.sub_sub_title("generating known malicious package index")
+    emitter.normal("\tgenerating known malicious package index")
     malicious_packages = {}
     if os.path.isdir(values.malicious_samples):
         for dirpath, _, filenames  in os.walk(values.malicious_samples):
@@ -360,8 +362,9 @@ def hash_based_analysis(dir_pkg):
     for release_hash in pkg_hashes:
         rel_fd = pkg_hashes[release_hash]
         file_name = rel_fd.getFileName()
+        file_path = f"{dir_pkg}/{file_name}"
         if release_hash not in src_hashes:
-            phantom_files.append(file_name)
+            phantom_files.append(file_path)
     return phantom_files, [], []
 
 
@@ -374,21 +377,24 @@ def analyze_files(dir_pkg, dir_src):
 
 
 def filter_codeql_results(new_files, mod_locs, codeql_alerts, dir_pkg):
-    hercule_alerts = []
+    pkg_alerts = []
+    setup_alerts = []
+    malicious_files = []
     for alert in codeql_alerts:
         locations = alert["locations"]
         for loc in locations:
             _file = loc["physicalLocation"]["artifactLocation"]["uri"]
             _line = loc["physicalLocation"]["region"]["startLine"]
             src_file = f"{dir_pkg}/{_file}"
-            src_loc = f"{src_file}/{_line}"
-            if src_file in new_files:
-                hercule_alerts.append(alert)
-                continue
-            if src_loc in mod_locs:
-                hercule_alerts.append(alert)
-                continue
-    return hercule_alerts
+            src_loc = f"{src_file}:{_line}"
+
+            if src_file in new_files or src_loc in mod_locs:
+                if "setup.py" in src_file:
+                    setup_alerts.append(alert)
+                if src_file not in malicious_files:
+                    malicious_files.append(src_file)
+                pkg_alerts.append(alert)
+    return pkg_alerts, setup_alerts, malicious_files
 
 
 def filter_bandit_results(new_files, mod_locs, bandit_results):

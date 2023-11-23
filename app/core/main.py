@@ -102,9 +102,10 @@ def scan_package(package_path,malicious_packages = None):
     values.result['general']['suspicious-modified-files'] = 0
     values.result['general']['total-suspicious-modifications'] = 0
     file_analysis_results = ([], [], [])
+    is_source_avail = False
     if github_page or source_url:
-        is_success = extract.extract_source(source_url, github_page, dir_src, package_version)
-        if is_success:
+        is_source_avail = extract.extract_source(source_url, github_page, dir_src, package_version)
+        if is_source_avail:
             file_analysis_results = analysis.analyze_files(dir_pkg, dir_src)
     suspicious_new_files, suspicious_mod_files, suspicious_mod_locs = file_analysis_results
     suspicious_files = suspicious_mod_files + suspicious_new_files
@@ -114,7 +115,7 @@ def scan_package(package_path,malicious_packages = None):
     values.result["general"]["total-suspicious-modifications"] = len(suspicious_mod_locs)
     values.result["suspicious-files"] = ",".join(suspicious_files)
     values.result["suspicious-modifications"] = ",".join(suspicious_mod_locs)
-    if not suspicious_files:
+    if not suspicious_files and is_source_avail:
         values.result["has-integrity"] = True
 
     bandit_pkg_alerts = analysis.bandit_analysis(dir_pkg)
@@ -125,14 +126,15 @@ def scan_package(package_path,malicious_packages = None):
                                                           suspicious_mod_locs,
                                                           bandit_pkg_alerts)
     filtered_setup_results = [x for x in filtered_pkg_results if "setup.py" in x["filename"]]
+    if filtered_pkg_results:
+        values.result['has-malicious-code'] = True
     values.result["bandit-analysis"]["filtered-pkg-alerts"] = len(filtered_pkg_results)
     values.result["bandit-analysis"]["filtered-setup-alerts"] = len(filtered_setup_results)
     values.result["bandit-analysis"]["hercule-report"] = filtered_pkg_results
 
-    if values.track_dependencies:
-        analysis.analyze_closure(dir_pkg,malicious_packages)
-
     if not values.is_lastpymile:
+        if values.track_dependencies:
+            analysis.analyze_closure(dir_pkg, malicious_packages)
         codeql_alerts = analysis.behavior_analysis(dir_pkg)
         codeql_alerts, setup_py_alerts, malicious_files = codeql_alerts
         filtered_codeql_alerts = analysis.filter_codeql_results(suspicious_new_files,

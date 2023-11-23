@@ -4,7 +4,7 @@ from git import Repo
 import git
 import hashlib
 import os
-
+from app.core import emitter
 
 class GitRepository:
     """
@@ -216,6 +216,7 @@ def __collectFilesHashes(folder: str) -> map[str:ReleaseFileDescriptor]:
 
 
 def _scanPackage(dir_pkg: str) -> map[str:ReleaseFileDescriptor]:
+    emitter.normal("\t\tscanning files in package")
     return __collectFilesHashes(dir_pkg)
 
 
@@ -245,9 +246,10 @@ def _scanSources(repository: GitRepository) -> map[str:GitFileDescriptor]:
     commits = repository.getCommitsList()
     commits_len = len(commits)
     processed_files = 0
+    emitter.normal("\t\tscanning files in source")
     i = 1
     for commit_hash in commits:
-        print("Processing commit {}/{} ({})".format(i, commits_len, commit_hash))
+        emitter.normal("\t\t\tprocessing commit {}/{} ({})".format(i, commits_len, commit_hash))
         i += 1
         commit = repository.checkoutCommit(commit_hash)
         files_at_commit = repository.getFilesAtCommit(commit)
@@ -260,7 +262,7 @@ def _scanSources(repository: GitRepository) -> map[str:GitFileDescriptor]:
                 source_files_hashes[file_hash] = git_fd
                 processed_files += 1
 
-    print("processed_commits", commits_len)
-    print("processed_files", processed_files)
+    emitter.highlight(f"\t\t\tprocessed_commits: {commits_len}")
+    emitter.highlight(f"\t\t\tprocessed_files: {processed_files}")
     return source_files_hashes
 
