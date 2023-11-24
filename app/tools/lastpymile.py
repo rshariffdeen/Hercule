@@ -88,7 +88,7 @@ class GitRepository:
               a git.objects.commit.Commit Object
         """
         if self.repo.head.object.hexsha != commit_hash:
-            self.repo.git.checkout(commit_hash)
+            self.repo.git.checkout(commit_hash, force=True)
         return self.repo.head.object
 
     def getCommitEntryContent(self, commit_hash: str, file_path: str) -> bytes:
