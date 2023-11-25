@@ -332,7 +332,7 @@ def process_dependency_queue(dir_pkg, pkg_folder, explicit_dependencies, constra
             continue
                 
         if contents[:2] == '-c':
-            file = contents[2:]
+            file = contents[2:].strip()
             if file not in traversed_files:
                 with open(join(dir_pkg,pkg_folder,file)) as f:
                     dependency_queue = dependency_queue + f.readlines()
