@@ -77,8 +77,10 @@ def detect_modified_source_files(interested_files, dir_src, dir_pkg):
         f_rel_src = f"{prefix_src}{f_rel}"
         if ".py" not in f_rel:
             continue
+        full_prefix_src = f"{dir_src}{prefix_src}"
+        full_prefix_pkg = f"{dir_pkg}{prefix_pkg}"
         if f_rel_src not in src_files:
-            f_rel_src = find_matching_file(f_rel, src_files)
+            f_rel_src = find_matching_file(f_rel, src_files, full_prefix_src, full_prefix_pkg)
             if f_rel_src is None:
                 continue
 
@@ -93,22 +95,32 @@ def detect_modified_source_files(interested_files, dir_src, dir_pkg):
     return modified_file_list
 
 
-def find_matching_file(src_file, search_list):
-    file_name = str(src_file).split("/")[-1]
-    exact_name_list = [x for x in search_list if file_name in x]
+def find_matching_file(src_file, search_list, prefix_src, prefix_pkg):
+    exact_name_list = []
+    file_name = src_file
+    while not exact_name_list:
+        file_name = "/".join(str(file_name).split("/")[1:])
+        exact_name_list = [x for x in search_list if file_name in x]
     if not exact_name_list:
         return None
     if len(exact_name_list) == 1:
         return exact_name_list[0]
     similar_list = []
     for _f in exact_name_list:
+        abs_pkg_file = f"{prefix_pkg}/{src_file}"
+        abs_src_file = f"{prefix_src}/{_f}"
+        ast_diff_file = transform.generate_ast_diff(abs_src_file, abs_pkg_file)
+        ast_distance = 1000
+        if os.path.isfile(ast_diff_file):
+            with open(ast_diff_file, "r") as diff_file:
+                ast_distance = len(diff_file.readlines())
         _f_dist = utilities.levenshtein_distance(_f, src_file)
-        similar_list.append((_f, _f_dist))
-    sorted_list = sorted(similar_list, key=lambda x:x[1])
+        similar_list.append((_f, ast_distance, _f_dist))
+    sorted_list = sorted(similar_list, key=lambda x:(x[1], x[2]))
     return sorted_list[0][0]
 
 
-def detect_new_files(interested_files, dir_pkg):
+def detect_new_files(interested_files, dir_pkg, dir_src):
     emitter.sub_sub_title("detecting new files")
     new_list = []
     src_files = []
@@ -125,12 +137,17 @@ def detect_new_files(interested_files, dir_pkg):
         if f_path not in rel_path_list_src:
             if any(_type in f_path for _type in [".bak", ".ast"]):
                 continue
+            filename = f_path.split("/")[-1]
+            if not any(filename in _f for _f in rel_path_list_src):
+                continue
             if ".pyc" in f_path:
                 f_path = f_path.replace(".pyc", ".pyc.py")
                 abs_path = f"{dir_pkg}{prefix_pkg}{f_path}"
                 if not os.path.isfile(abs_path):
                     continue
-            matching_file = find_matching_file(f_path, rel_path_list_src)
+            full_prefix_src = f"{dir_src}{prefix_src}"
+            full_prefix_pkg = f"{dir_pkg}{prefix_pkg}"
+            matching_file = find_matching_file(f_path, rel_path_list_src, full_prefix_src, full_prefix_pkg)
             if matching_file:
                 continue
             extra_file_count += 1
@@ -334,7 +351,7 @@ def ast_based_analysis(dir_pkg, dir_src):
     analyze_loc(dir_pkg)
     src_pyc_list, pkg_pyc_list = decompile.decompile_python_files(dir_pkg, dir_src)
     interested_files["decompiled pyc"] = {"src": src_pyc_list, "pkg": pkg_pyc_list}
-    new_list = detect_new_files(interested_files, dir_pkg)
+    new_list = detect_new_files(interested_files, dir_pkg, dir_src)
     mod_list = detect_modified_source_files(interested_files, dir_src, dir_pkg)
     values.result["general"]["total-modified-files"] = len(mod_list)
     values.result["general"]["total-new-files"] = len(new_list)
