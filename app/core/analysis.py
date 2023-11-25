@@ -293,19 +293,18 @@ def get_malicious_index():
         for dirpath, _, filenames  in os.walk(values.malicious_samples):
             for file in filenames:
                 if os.path.isfile(os.path.join(dirpath,file)):
-                    args = file.split('-')
-                    if len(args) == 1:
-                        name = file.split('.')[0]
-                        version = ""
-                    else:
-                        name, version, *rest = args
-                    package_extensions = [".tar.gz",".whl", ".tgz"]
+                    package_extensions = [".tar.gz", ".whl", ".tgz", ".zip"]
+                    file_extension = ""
                     for extension in package_extensions:
-                        if version.endswith(extension):
-                            version = version[:-len(extension)]
-                    if name not in malicious_packages:
-                        malicious_packages[name] = []
-                    malicious_packages[name].append(version)
+                        if file.endswith(extension):
+                            file_extension = extension
+                    filename = file.replace(file_extension, "")
+                    version = filename.split("-")[-1]
+                    pkg_name = filename.replace("-" + version, "")
+
+                    if pkg_name not in malicious_packages:
+                        malicious_packages[pkg_name] = []
+                    malicious_packages[pkg_name].append(version)
     return malicious_packages
 
 
