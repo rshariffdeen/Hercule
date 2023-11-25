@@ -33,7 +33,7 @@ def analyze_file_types(dir_pkg, dir_src):
         count = len(src_file_types[kind])
         emitter.highlight(f"\t\t\t{kind}: {count}")
 
-    interested_types_short = ["python", "shell", "dos", "ascii"]
+    interested_types_short = ["python", "shell", "dos", "ascii", "elf", "pe32"]
     interested_types_long = []
     all_file_types = list(set((list(src_file_types.keys())) + list(pkg_file_types.keys())))
     for f_type in all_file_types:
@@ -73,7 +73,7 @@ def detect_modified_source_files(interested_files, dir_src, dir_pkg):
     prefix_pkg = extract.extract_path_prefix(pkg_files)
     prefix_src = extract.extract_path_prefix(src_files)
     for f_rel_pkg in pkg_files:
-        f_rel = f_rel_pkg.replace(prefix_pkg, "")
+        f_rel = f_rel_pkg.replace(prefix_pkg, "", 1)
         f_rel_src = f"{prefix_src}{f_rel}"
         if ".py" not in f_rel:
             continue
