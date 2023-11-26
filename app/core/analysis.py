@@ -299,8 +299,11 @@ def get_malicious_index():
                         if file.endswith(extension):
                             file_extension = extension
                     filename = file.replace(file_extension, "")
-                    version = filename.split("-")[-1]
-                    pkg_name = filename.replace("-" + version, "")
+                    version = "latest"
+                    pkg_name = filename
+                    if "-" in filename:
+                        version = filename.split("-")[-1]
+                        pkg_name = filename.replace("-" + version, "")
 
                     if pkg_name not in malicious_packages:
                         malicious_packages[pkg_name] = []
