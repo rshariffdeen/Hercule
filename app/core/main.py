@@ -20,6 +20,7 @@ from app.core import logger
 from app.core import utilities
 from app.core import values
 from app.core import analysis
+from app.core import decompile
 from app.core.args import parse_args
 from app.core.configuration import Configurations
 from app.notification import notification
@@ -102,6 +103,8 @@ def scan_package(package_path, malicious_packages=None):
         is_source_avail = extract.extract_source(source_url, github_page, dir_src, package_version)
         if is_source_avail:
             file_analysis_results = analysis.analyze_files(dir_pkg, dir_src)
+    if not is_source_avail:
+        decompile.decompile_python_files(dir_pkg, None)
     suspicious_new_files, suspicious_mod_files, suspicious_mod_locs = file_analysis_results
     suspicious_files = suspicious_mod_files + suspicious_new_files
     values.result["general"]["suspicious-modified-files"] = len(suspicious_mod_files)

@@ -299,7 +299,7 @@ def get_malicious_index():
                         if file.endswith(extension):
                             file_extension = extension
                     filename = file.replace(file_extension, "")
-                    version = "latest"
+                    version = "0.0"
                     pkg_name = filename
                     if "-" in filename:
                         version = filename.split("-")[-1]
