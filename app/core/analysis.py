@@ -139,6 +139,9 @@ def detect_new_files(interested_files, dir_pkg, dir_src):
                 continue
             filename = f_path.split("/")[-1]
             if not any(filename in _f for _f in rel_path_list_src):
+                extra_file_count += 1
+                new_list.append(f"{dir_pkg}{prefix_pkg}{f_path}")
+                emitter.error(f"\t\t\t {f_path}")
                 continue
             if ".pyc" in f_path:
                 f_path = f_path.replace(".pyc", ".pyc.py")
