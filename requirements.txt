@@ -16,3 +16,8 @@ parso
 bs4
 pipreqs
 networkx
+textual
+toml
+validators
+pkginfo
+matplotlib
