@@ -41,6 +41,7 @@ gumtree_cmd = "java -jar /opt/gumtree-modified/dist/build/libs/gumtree.jar"
 codeql_database_name = tool_name + "_codeql_database"
 git_repo = None
 cpus = 20
+codeql_query_timeout = 1200
 codeql_output_format = "sarif-latest"
 codeql_output_name = tool_name + "_codeql_database_output." + codeql_output_format
 

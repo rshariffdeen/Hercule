@@ -22,7 +22,12 @@ def remove_database(dir_pkg):
 
 
 def generate_codeql_query_report(dir_pkg):
-    codeql_cmd = f"codeql database analyze --rerun -j {values.cpus} --format={values.codeql_output_format} --output={values.codeql_output_name} {values.codeql_database_name} {values.dir_queries}"
+    codeql_cmd = (f"codeql database analyze --rerun -j {values.cpus} "
+                  f" --format={values.codeql_output_format} "
+                  f" --timeout={values.codeql_query_timeout} "
+                  f" --output={values.codeql_output_name} "
+                  f" {values.codeql_database_name} "
+                  f" {values.dir_queries} ")
     # print(codeql_cmd, " in ",dir_pkg)
     status,out,err = utilities.execute_command(codeql_cmd,directory=dir_pkg)
     if out:
