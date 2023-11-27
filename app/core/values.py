@@ -7,6 +7,7 @@ from os.path import join
 tool_name = "Hercule"
 dir_main = dirname(dirname(dirname(os.path.realpath(__file__))))
 dir_app = join(dir_main, "app", "")
+dir_data = join(dir_main, "data")
 dir_log_base = join(dir_main, "logs")
 dir_output_base = join(dir_main, "output")
 dir_results = join(dir_main, "results")
@@ -28,7 +29,8 @@ file_stats_log = dir_log_base + "/log-stats"
 file_output_log = ""
 file_setup_log = ""
 file_instrument_log = ""
-
+file_maloss_list = dir_data + "/maloss.json"
+file_new_list = dir_data + "/new.json"
 
 data_path = "/data"
 malicious_samples = os.path.join(data_path,'pypi-samples')

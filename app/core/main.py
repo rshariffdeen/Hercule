@@ -8,6 +8,7 @@ import traceback
 from argparse import Namespace
 from multiprocessing import set_start_method
 from app.tools import depclosure
+from app.core import reader
 from os.path import join
 import rich.traceback
 from rich import get_console
@@ -188,8 +189,18 @@ def scan_package(package_path, malicious_packages=None):
     writer.write_as_json(values.result, min_result_file_name)
 
 
+def get_malicious_list():
+    malicious_list = reader.read_json(values.file_maloss_list)
+    new_data = reader.read_json(values.file_new_list)
+    for pkg in new_data:
+        if pkg not in malicious_list:
+            malicious_list[pkg] = new_data[pkg]
+        else:
+            malicious_list[pkg] = list(set(malicious_list[pkg] + new_data[pkg]))
+    return malicious_list
+
 def run(parsed_args):
-    malicious_packages = analysis.get_malicious_index()
+    malicious_packages = get_malicious_list()
     if parsed_args.file:
         package_path = parsed_args.file.name
         scan_package(package_path,malicious_packages)
