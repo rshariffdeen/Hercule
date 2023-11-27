@@ -59,8 +59,9 @@ def download_dependency(dir_pkg,constraints,pkg_map,dependency):
     status,out,err =  utilities.execute_command(f"pip download -d {download_dir} '{ constraints.get(dependency,dependency) }' "
                                         ,show_output=True
                                         ,directory=dir_pkg)
-    if status == 0:
-        downloaded_file = os.listdir(download_dir)[0].replace(download_dir, "")
+    dir_list = os.listdir(download_dir)
+    if status == 0 and dir_list:
+        downloaded_file = dir_list[0].replace(download_dir, "")
         move_command = f"mv {download_dir}/{downloaded_file} {dir_pkg}"
         utilities.execute_command(move_command)
         # dep_name_variations = [dependency.lower().replace('-', '_'),
