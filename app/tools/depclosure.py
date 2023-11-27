@@ -56,13 +56,15 @@ def download_dependency(dir_pkg,constraints,pkg_map,dependency):
                                         ,show_output=True
                                         ,directory=dir_pkg)
     if status == 0:
-        pkg = [x for x in os.listdir(dir_pkg) if 
-               (dependency.lower().replace('-','_') in x.lower() 
-                or dependency.lower().replace('_','.') in x.lower() 
-                or dependency.lower().replace('-','.') in x.lower() 
-                or dependency.lower().replace('.','_') in x.lower() 
-                or dependency.lower() in x.lower()) ][0]
-        pkg_map[pkg]=dependency
+        dep_name_variations = [dependency.lower().replace('-', '_'),
+                               dependency.lower().replace('_', '.'),
+                               dependency.lower().replace('-', '.'),
+                               dependency.lower().replace('.', '_'),
+                               dependency.lower().replace('_', '-'),
+                               dependency.lower()]
+
+        pkg = [x for x in os.listdir(dir_pkg) if any(e in x.lower() for e in dep_name_variations)][0]
+        pkg_map[pkg] = dependency
         #print(pkg)
         
         if pkg.endswith('.tar.gz'):
