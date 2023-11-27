@@ -40,9 +40,11 @@ def extract_compiled_python(dir_path):
         else:
             kind = kind.extension
         if "python 2" in kind and "byte-compiled" in kind:
-            compiled_python2_list.append(f_p)
+            f_r = f_p.replace(dir_path, "") + ".py"
+            compiled_python2_list.append(f_r)
         if "python 3" in kind and "byte-compiled" in kind:
-            compiled_python3_list.append(f_p)
+            f_r = f_p.replace(dir_path, "") + ".py"
+            compiled_python3_list.append(f_r)
     return compiled_python2_list, compiled_python3_list
 
 
