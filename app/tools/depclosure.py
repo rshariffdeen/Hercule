@@ -92,8 +92,11 @@ def generate_closure(dir_pkg):
     failed_deps = []
     visited = set()
     constraints = {}
-    pkg_folder = [ x for x in os.listdir(dir_pkg) if os.path.isdir(join(dir_pkg,x)) and not x.endswith('dist-info')] [0]
+    matching_dirs = [ x for x in os.listdir(dir_pkg) if os.path.isdir(join(dir_pkg,x)) and not x.endswith('dist-info')]
     G = nx.DiGraph()
+    if not matching_dirs:
+        return G, failed_deps
+    pkg_folder = matching_dirs[0]
     name = pkg_folder.split('-')[0]
     G.add_node(name, label = name, constraint=Requirement(name), direct=True, dependency_type="root")
 
