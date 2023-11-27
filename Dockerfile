@@ -56,3 +56,7 @@ ENV PATH /opt/hercule/bin:/opt/cloc:${PATH}
 ENV PATH /opt/pythonparser:${PATH}
 WORKDIR /opt/hercule/
 
+WORKDIR /opt/hercule/codeql
+RUN codeql pack install
+
+WORKDIR /opt/hercule/
