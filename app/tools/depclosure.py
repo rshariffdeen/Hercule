@@ -66,6 +66,7 @@ def download_dependency(dir_pkg,constraints,pkg_map,dependency):
         pkg = [x for x in os.listdir(dir_pkg) if any(e in x.lower() for e in dep_name_variations)][0]
         pkg_map[pkg] = dependency
         #print(pkg)
+        emitter.normal(f"\t\t{dependency} in {pkg}")
         
         if pkg.endswith('.tar.gz'):
             utilities.execute_command(f"tar -xzf {pkg}",directory=dir_pkg)
