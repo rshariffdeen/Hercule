@@ -98,6 +98,7 @@ def generate_closure(dir_pkg):
         return G, failed_deps
     pkg_folder = matching_dirs[0]
     name = pkg_folder.split('-')[0]
+    name = "pkg-" + name
     G.add_node(name, label = name, constraint=Requirement(name), direct=True, dependency_type="root")
 
     visited.add(pkg_folder)
