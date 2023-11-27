@@ -52,28 +52,37 @@ class FindCall(ast.NodeVisitor):
 
 def download_dependency(dir_pkg,constraints,pkg_map,dependency):
     failed_dep = None
-    status,out,err =  utilities.execute_command(f"pip download '{ constraints.get(dependency,dependency) }' "
+    download_dir = f"{dir_pkg}/pip-download"
+    if not os.path.isdir(download_dir):
+        utilities.execute_command(f"mkdir {download_dir}")
+
+    status,out,err =  utilities.execute_command(f"pip download -d {download_dir} '{ constraints.get(dependency,dependency) }' "
                                         ,show_output=True
                                         ,directory=dir_pkg)
     if status == 0:
-        dep_name_variations = [dependency.lower().replace('-', '_'),
-                               dependency.lower().replace('_', '.'),
-                               dependency.lower().replace('-', '.'),
-                               dependency.lower().replace('.', '_'),
-                               dependency.lower().replace('_', '-'),
-                               dependency.lower()]
-
-        pkg = [x for x in os.listdir(dir_pkg) if any(e in x.lower() for e in dep_name_variations)][0]
-        pkg_map[pkg] = dependency
+        downloaded_file = os.listdir(download_dir)[0].replace(download_dir, "")
+        move_command = f"mv {download_dir}/{downloaded_file} {dir_pkg}"
+        utilities.execute_command(move_command)
+        # dep_name_variations = [dependency.lower().replace('-', '_'),
+        #                        dependency.lower().replace('_', '.'),
+        #                        dependency.lower().replace('-', '.'),
+        #                        dependency.lower().replace('.', '_'),
+        #                        dependency.lower().replace('_', '-'),
+        #                        dependency.lower()]
+        #
+        # mapping = [x for x in os.listdir(dir_pkg) if any(e in x.lower() for e in dep_name_variations)]
+        # if mapping:
+        #     pkg = mapping[0]
+        pkg_map[downloaded_file] = dependency
         #print(pkg)
-        emitter.normal(f"\t\t{dependency} in {pkg}")
-        
-        if pkg.endswith('.tar.gz'):
-            utilities.execute_command(f"tar -xzf {pkg}",directory=dir_pkg)
-        elif pkg.endswith('.whl') or pkg.endswith('.zip'):
-            utilities.execute_command(f"unzip -n {pkg}",directory=dir_pkg)
-        elif os.path.isfile(os.path.join(dir_pkg,pkg)):
-            emitter.warning(f"Package {dependency} has filename {pkg}, which is not supported")
+        emitter.normal(f"\t\t{dependency} in {downloaded_file}")
+
+        if downloaded_file.endswith('.tar.gz') or downloaded_file.endswith('.tgz'):
+            utilities.execute_command(f"tar -xzf {downloaded_file}",directory=dir_pkg)
+        elif downloaded_file.endswith('.whl') or downloaded_file.endswith('.zip'):
+            utilities.execute_command(f"unzip -n {downloaded_file}",directory=dir_pkg)
+        elif os.path.isfile(os.path.join(dir_pkg,downloaded_file)):
+            emitter.warning(f"Package {dependency} has filename {downloaded_file}, which is not supported")
     else:
         failed_dep = str(constraints.get(dependency, dependency))
     return failed_dep
@@ -330,7 +339,11 @@ def process_dependency_queue(dir_pkg, pkg_folder, explicit_dependencies, constra
             file = contents[2:]
             if file not in traversed_files:
                 with open(join(dir_pkg,pkg_folder,file)) as f:
-                    dependency_queue = dependency_queue + f.readlines()
+                    content = f.readlines()
+                    for _l in content:
+                        if _l.strip().startswith("-e"):
+                            continue
+                        dependency_queue.append(_l)
                 traversed_files.add(file)
             continue
                 
@@ -338,7 +351,11 @@ def process_dependency_queue(dir_pkg, pkg_folder, explicit_dependencies, constra
             file = contents[2:].strip()
             if file not in traversed_files:
                 with open(join(dir_pkg,pkg_folder,file)) as f:
-                    dependency_queue = dependency_queue + f.readlines()
+                    content = f.readlines()
+                    for _l in content:
+                        if _l.strip().startswith("-e"):
+                            continue
+                        dependency_queue.append(_l)
                 traversed_files.add(file)
             continue
             
@@ -357,6 +374,8 @@ def process_requirements(dir_pkg, pkg_folder, dependency_queue,file_name ="requi
         previous_line = ""
         with open(join(dir_pkg,pkg_folder,file_name)) as f:
             for line in f:
+                if line.strip().startswith("-e"):
+                    continue
                 dependency_queue.append(line)
 
 def process_pipfile(dir_pkg, pkg_folder, explicit_dependencies, constraints):
