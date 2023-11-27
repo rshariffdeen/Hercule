@@ -77,6 +77,9 @@ def detect_modified_source_files(interested_files, dir_src, dir_pkg):
         f_rel_src = f"{prefix_src}{f_rel}"
         if ".py" not in f_rel:
             continue
+        filename = f_rel_pkg.split("/")[-1]
+        if not any(filename in _f for _f in src_files):
+            continue
         full_prefix_src = f"{dir_src}{prefix_src}"
         full_prefix_pkg = f"{dir_pkg}{prefix_pkg}"
         if f_rel_src not in src_files:
