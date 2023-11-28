@@ -136,7 +136,10 @@ def scan_package(package_path, malicious_packages=None):
     values.result["dep-analysis"]["malicious-list"] = []
 
     if not values.is_lastpymile:
-        dep_graph, failed_deps = depclosure.generate_closure(dir_pkg)
+        failed_deps = []
+        dep_graph = None
+        if values.track_dependencies:
+            dep_graph, failed_deps = depclosure.generate_closure(dir_pkg)
         values.result["dep-analysis"]["failed-list"] = failed_deps
         codeql_alerts = analysis.behavior_analysis(dir_pkg)
         codeql_alerts, setup_py_alerts, malicious_files = codeql_alerts
@@ -163,7 +166,7 @@ def scan_package(package_path, malicious_packages=None):
         values.result["codeql-analysis"]["hercule-files"] = list(f_malicious_files)
         values.result["codeql-analysis"]["hercule-report"] = filtered_codeql_alerts
 
-        if not values.is_lastpymile and values.track_dependencies:
+        if values.track_dependencies:
             malicious_deps = analysis.analyze_closure(dep_graph, malicious_packages)
             values.result["dep-analysis"]["malicious-list"] = malicious_deps
             if malicious_deps:
