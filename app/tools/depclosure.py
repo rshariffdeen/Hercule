@@ -439,17 +439,17 @@ def process_pyproject(dir_pkg, pkg_folder, explicit_dependencies, constraints):
             constraints[dependency] = constraint
             explicit_dependencies.add(dependency)
 
-        for group in py_project_data.get('project',{}).get('optional-dependencies',[]):
-            for dep in group:
-                dependency,constraint = parse_dependency(dep)
-                constraints[dependency] = constraint
-                explicit_dependencies.add(dependency)
+        for dep in py_project_data.get('project',{}).get('optional-dependencies',[]):
+            # for dep in group:
+            dependency,constraint = parse_dependency(dep)
+            constraints[dependency] = constraint
+            explicit_dependencies.add(dependency)
         
-        for group in py_project_data.get('project.optional-dependencies',[]):
-            for dep in group:
-                dependency,constraint = parse_dependency(dep)
-                constraints[dependency] = constraint
-                explicit_dependencies.add(dependency)
+        for dep in py_project_data.get('project.optional-dependencies',[]):
+            # for dep in group:
+            dependency,constraint = parse_dependency(dep)
+            constraints[dependency] = constraint
+            explicit_dependencies.add(dependency)
                 
 
     
