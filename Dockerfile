@@ -18,7 +18,8 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     openjdk-17-jdk \
     openjdk-17-jre \
     gradle \
-    wget
+    wget \
+    xz-utils
 
 
 # copy src files of the tool
