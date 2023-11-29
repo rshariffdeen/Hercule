@@ -29,8 +29,7 @@ file_stats_log = dir_log_base + "/log-stats"
 file_output_log = ""
 file_setup_log = ""
 file_instrument_log = ""
-file_maloss_list = dir_data + "/maloss.json"
-file_new_list = dir_data + "/new.json"
+
 
 data_path = "/data"
 malicious_samples = os.path.join(data_path,'pypi-samples')

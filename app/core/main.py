@@ -193,13 +193,21 @@ def scan_package(package_path, malicious_packages=None):
 
 
 def get_malicious_list():
-    malicious_list = reader.read_json(values.file_maloss_list)
-    new_data = reader.read_json(values.file_new_list)
-    for pkg in new_data:
-        if pkg not in malicious_list:
-            malicious_list[pkg] = new_data[pkg]
-        else:
-            malicious_list[pkg] = list(set(malicious_list[pkg] + new_data[pkg]))
+    data_file_list = os.listdir(values.dir_data)
+    malicious_list = dict()
+    count = 0
+    for f in data_file_list:
+        abs_f = os.path.join(values.dir_data, f)
+        if os.path.isfile(abs_f):
+            pkg_list = reader.read_json(abs_f)
+            for pkg in pkg_list:
+                if pkg not in malicious_list:
+                    malicious_list[pkg] = pkg_list[pkg]
+                else:
+                    malicious_list[pkg] = list(set(malicious_list[pkg] + pkg_list[pkg]))
+    for pkg in malicious_list:
+        count += len(malicious_list[pkg])
+    emitter.normal(f"\tloaded {count} known malicious packages")
     return malicious_list
 
 def run(parsed_args):
