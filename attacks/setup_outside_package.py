@@ -7,6 +7,9 @@ if len(sys.argv) != 2:
 
 attack_name = sys.argv[1]
 
+if attack_name.startswith('./'):
+    attack_name=attack_name[2:]
+
 module_name = sys.argv[1].replace('/','.')
 
 if module_name.startswith('..'):
@@ -19,7 +22,7 @@ os.system(f"cp -r {attack_name} {attack_name}_temp")
 
 libfolder = sys.path[4]
 
-os.system(f"mkdir {libfolder}/{attack_name}")
+os.system(f"mkdir -p {libfolder}/{attack_name}")
 
 os.system(f"sed -i 's/<MODULE>/{module_name}/' {attack_name}_temp/poc/main.py")
 
