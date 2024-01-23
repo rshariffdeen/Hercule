@@ -24,7 +24,8 @@ def get_pkg_list(html_soup):
     pkg_list = []
     anchor_list = html_soup.find_all("a")
     for anchor in anchor_list:
-        pkg_list.append(anchor["name"])
+        pkg_name = anchor.contents[0]
+        pkg_list.append(pkg_name)
     return pkg_list
 
 
