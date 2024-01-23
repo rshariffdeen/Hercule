@@ -1,8 +1,8 @@
 #!/bin/bash
 BASEDIR="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 TOOL_NAME="hercule"
-IMAGE_NAME="$(TOOL_NAME)"
-CONTAINER_NAME="$(TOOL_NAME)_container"
+IMAGE_NAME="$TOOL_NAME"
+CONTAINER_NAME="$TOOL_NAME""_container"
 
 if [[ "$(docker images -q $IMAGE_NAME 2> /dev/null)" == ""  ]]; then
   echo "Docker Image $(TOOL_NAME) not found"
