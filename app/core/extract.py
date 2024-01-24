@@ -188,6 +188,9 @@ def extract_archive(pkg_path):
     archive_name = str(archive_path).split("/")[-1]
     file_extension = archive_name.split(".")[-1]
     dir_pkg = f"{values.dir_experiments}/{archive_name}-dir"
+    if values.is_rerun:
+        rm_command = f"rm -rf {dir_pkg}"
+        utilities.execute_command(rm_command)
     extract_dir = archives.decompress_archive(archive_path, file_extension, dir_pkg)
     emitter.sub_sub_title("extracting internally compressed file(s)")
     archive_list = archives.find_compressed(extract_dir)
