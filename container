@@ -1,6 +1,6 @@
 #!/bin/bash
 BASEDIR="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
-TOOL_NAME="hercule"
+export TOOL_NAME="hercule"
 IMAGE_NAME="$TOOL_NAME"
 CONTAINER_NAME="$TOOL_NAME""_container"
 

@@ -139,7 +139,7 @@ def scan_package(package_path, malicious_packages=None):
         failed_deps = []
         dep_graph = None
         if values.track_dependencies:
-            dep_graph, failed_deps = depclosure.generate_closure(dir_pkg)
+            dep_graph, failed_deps = depclosure.generate_closure(dir_pkg, distribution_name)
         values.result["dep-analysis"]["failed-list"] = failed_deps
         codeql_alerts = analysis.behavior_analysis(dir_pkg)
         codeql_alerts, setup_py_alerts, malicious_files = codeql_alerts
@@ -167,7 +167,7 @@ def scan_package(package_path, malicious_packages=None):
         values.result["codeql-analysis"]["hercule-report"] = filtered_codeql_alerts
 
         if values.track_dependencies:
-            malicious_deps = analysis.analyze_closure(dep_graph, malicious_packages)
+            malicious_deps = analysis.analyze_closure(dep_graph, failed_deps, malicious_packages)
             values.result["dep-analysis"]["malicious-list"] = malicious_deps
             if malicious_deps:
                 values.result["is-compromised"] = True

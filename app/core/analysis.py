@@ -276,11 +276,11 @@ def analyze_loc(dir_pkg):
     values.result["cloc"] = cloc_info
 
 
-def analyze_closure(dep_graph, malicious_packages=None):
+def analyze_closure(dep_graph, failed_deps, malicious_packages=None):
     emitter.sub_sub_title("transitive dependency analysis")
     #emitter.normal("\t\tcreating codeql database")
     emitter.normal("\t\tchecking for known malicious packages in the dependency graph")
-    malicious_deps = []
+    malicious_deps = set()
     for pkg, pkg_data in dep_graph.nodes.items() :
         if pkg in malicious_packages:
             versions = malicious_packages[pkg]
@@ -288,7 +288,18 @@ def analyze_closure(dep_graph, malicious_packages=None):
                 if version in pkg_data['constraint'].specifier and pkg_data['dependency_type'] != 'root':
                     emitter.information(f"\t\t\tFound {pkg_data['dependency_type']} { 'directly referenced' if pkg_data['direct'] else 'transitively referenced' } package {pkg}-{version}, which is known to be malicious")
                     malicious_deps.append( (pkg,version))
-    return malicious_deps
+    for dependency in failed_deps:
+        dep_name_variations = [dependency.lower().replace('-', '_'),
+                                dependency.lower().replace('_', '.'),
+                                dependency.lower().replace('-', '.'),
+                                dependency.lower().replace('.', '_'),
+                                dependency.lower().replace('_', '-'),
+                                dependency.lower()]
+        for variation in dep_name_variations:
+            if variation in malicious_packages:
+                emitter.information(f"\t\t\tFound failed dependency {variation}, which is known to be malicious")
+                malicious_deps.append( (variation,"0.0.0"))
+    return list(malicious_deps)
     
     
     

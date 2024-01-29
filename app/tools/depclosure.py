@@ -31,6 +31,7 @@ class FindCall(ast.NodeVisitor):
     def __init__(self,src) -> None:
         super().__init__()
         self.src = src
+        self.names = {}
         self.packages = []
     def visit_Call(self,node):
         if isinstance(node.func, ast.Name) and node.func.id == "setup":
@@ -47,9 +48,21 @@ class FindCall(ast.NodeVisitor):
                             for (extra,packages) in ast.literal_eval(x).items():
                                 for package in packages:
                                     self.packages.append(package) 
+                    elif isinstance(keyword.value,ast.Name):
+                        key = ast.get_source_segment(self.src,keyword.value)
+                        x = ast.get_source_segment(self.src,self.names[key])
+                        if x is not None:
+                            for package in ast.literal_eval(x):
+                                self.packages.append(package)
                     else:
                         emitter.information(f"Unexpected type {type(keyword.value)} for {keyword.arg}")
-
+    def visit_Assign(self, node):
+        for target in node.targets:
+            if isinstance(target,ast.Name):
+                key = ast.get_source_segment(self.src,target) 
+                emitter.debug("Capturing value for {}".format(key))
+                self.names[key] = node.value
+        
 def download_dependency(dir_pkg,constraints,pkg_map,dependency):
     failed_dep = None
     download_dir = f"{dir_pkg}/pip-download"
@@ -89,15 +102,25 @@ def download_dependency(dir_pkg,constraints,pkg_map,dependency):
     return failed_dep
 
 
-def generate_closure(dir_pkg):
+def generate_closure(dir_pkg, distribution_name):
     failed_deps = []
     visited = set()
     constraints = {}
+    if distribution_name.endswith('.tar.gz'):
+        module_name = distribution_name.split('.tar.gz')[0]
+    elif distribution_name.endswith('.whl'):
+        module_name = distribution_name.split('-')[0]
     matching_dirs = [ x for x in os.listdir(dir_pkg) if os.path.isdir(join(dir_pkg,x)) and not x.endswith('dist-info')]
     G = nx.DiGraph()
     if not matching_dirs:
         return G, failed_deps
-    pkg_folder = matching_dirs[0]
+    
+    emitter.debug("Module name is {}".format(module_name))
+    
+    if module_name in matching_dirs:
+        pkg_folder = module_name
+    else:
+        pkg_folder = matching_dirs[0]
     name = pkg_folder.split('-')[0]
     name = "pkg-" + name
     G.add_node(name, label = name, constraint=Requirement(name), direct=True, dependency_type="root")
@@ -217,6 +240,8 @@ def generate_closure(dir_pkg):
              
     nx.draw(G,edgecolors='black',with_labels=True,node_size=100,node_color=node_map)
     plt.savefig(os.path.join(dir_pkg,'dependency_graph.pdf'))
+    emitter.debug("Nodes: {}".format(G.nodes))
+    emitter.debug("Failed deps: {}".format(failed_deps))
     return G, failed_deps
 
 
