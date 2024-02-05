@@ -205,9 +205,10 @@ def get_malicious_list():
                     malicious_list[pkg] = pkg_list[pkg]
                 else:
                     malicious_list[pkg] = list(set(malicious_list[pkg] + pkg_list[pkg]))
+            emitter.highlight(f"\tloaded {len(pkg_list)} malicious packages from {abs_f}")
     for pkg in malicious_list:
         count += len(malicious_list[pkg])
-    emitter.normal(f"\tloaded {count} known malicious packages")
+    emitter.normal(f"\tloaded total of {count} known malicious packages")
     return malicious_list
 
 def run(parsed_args):
