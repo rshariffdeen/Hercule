@@ -108,6 +108,8 @@ def generate_closure(dir_pkg, distribution_name):
     constraints = {}
     if distribution_name.endswith('.tar.gz'):
         module_name = distribution_name.split('.tar.gz')[0]
+    elif distribution_name.endswith('.zip'):
+        module_name = distribution_name.split('.zip')[0]
     elif distribution_name.endswith('.whl'):
         module_name = distribution_name.split('-')[0]
     matching_dirs = [ x for x in os.listdir(dir_pkg) if os.path.isdir(join(dir_pkg,x)) and not x.endswith('dist-info')]
