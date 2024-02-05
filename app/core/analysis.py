@@ -473,6 +473,8 @@ def final_result():
             emitter.error(f"\t\t\tis-compromised: {values.result['is-compromised']}")
         else:
             emitter.success(f"\t\t\tis-compromised: {values.result['is-compromised']}")
+
+        emitter.highlight(f"\t\t\tfailed dependencies: {values.result['dep-analysis']['failed-list']}")
         emitter.highlight(f"\t\t\tmalicious dependencies: {values.result['dep-analysis']['malicious-list']}")
 
 
