@@ -14,8 +14,8 @@ import python
 import semmle.python.dataflow.new.TaintTracking
 import semmle.python.ApiGraphs
 
-from DataFlow::CallCfgNode p, string x
+from DataFlow::CallCfgNode call, string name
 where
-  x in ["add_dll_directory", "popen", "rename", "startfile", "uname"] and
-  p = API::moduleImport("os").getMember(x).getACall()
-select p.getLocation(), "Found a usage of a commonly targetted os call " + x + " at " + p.getLocation()
+  name in ["add_dll_directory", "popen", "rename", "startfile", "uname"] and
+  call = API::moduleImport("os").getMember(name).getACall()
+select call.getLocation(), "Found a usage of a commonly targetted os call " + name + " at " + call.getLocation()

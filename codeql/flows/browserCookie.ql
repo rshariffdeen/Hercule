@@ -12,7 +12,7 @@ import python
 import semmle.python.dataflow.new.TaintTracking
 import semmle.python.ApiGraphs
 
-from DataFlow::CallCfgNode p
+from DataFlow::CallCfgNode call
 where
-  p = API::moduleImport("browser_cookie3").getAMember().getACall()
-select p.getLocation(), "Found a reference of browser_cookie3"
+  call = API::moduleImport("browser_cookie3").getAMember().getACall()
+select call.getLocation(), "Found a reference of browser_cookie3"

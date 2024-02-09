@@ -12,7 +12,7 @@ import python
 import semmle.python.dataflow.new.TaintTracking
 import semmle.python.ApiGraphs
 
-from DataFlow::CallCfgNode p
+from DataFlow::CallCfgNode call
 where
-  p = API::moduleImport("selenium").getAMember().getACall()
-select p.getLocation(), "Found a read of selenium"
+  call = API::moduleImport("selenium").getAMember().getACall()
+select call.getLocation(), "Found a read of selenium"

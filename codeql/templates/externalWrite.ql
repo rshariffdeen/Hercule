@@ -37,8 +37,9 @@
      TaintTracking::localTaint(p, call.(DataFlow::MethodCallNode).getArgByName(_))
    ) and
    not call.getLocation().getFile().inStdlib()
- select call,
+   and call != p
+ select p,
    "Found an external write call " + name +
-     " to an evaluation function using an evaluation, which flows from (" + p.getLocation() +
+     " to an evaluation function, which flows from (" + p.getLocation() +
      ") to (" + call.getLocation() + ")"
  

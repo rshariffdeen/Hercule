@@ -19,13 +19,19 @@ module MyFlowConfiguration implements DataFlow::ConfigSig {
     source = API::moduleImport("getPass").getMember(_).asSource()
   }
 
-  predicate isSink(DataFlow::Node sink) { 
+  predicate isSink(DataFlow::Node sink) {
     (
-    sink = API::moduleImport("socket").getMember(_).getACall() or
-    sink.(DataFlow::CallCfgNode).getFunction().toString().regexpMatch(".*(write|sendall|send|post|put|patch|delete|get|exec|eval|dumps?).*") or
-    sink.(DataFlow::MethodCallNode).getMethodName()      .regexpMatch(".*(write|sendall|send|post|put|patch|delete|get|exec|eval|dumps?).*"))
-    and not sink.getLocation().getFile().inStdlib()
-   }
+      sink = API::moduleImport("socket").getMember(_).getACall() or
+      sink.(DataFlow::CallCfgNode)
+          .getFunction()
+          .toString()
+          .regexpMatch(".*(write|sendall|send|post|put|patch|delete|get|exec|eval|dumps?).*") or
+      sink.(DataFlow::MethodCallNode)
+          .getMethodName()
+          .regexpMatch(".*(write|sendall|send|post|put|patch|delete|get|exec|eval|dumps?).*")
+    ) and
+    not sink.getLocation().getFile().inStdlib()
+  }
 
   predicate isAdditionalFlowStep(DataFlow::Node nodeFrom, DataFlow::Node nodeTo) {
     exists(DataFlow::ExprNode expr | expr = nodeTo |
@@ -38,7 +44,10 @@ module MyFlowConfiguration implements DataFlow::ConfigSig {
 
 module MyFlow = DataFlow::Global<MyFlowConfiguration>;
 
-from DataFlow::CallCfgNode call, DataFlow::Node p, DataFlow::Node n
+from DataFlow::Node sink, DataFlow::Node source
 where
-  MyFlowConfiguration::isSource(n) and MyFlow::flow(n, p)
-select call.getLocation(), "GetPass data is used at " + p.getLocation()
+  MyFlowConfiguration::isSource(source) and
+  MyFlow::flow(source, sink) and
+  MyFlowConfiguration::isSink(sink) and
+  sink != source
+select sink.getLocation(), "GetPass data is used at " + sink.getLocation()

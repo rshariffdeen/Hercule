@@ -20,5 +20,5 @@
  import semmle.python.ApiGraphs
  import semmle.python.Concepts
 
- from SystemCommandExecution s
- select s, "Detected SystemCommandExecution (" + s.asExpr().(FunctionExpr).getName() + ")" 
+ from SystemCommandExecution execution
+ select execution, "Detected SystemCommandExecution (" + execution.asExpr().(FunctionExpr).getName() + ")" 

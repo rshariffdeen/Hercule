@@ -1,11 +1,11 @@
 /**
- * @name pwd.getpwuid smarter issues
+ * @name Socket flows to an external write
  * @description smth
  * @kind problem
  * @problem.severity warning
  * @security-severity 7.8
  * @precision high
- * @id py/pwuid-smart
+ * @id py/socket-flow
  * @tags security
  */
 
@@ -16,13 +16,11 @@ import semmle.python.Concepts
 
 module MyFlowConfiguration implements DataFlow::ConfigSig {
   predicate isSource(DataFlow::Node source) {
-    exists(DataFlow::CallCfgNode call |
-      call = API::moduleImport("pwd").getMember("getpwuid").getACall() and
-      source.(DataFlow::AttrRead).accesses(call, _)
-    )
+    source = API::moduleImport("socket").getMember(_).getACall()  
   }
 
-  predicate isSink(DataFlow::Node sink) { (
+  predicate isSink(DataFlow::Node sink) { 
+    (
     sink = API::moduleImport("socket").getMember(_).getACall() or
     sink.(DataFlow::CallCfgNode).getFunction().toString().regexpMatch(".*(write|sendall|send|post|put|patch|delete|get|exec|eval|dumps?).*") or
     sink.(DataFlow::MethodCallNode).getMethodName()      .regexpMatch(".*(write|sendall|send|post|put|patch|delete|get|exec|eval|dumps?).*"))
@@ -40,9 +38,10 @@ module MyFlowConfiguration implements DataFlow::ConfigSig {
 
 module MyFlow = DataFlow::Global<MyFlowConfiguration>;
 
-from DataFlow::CallCfgNode call, DataFlow::Node p, DataFlow::AttrRead read
+from DataFlow::Node sink, DataFlow::Node source
 where
-  MyFlowConfiguration::isSource(read) and
-  read.accesses(call, "pw_name") and
-  MyFlow::flow(read, p)
-select call.getLocation(), "smart getPwuid data is used at $@", p.getLocation(), "  "
+  MyFlowConfiguration::isSource(source) and
+  MyFlow::flow(source, sink) and
+  MyFlowConfiguration::isSink(sink)
+  and sink != source
+select sink.getLocation(), "Socket data flows from " + source.getLocation() + " to " + sink.getLocation()

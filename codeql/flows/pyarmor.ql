@@ -12,9 +12,9 @@ import python
 import semmle.python.dataflow.new.TaintTracking
 import semmle.python.ApiGraphs
 
-from DataFlow::CallCfgNode p
+from DataFlow::CallCfgNode call
 where
-  p = API::moduleImport(_).getMember("__pyarmor__").getACall() or
-  p = API::moduleImport(_).getMember("pyarmor_runtime").getACall() or
-  p = API::moduleImport(_).getMember("pyarmor_runtime_000000").getACall()
-select p.getLocation(), "Found a read of pyarmor"
+  call = API::moduleImport(_).getMember("__pyarmor__").getACall() or
+  call = API::moduleImport(_).getMember("pyarmor_runtime").getACall() or
+  call = API::moduleImport(_).getMember("pyarmor_runtime_000000").getACall()
+select call.getLocation(), "Found a read of pyarmor"

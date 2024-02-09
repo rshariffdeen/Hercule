@@ -13,9 +13,9 @@ import python
 import semmle.python.dataflow.new.TaintTracking
 import semmle.python.ApiGraphs
 
-from DataFlow::CallCfgNode p, DataFlow::CallCfgNode q
+from DataFlow::CallCfgNode call, DataFlow::CallCfgNode source
 where
-  p = API::builtin("getattr").getACall() and
-  q.asExpr().getAChildNode().(StringPart).getText() = "__file__" and
-  TaintTracking::localTaint(q.getALocalSource(), p.getArg(_))
-select p.getLocation(), "Found a read of __file__ at " + p.getLocation()
+  call = API::builtin("getattr").getACall() and
+  source.asExpr().getAChildNode().(StringPart).getText() = "__file__" and
+  TaintTracking::localTaint(source.getALocalSource(), call.getArg(_))
+select call.getLocation(), "Found a read of __file__ at " + call.getLocation()

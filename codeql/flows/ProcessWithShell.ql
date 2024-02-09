@@ -18,7 +18,7 @@
  import semmle.python.ApiGraphs
  import semmle.python.Concepts
 
- from SystemCommandExecution s
+ from SystemCommandExecution execution
  // Or use "/bin/%" for anything in the bin directory
- where s.getCommand().toString().matches(["%/bin/sh%", "$cmd$", "%/bin/bash%", "%/bin/zsh%", "%powershell.exe%", "%ps%", "%top%", "%exec%", "%wget%", "%curl%"])
- select s, "A system command ($@) tries to open a shell", s, s.toString()
+ where execution.getCommand().toString().matches(["%/bin/sh%", "$cmd$", "%/bin/bash%", "%/bin/zsh%", "%powershell%", "%ps%", "%top%", "%exec%", "%wget%", "%curl%"])
+ select execution, "A system command ($@) tries to open a shell", execution, execution.toString()

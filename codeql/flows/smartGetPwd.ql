@@ -40,9 +40,10 @@ module MyFlowConfiguration implements DataFlow::ConfigSig {
 
 module MyFlow = DataFlow::Global<MyFlowConfiguration>;
 
-from DataFlow::CallCfgNode call, DataFlow::Node p, DataFlow::AttrRead read
+from DataFlow::CallCfgNode call, DataFlow::Node sink, DataFlow::AttrRead source
 where
-  MyFlowConfiguration::isSource(read) and
-  read.accesses(call, "pw_name") and
-  MyFlow::flow(read, p)
-select call.getLocation(), "smart getPwuid data is used at $@", p.getLocation(), "  "
+  MyFlowConfiguration::isSource(source) and
+  source.accesses(call, "pw_name") and
+  MyFlow::flow(source, sink) and
+  MyFlowConfiguration::isSink(sink)
+select call.getLocation(), "Smart getPwuid data is used at $@", sink.getLocation(), "  "

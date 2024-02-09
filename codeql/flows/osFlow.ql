@@ -38,9 +38,11 @@
  
  module MyFlow = DataFlow::Global<MyFlowConfiguration>;
  
- from DataFlow::Node p, DataFlow::Node read
+ from DataFlow::Node sink, DataFlow::Node source
  where
-   MyFlowConfiguration::isSource(read) and
-   MyFlow::flow(read, p)
- select p.getLocation(), "Os argument data flows from" + read.getLocation() + " to " + p.getLocation()
+   MyFlowConfiguration::isSource(source) and
+   MyFlow::flow(source, sink) and
+   MyFlowConfiguration::isSink(sink)
+   and sink != source
+ select sink.getLocation(), "Os argument data flows from " + source.getLocation() + " to " + sink.getLocation()
  

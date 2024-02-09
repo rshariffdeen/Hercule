@@ -12,7 +12,7 @@ import python
 import semmle.python.dataflow.new.TaintTracking
 import semmle.python.ApiGraphs
 
-from DataFlow::CallCfgNode p
+from DataFlow::CallCfgNode call
 where
-  p = API::moduleImport("netifaces").getAMember().getACall()
-select p.getLocation(), "Found a read of netifaces at " + p.getLocation()
+  call = API::moduleImport("netifaces").getAMember().getACall()
+select call.getLocation(), "Found a read of netifaces at " + call.getLocation()

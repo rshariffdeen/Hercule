@@ -14,15 +14,15 @@ import semmle.python.dataflow.new.TaintTracking
 import semmle.python.ApiGraphs
 import semmle.python.Concepts
 
-from StringValue s, DataFlow::CallCfgNode call, DataFlow::Node n
+from StringValue contents, DataFlow::CallCfgNode call, DataFlow::Node n
 where
-  s.getText().matches("%=") and
+  contents.getText().regexpMatch(".*[A-Za-z0-9+/=]{5,}.*") and
   call = API::moduleImport("base64").getMember("b64decode").getACall() and
-  n.asCfgNode() = s.getAReference() and
+  n.asCfgNode() = contents.getAReference() and
   (
-    call.getArg(_).asCfgNode() = s.getAReference() or
-    call.getArgByName(_).asCfgNode() = s.getAReference() or
+    call.getArg(_).asCfgNode() = contents.getAReference() or
+    call.getArgByName(_).asCfgNode() = contents.getAReference() or
     TaintTracking::localTaint(n, call.getArg(_)) or
     TaintTracking::localTaint(n, call.getArgByName(_))
   )
-select s.getAReference().getLocation(), "Found usage of a base64 string " + s.getText() + " that is used at " + call.getLocation()
+select contents.getAReference().getLocation(), "Found usage of a base64 string " + contents.getText() + " that is used at " + call.getLocation()

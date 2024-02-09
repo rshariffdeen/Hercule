@@ -42,4 +42,4 @@ where
     isShutilCopy(call)
   ) and
   TaintTracking::localTaint(read.getALocalSource(), call)
-select call.getLocation(), "Found a usage of __file__ $@", read.getLocation(), "."
+select call.getLocation(), "Found a usage of __file__ $@ ", read.getLocation(), "."

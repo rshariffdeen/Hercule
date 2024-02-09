@@ -39,8 +39,10 @@ module MyFlowConfiguration implements DataFlow::ConfigSig {
 
 module MyFlow = DataFlow::Global<MyFlowConfiguration>;
 
-from DataFlow::CallCfgNode call, DataFlow::Node p, DataFlow::Node read
+from DataFlow::Node sink, DataFlow::Node source
 where
-  MyFlowConfiguration::isSource(read) and
-  MyFlow::flow(read, p)
-select call.getLocation(), "smart base64 data is used at $@", p.getLocation(), "  "
+  MyFlowConfiguration::isSource(source) and
+  MyFlow::flow(source, sink) and
+  MyFlowConfiguration::isSink(sink)
+  and sink != source
+select sink.getLocation(), "Smart base64 data is used at $@", sink.getLocation(), "  "

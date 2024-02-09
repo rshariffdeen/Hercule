@@ -13,12 +13,12 @@
  import semmle.python.dataflow.new.TaintTracking
  import semmle.python.ApiGraphs
  
- from DataFlow::CallCfgNode p
+ from DataFlow::CallCfgNode call
  where
-   p = API::moduleImport(_).getMember("request").getMember(_).getACall() 
+   call = API::moduleImport(_).getMember("request").getMember(_).getACall() 
    or
-   p = API::moduleImport(_).getMember("Request").getMember("urlopen").getACall() 
+   call = API::moduleImport(_).getMember("Request").getMember("urlopen").getACall() 
    or
-   p = API::moduleImport(_).getMember("urlopen").getACall()  
- select p.getLocation(), "Found a read of urllib which is suspicious"
+   call = API::moduleImport(_).getMember("urlopen").getACall()  
+ select call.getLocation(), "Found a read of urllib which is suspicious"
  

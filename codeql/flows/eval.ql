@@ -1,5 +1,5 @@
 /**
- * @name Base64 flows to an external write
+ * @name Eval/exec flows to an external write
  * @description smth
  * @kind problem
  * @problem.severity warning
@@ -40,9 +40,11 @@
  
  module MyFlow = DataFlow::Global<MyFlowConfiguration>;
  
- from DataFlow::Node p, DataFlow::Node read
+ from DataFlow::Node sink, DataFlow::Node source
  where
-   MyFlowConfiguration::isSource(read) and
-   MyFlow::flow(read, p)
- select p.getLocation(), "Evaluation data flows from" + read.getLocation() + " to " + p.getLocation()
+   MyFlowConfiguration::isSource(source) and
+   MyFlow::flow(source, sink) and 
+   MyFlowConfiguration::isSink(sink)
+   and sink != source
+ select sink.getLocation(), "Evaluation data flows from " + source.getLocation() + " to " + sink.getLocation()
  

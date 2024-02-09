@@ -12,7 +12,7 @@ import python
 import semmle.python.dataflow.new.TaintTracking
 import semmle.python.ApiGraphs
 
-from DataFlow::CallCfgNode p
+from DataFlow::CallCfgNode call
 where
-  p = API::moduleImport("httpx").getAMember().getACall()
-select p.getLocation(), "Found a reference of httpx at " + p.getLocation()
+  call = API::moduleImport("httpx").getAMember().getACall()
+select call.getLocation(), "Found a reference of httpx at " + call.getLocation()
