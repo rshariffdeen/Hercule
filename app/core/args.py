@@ -48,18 +48,10 @@ def parse_args():
 
     optional.add_argument(
         definitions.ARG_PURGE,
-        help="clean everything after the analysis",
+        help="clean everything after the experiment",
         action="store_true",
         default=False,
     )
-
-    optional.add_argument(
-        definitions.ARG_RERUN,
-        help="clean cache before the analysis",
-        action="store_true",
-        default=False,
-    )
-
 
     optional.add_argument(
         definitions.ARG_DATA_PATH,

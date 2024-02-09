@@ -38,7 +38,6 @@ is_arg_valid = False
 is_lastpymile = False
 use_purge = False
 use_parallel = False
-is_rerun = False
 gumtree_cmd = "java -jar /opt/gumtree-modified/dist/build/libs/gumtree.jar" 
 codeql_database_name = tool_name + "_codeql_database"
 git_repo = None

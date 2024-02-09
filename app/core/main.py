@@ -142,12 +142,15 @@ def scan_package(package_path, malicious_packages=None):
             dep_graph, failed_deps = depclosure.generate_closure(dir_pkg, distribution_name)
         values.result["dep-analysis"]["failed-list"] = failed_deps
         codeql_alerts = analysis.behavior_analysis(dir_pkg)
-        codeql_alerts, setup_py_alerts, malicious_files = codeql_alerts
+        codeql_alerts, setup_py_alerts, malicious_files, domains = codeql_alerts
         filtered_codeql_alerts = analysis.filter_codeql_results(suspicious_new_files,
                                                                 suspicious_mod_locs,
                                                                 codeql_alerts,
-                                                                dir_pkg)
+                                                                dir_pkg,
+                                                                is_source_avail)
         f_codeql_alerts, f_setup_py_alerts, f_malicious_files = filtered_codeql_alerts
+
+
         if f_codeql_alerts:
             values.result["has-malicious-behavior"] = True
         emitter.normal("\t\tmalicious files")
@@ -161,6 +164,8 @@ def scan_package(package_path, malicious_packages=None):
         values.result["codeql-analysis"]["codeql-alerts"] = len(codeql_alerts)
         values.result["codeql-analysis"]["codeql-file-count"] = len(malicious_files)
         values.result["codeql-analysis"]["hercule-setup-alerts"] = len(f_setup_py_alerts)
+        values.result["codeql-analysis"]["codeql-domains"] = domains
+        values.result["codeql-analysis"]["codeql-domain-count"] = len(domains)
         values.result["codeql-analysis"]["hercule-alerts"] = len(f_codeql_alerts)
         values.result["codeql-analysis"]["hercule-file-count"] = len(f_malicious_files)
         values.result["codeql-analysis"]["hercule-files"] = list(f_malicious_files)
@@ -205,10 +210,10 @@ def get_malicious_list():
                     malicious_list[pkg] = pkg_list[pkg]
                 else:
                     malicious_list[pkg] = list(set(malicious_list[pkg] + pkg_list[pkg]))
-            emitter.highlight(f"\tloaded {len(pkg_list)} malicious packages from {abs_f}")
+            print(abs_f, len(pkg_list))
     for pkg in malicious_list:
         count += len(malicious_list[pkg])
-    emitter.normal(f"\tloaded total of {count} known malicious packages")
+    emitter.normal(f"\tloaded {count} known malicious packages")
     return malicious_list
 
 def run(parsed_args):

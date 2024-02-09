@@ -280,7 +280,7 @@ def analyze_closure(dep_graph, failed_deps, malicious_packages=None):
     emitter.sub_sub_title("transitive dependency analysis")
     #emitter.normal("\t\tcreating codeql database")
     emitter.normal("\t\tchecking for known malicious packages in the dependency graph")
-    malicious_deps = set()
+    malicious_deps = []
     for pkg, pkg_data in dep_graph.nodes.items() :
         if pkg in malicious_packages:
             versions = malicious_packages[pkg]
@@ -299,7 +299,7 @@ def analyze_closure(dep_graph, failed_deps, malicious_packages=None):
             if variation in malicious_packages:
                 emitter.information(f"\t\t\tFound failed dependency {variation}, which is known to be malicious")
                 malicious_deps.append( (variation,"0.0.0"))
-    return list(malicious_deps)
+    return malicious_deps
     
     
     
@@ -346,6 +346,7 @@ def behavior_analysis(dir_pkg):
 
     setup_py_alerts = []
     malicious_files = set()
+    domains = set()
     for alert in codeql_alerts:
         locations = alert["locations"]
         for loc in locations:
@@ -353,8 +354,10 @@ def behavior_analysis(dir_pkg):
             if "setup.py" in _loc:
                 setup_py_alerts.append(_loc)
             malicious_files.add(_loc)
+        if "domain-flow" in alert["ruleId"]:
+            domains.add(alert["message"]["text"].split("URL: ")[1])
 
-    return codeql_alerts, setup_py_alerts, malicious_files
+    return codeql_alerts, setup_py_alerts, malicious_files, list(domains)
 
 
 
@@ -400,7 +403,7 @@ def analyze_files(dir_pkg, dir_src):
     return file_analysis_results
 
 
-def filter_codeql_results(new_files, mod_locs, codeql_alerts, dir_pkg):
+def filter_codeql_results(new_files, mod_locs, codeql_alerts, dir_pkg, is_source_avail):
     pkg_alerts = []
     setup_alerts = []
     malicious_files = []
@@ -408,16 +411,26 @@ def filter_codeql_results(new_files, mod_locs, codeql_alerts, dir_pkg):
         locations = alert["locations"]
         for loc in locations:
             _file = loc["physicalLocation"]["artifactLocation"]["uri"]
-            _line = loc["physicalLocation"]["region"]["startLine"]
+            _line = -1
+            if "region" in loc["physicalLocation"]:
+                _line = loc["physicalLocation"]["region"]["startLine"]
             src_file = f"{dir_pkg}/{_file}"
             src_loc = f"{src_file}:{_line}"
 
-            if src_file in new_files or src_loc in mod_locs:
+            if is_source_avail:
+                if src_file in new_files or src_loc in mod_locs:
+                    if "setup.py" in src_file:
+                        setup_alerts.append(alert)
+                    if src_file not in malicious_files:
+                        malicious_files.append(src_file)
+                    pkg_alerts.append(alert)
+            else:
                 if "setup.py" in src_file:
                     setup_alerts.append(alert)
                 if src_file not in malicious_files:
                     malicious_files.append(src_file)
                 pkg_alerts.append(alert)
+
     return pkg_alerts, setup_alerts, malicious_files
 
 
@@ -473,7 +486,6 @@ def final_result():
             emitter.error(f"\t\t\tis-compromised: {values.result['is-compromised']}")
         else:
             emitter.success(f"\t\t\tis-compromised: {values.result['is-compromised']}")
-
         emitter.highlight(f"\t\t\tfailed dependencies: {values.result['dep-analysis']['failed-list']}")
         emitter.highlight(f"\t\t\tmalicious dependencies: {values.result['dep-analysis']['malicious-list']}")
 

@@ -42,7 +42,6 @@ class Configurations:
         "is-debug": False,
         "is-lastpymile": False,
         "use-purge": False,
-        "is-rerun": False,
         "parallel": False,
         "no-dependencies": False,
         "cpu-count": 1,
@@ -74,9 +73,6 @@ class Configurations:
             self.__runtime_config_values["use-cache"] = True
         if arg_list.purge:
             self.__runtime_config_values["use-purge"] = True
-
-        if arg_list.rerun:
-            self.__runtime_config_values["is-rerun"] = True
 
         if arg_list.data_dir:
             self.__runtime_config_values["dir-data"] = arg_list.data_dir
@@ -173,7 +169,6 @@ class Configurations:
         values.is_lastpymile = self.__runtime_config_values["is-lastpymile"]
         values.debug = self.__runtime_config_values["is-debug"]
         values.use_purge = self.__runtime_config_values["use-purge"]
-        values.is_rerun = self.__runtime_config_values["is-rerun"]
         values.ui_mode = self.__runtime_config_values["use-ui"]
         values.track_dependencies = not self.__runtime_config_values["no-dependencies"] 
         sys.setrecursionlimit(values.default_stack_size)

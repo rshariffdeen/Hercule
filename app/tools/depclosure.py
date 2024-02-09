@@ -63,6 +63,7 @@ class FindCall(ast.NodeVisitor):
                 emitter.debug("Capturing value for {}".format(key))
                 self.names[key] = node.value
         
+
 def download_dependency(dir_pkg,constraints,pkg_map,dependency):
     failed_dep = None
     download_dir = f"{dir_pkg}/pip-download"
@@ -364,11 +365,34 @@ def process_dependency_queue(dir_pkg, pkg_folder, explicit_dependencies, constra
             continue
         
         if validators.url(contents):
+            emitter.warning("Got a url")
             #This is not possible in a package from  the common index
             continue
         
-        if contents[:2] == '-r': #References file
-            file = contents[2:].strip()
+        if contents[:2] == '-e' or contents[:3] == '--e':
+            emitter.warning("Got a link")
+            continue
+        
+        found_flag = False
+        for possible_flag in ["-i","--index-url",
+                  "--extra-index-url",
+                  "--no-index",
+                  "-c","--constraint",
+                  #"-r","--requirement",
+                  "-e","--editable",
+                  "-f","--find-links",
+                  "-no-binary","--only-binary","--prefer-binary",
+                  "--use-feature","--pre","--trusted-host","--require-hashes"]:
+            emitter.warning("Found flag {}".format(possible_flag))
+            if contents.startswith(possible_flag):
+                found_flag = True
+                break
+        
+        if found_flag:
+            continue
+        
+        if contents[:2] == '-r' or contents[:3] == "--r": #References file
+            file = contents[contents.index(' ')+1:].strip()
             if file not in traversed_files:
                 with open(join(dir_pkg,pkg_folder,file)) as f:
                     content = f.readlines()
@@ -379,8 +403,8 @@ def process_dependency_queue(dir_pkg, pkg_folder, explicit_dependencies, constra
                 traversed_files.add(file)
             continue
                 
-        if contents[:2] == '-c':
-            file = contents[2:].strip()
+        if contents[:2] == '-c' or contents[:3] == '--c':
+            file = contents[contents.index(' ')+1:].strip()
             if file not in traversed_files:
                 with open(join(dir_pkg,pkg_folder,file)) as f:
                     content = f.readlines()
