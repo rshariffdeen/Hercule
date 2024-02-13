@@ -161,9 +161,13 @@ def generate_closure(dir_pkg, distribution_name):
         if not implicit_dependency:
             continue
         emitter.debug(f"\t\tImplicit dependency {implicit_dependency}")
-        G.add_node(implicit_dependency, label = implicit_dependency, constraint=Requirement(implicit_dependency), direct=True, dependency_type="implicit")
-        G.add_edge(name,implicit_dependency)
-        failed_dep = download_dependency(dir_pkg,constraints,pkg_map,implicit_dependency)
+        failed_dep = False
+        try:
+            G.add_node(implicit_dependency, label = implicit_dependency, constraint=Requirement(implicit_dependency), direct=True, dependency_type="implicit")
+            G.add_edge(name,implicit_dependency)
+            failed_dep = download_dependency(dir_pkg,constraints,pkg_map,implicit_dependency)
+        except Exception as e:
+            failed_deps.append(implicit_dependency)
         if failed_dep:
             failed_deps.append(failed_dep)
     
