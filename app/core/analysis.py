@@ -364,7 +364,7 @@ def behavior_analysis(dir_pkg):
 
 def bandit_analysis(dir_pkg):
     whole_pkg_res = bandit.generate_bandit_dir_report(dir_pkg)
-    whole_pkg_alerts = whole_pkg_res.get("results", [])
+    whole_pkg_alerts = (whole_pkg_res or {}).get("results", [])
     return whole_pkg_alerts
 
 

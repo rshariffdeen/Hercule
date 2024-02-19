@@ -26,7 +26,10 @@ def decompress_archive(archive_path, file_extension, dir_path):
 
 def find_compressed(dir_path):
     emitter.normal("\t\tsearching for compressed files")
-    file_list = utilities.list_dir(dir_path)
+    if dir_path:
+        file_list = utilities.list_dir(dir_path)
+    else:
+        file_list = []
     archive_list = []
     for f_path in file_list:
         f_info = utilities.get_file_info(f_path)

@@ -243,25 +243,29 @@ def _scanSources(repository: GitRepository) -> map[str:GitFileDescriptor]:
           A map of [file_hash,file]
     """
     source_files_hashes = {}
-    commits = repository.getCommitsList()
-    commits_len = len(commits)
+    commits = [] 
+    commits_len = 0 
     processed_files = 0
     emitter.normal("\t\tscanning files in source")
     i = 1
-    for commit_hash in commits:
-        emitter.normal("\t\t\tprocessing commit {}/{} ({})".format(i, commits_len, commit_hash))
-        i += 1
-        commit = repository.checkoutCommit(commit_hash)
-        files_at_commit = repository.getFilesAtCommit(commit)
-        for cmt_file in commit.stats.files:
-            if cmt_file not in files_at_commit:  ##File has been deleted
-                continue
-            git_fd = GitFileDescriptor(repository, commit.hexsha, cmt_file)
-            if __isProcessableFile(git_fd):
-                file_hash = __computeFileHash(os.path.join(repository.getRepositoryFolder(), cmt_file))
-                source_files_hashes[file_hash] = git_fd
-                processed_files += 1
-
+    try:
+        commits = repository.getCommitsList()
+        commits_len = len(commits)
+        for commit_hash in commits:
+            emitter.normal("\t\t\tprocessing commit {}/{} ({})".format(i, commits_len, commit_hash))
+            i += 1
+            commit = repository.checkoutCommit(commit_hash)
+            files_at_commit = repository.getFilesAtCommit(commit)
+            for cmt_file in commit.stats.files:
+                if cmt_file not in files_at_commit:  ##File has been deleted
+                    continue
+                git_fd = GitFileDescriptor(repository, commit.hexsha, cmt_file)
+                if __isProcessableFile(git_fd):
+                    file_hash = __computeFileHash(os.path.join(repository.getRepositoryFolder(), cmt_file))
+                    source_files_hashes[file_hash] = git_fd
+                    processed_files += 1
+    except:
+        pass
     emitter.highlight(f"\t\t\tprocessed_commits: {commits_len}")
     emitter.highlight(f"\t\t\tprocessed_files: {processed_files}")
     return source_files_hashes
