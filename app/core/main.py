@@ -100,7 +100,7 @@ def scan_package(package_path, malicious_packages=None):
     values.result['general']['total-suspicious-modifications'] = 0
     file_analysis_results = (utilities.list_dir(dir_pkg), [], [])
     is_source_avail = False
-    if github_page or source_url:
+    if (github_page or source_url) and not values.is_banditmal:
         is_source_avail = extract.extract_source(source_url, github_page, dir_src, package_version)
         if is_source_avail:
             file_analysis_results = analysis.analyze_files(dir_pkg, dir_src)

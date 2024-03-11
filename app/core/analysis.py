@@ -470,7 +470,7 @@ def final_result():
     emitter.highlight(f"\t\t\tfiltered package alerts: {values.result['bandit-analysis']['filtered-pkg-alerts']}")
     emitter.highlight(f"\t\t\tfiltered setup alerts: {values.result['bandit-analysis']['filtered-setup-alerts']}")
 
-    if not values.is_lastpymile:
+    if values.is_hercule:
         emitter.normal("\t\tMalicious Code Segments (Code4QL)")
         if values.result['has-malicious-behavior']:
             emitter.error(f"\t\t\thas-malicious-behavior: {values.result['has-malicious-behavior']}")
