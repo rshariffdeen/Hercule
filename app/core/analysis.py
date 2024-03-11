@@ -271,8 +271,11 @@ def analyze_loc(dir_pkg):
     pkg_loc_info = reader.read_json(f"{dir_pkg}/cloc.json")
     cloc_info["total-files"] = pkg_loc_info["header"]["n_files"]
     cloc_info["total-lines"] = pkg_loc_info["header"]["n_lines"]
-    cloc_info["python-files"] = pkg_loc_info["Python"]["nFiles"]
-    cloc_info["python-lines"] = pkg_loc_info["Python"]["code"]
+    cloc_info["python-files"] = 0
+    cloc_info["python-lines"] = 0
+    if "Python" in pkg_loc_info:
+        cloc_info["python-files"] = pkg_loc_info["Python"]["nFiles"]
+        cloc_info["python-lines"] = pkg_loc_info["Python"]["code"]
     values.result["cloc"] = cloc_info
 
 
