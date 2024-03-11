@@ -14,6 +14,7 @@ ARG_DEBUG_MODE = "--debug"
 ARG_PURGE = "--purge"
 ARG_PACKAGE_FILE = "--file"
 ARG_LASTPYMILE = "--lastpymile"
+ARG_BANDITMAL = "--banditmal"
 ARG_NO_DEPS= "--no-dependencies"
 
 UI_STARTED_AT = "Started at"

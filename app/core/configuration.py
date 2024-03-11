@@ -41,6 +41,7 @@ class Configurations:
         "use-ui": False,
         "is-debug": False,
         "is-lastpymile": False,
+        "is-banditmal": False,
         "use-purge": False,
         "parallel": False,
         "no-dependencies": False,
@@ -68,6 +69,9 @@ class Configurations:
 
         if arg_list.lastpymile:
             self.__runtime_config_values["is-lastpymile"] = True
+
+        if arg_list.banditmal:
+            self.__runtime_config_values["is-banditmal"] = True
 
         if arg_list.cache:
             self.__runtime_config_values["use-cache"] = True
@@ -167,6 +171,9 @@ class Configurations:
             ),
         )
         values.is_lastpymile = self.__runtime_config_values["is-lastpymile"]
+        values.is_banditmal = self.__runtime_config_values["is-banditmal"]
+        if values.is_banditmal or values.is_lastpymile:
+            values.is_hercule = False
         values.debug = self.__runtime_config_values["is-debug"]
         values.use_purge = self.__runtime_config_values["use-purge"]
         values.ui_mode = self.__runtime_config_values["use-ui"]

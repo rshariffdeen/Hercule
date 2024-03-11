@@ -121,21 +121,27 @@ def scan_package(package_path, malicious_packages=None):
     setup_py_pkg_alerts = [x for x in bandit_pkg_alerts if "setup.py" in x["filename"]]
     values.result["bandit-analysis"]["pkg-alerts"] = len(bandit_pkg_alerts)
     values.result["bandit-analysis"]["setup-alerts"] = len(setup_py_pkg_alerts)
-    filtered_pkg_results = analysis.filter_bandit_results(suspicious_new_files,
-                                                          suspicious_mod_locs,
-                                                          bandit_pkg_alerts)
-    filtered_setup_results = [x for x in filtered_pkg_results if "setup.py" in x["filename"]]
-    if filtered_pkg_results:
-        values.result['has-malicious-code'] = True
-    values.result["bandit-analysis"]["filtered-pkg-alerts"] = len(filtered_pkg_results)
-    values.result["bandit-analysis"]["filtered-setup-alerts"] = len(filtered_setup_results)
-    values.result["bandit-analysis"]["hercule-report"] = filtered_pkg_results
 
+    if not values.is_banditmal:
+        filtered_pkg_results = analysis.filter_bandit_results(suspicious_new_files,
+                                                              suspicious_mod_locs,
+                                                              bandit_pkg_alerts)
+        filtered_setup_results = [x for x in filtered_pkg_results if "setup.py" in x["filename"]]
+        if filtered_pkg_results:
+            values.result['has-malicious-code'] = True
+
+        values.result["bandit-analysis"]["filtered-pkg-alerts"] = len(filtered_pkg_results)
+        values.result["bandit-analysis"]["filtered-setup-alerts"] = len(filtered_setup_results)
+        values.result["bandit-analysis"]["hercule-report"] = filtered_pkg_results
+
+    else:
+        if bandit_pkg_alerts:
+            values.result['has-malicious-code'] = True
     values.result["dep-analysis"] = dict()
     values.result["dep-analysis"]["failed-list"] = []
     values.result["dep-analysis"]["malicious-list"] = []
 
-    if not values.is_lastpymile:
+    if values.is_hercule:
         failed_deps = []
         dep_graph = None
         if values.track_dependencies:

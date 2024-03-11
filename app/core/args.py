@@ -38,6 +38,12 @@ def parse_args():
         action="store_true",
         default=False,
     )
+    optional.add_argument(
+        definitions.ARG_BANDITMAL,
+        help="use bandit4mal mode",
+        action="store_true",
+        default=False,
+    )
 
     optional.add_argument(
         definitions.ARG_CACHE,
