@@ -33,6 +33,7 @@ file_instrument_log = ""
 
 data_path = "/data"
 malicious_samples = os.path.join(data_path,'pypi-samples')
+malicious_cache = os.path.join(data_path,'malicious-pypi-cache')
 debug = False
 is_arg_valid = False
 is_hercule = True
