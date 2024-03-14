@@ -43,7 +43,6 @@
  where
     n.asCfgNode() = sink.getAnEntryNode() and
     not source.getLocation().getFile().inStdlib()
-    and source.getLocation().getFile().getURL().toString().indexOf("ROOT_DIR/") >= 0
     and sink.getEnclosingModule().getName().indexOf(source.getAnImportedModuleName()) >=0
     and sink.getScope() instanceof Module
     and not sink instanceof ImportingStmt
