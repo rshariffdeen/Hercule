@@ -419,20 +419,20 @@ def filter_codeql_results(new_files, mod_locs, codeql_alerts, dir_pkg, is_source
                 _line = loc["physicalLocation"]["region"]["startLine"]
             src_file = f"{dir_pkg}/{_file}"
             src_loc = f"{src_file}:{_line}"
-
-            if is_source_avail:
-                if src_file in new_files or src_loc in mod_locs:
+            if _file in values.list_package_python_files:
+                if is_source_avail:
+                    if src_file in new_files or src_loc in mod_locs:
+                        if "setup.py" in src_file:
+                            setup_alerts.append(alert)
+                        if src_file not in malicious_files:
+                            malicious_files.append(src_file)
+                        pkg_alerts.append(alert)
+                else:
                     if "setup.py" in src_file:
                         setup_alerts.append(alert)
                     if src_file not in malicious_files:
                         malicious_files.append(src_file)
                     pkg_alerts.append(alert)
-            else:
-                if "setup.py" in src_file:
-                    setup_alerts.append(alert)
-                if src_file not in malicious_files:
-                    malicious_files.append(src_file)
-                pkg_alerts.append(alert)
 
     return pkg_alerts, setup_alerts, malicious_files
 

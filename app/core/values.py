@@ -18,7 +18,9 @@ dir_config = join(dir_main, "config")
 dir_scripts = join(dir_main, "scripts")
 dir_output = ""
 dir_backup = join(dir_main, "backup")
-dir_queries = join(dir_main,'codeql','flows')
+dir_queries_base = join(dir_main,'codeql')
+dir_queries = ""
+list_package_python_files = []
 
 file_main_log = ""
 file_error_log = dir_log_base + "/log-error"

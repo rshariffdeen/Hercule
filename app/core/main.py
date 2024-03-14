@@ -72,6 +72,8 @@ def scan_package(package_path, malicious_packages=None):
     values.result = dict()
 
     dir_pkg = extract.extract_archive(package_path)
+    values.dir_queries = f"{dir_pkg}/codeql/flows"
+    utilities.execute_command(f"cp -rf {values.dir_queries_base} {dir_pkg}")
     package_name, package_version, source_url, github_page = extract.extract_meta_data(dir_pkg)
     distribution_name = dir_pkg.split("/")[-1].replace("-dir", "")
     
@@ -98,7 +100,9 @@ def scan_package(package_path, malicious_packages=None):
     values.result['general']['suspicious-new-files'] = 0
     values.result['general']['suspicious-modified-files'] = 0
     values.result['general']['total-suspicious-modifications'] = 0
-    file_analysis_results = (utilities.list_dir(dir_pkg), [], [])
+    package_file_list = utilities.list_dir(dir_pkg)
+    values.list_package_python_files = [x.replace(dir_pkg + "/", "") for x in package_file_list if ".py" in x]
+    file_analysis_results = (package_file_list, [], [])
     is_source_avail = False
     if (github_page or source_url) and not values.is_banditmal:
         is_source_avail = extract.extract_source(source_url, github_page, dir_src, package_version)
@@ -163,7 +167,7 @@ def scan_package(package_path, malicious_packages=None):
         if not f_malicious_files:
             emitter.error(f"\t\t\t-none-")
         for f in f_malicious_files:
-            _f = f.replace(dir_pkg, "")
+            _f = f.replace(dir_pkg + "/", "")
             emitter.error(f"\t\t\t{_f}")
         values.result["codeql-analysis"] = dict()
         values.result["codeql-analysis"]["codeql-setup-alerts"] = len(setup_py_alerts)
