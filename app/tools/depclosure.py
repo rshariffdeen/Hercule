@@ -9,6 +9,7 @@ from app.core import emitter
 import networkx as nx
 import matplotlib.pyplot as plt
 from packaging.requirements import Requirement
+from packaging.requirements import InvalidRequirement
 from app.core import values
 
 
@@ -69,7 +70,9 @@ def download_dependency(dir_pkg,constraints,pkg_map,dependency):
     download_dir = f"{dir_pkg}/pip-download"
     if not os.path.isdir(download_dir):
         utilities.execute_command(f"mkdir {download_dir}")
-
+    else:
+        utilities.execute_command(f"bash -c 'rm -rf {download_dir}/*'")
+        
     status,out,err =  utilities.execute_command(f"pip download -d {download_dir} '{ constraints.get(dependency,dependency) }' "
                                         ,show_output=True
                                         ,directory=dir_pkg)
@@ -154,7 +157,7 @@ def generate_closure(dir_pkg, distribution_name):
         if os.path.isfile(join(dir_pkg,package,requirements_file)) and requirements_file.endswith('requirements.txt'):
             process_requirements(dir_pkg, package, dependency_queue,requirements_file)
 
-    process_dependency_queue(dir_pkg, package, explicit_dependencies, constraints, dependency_queue)
+    process_dependency_queue(dir_pkg, package, explicit_dependencies, constraints, dependency_queue,failed_deps)
     pkg_map = {}
     implicit_dependencies = all_imports.difference(explicit_dependencies)
     
@@ -355,7 +358,7 @@ def generate_closure(dir_pkg, distribution_name):
 #     return G
 
 
-def process_dependency_queue(dir_pkg, pkg_folder, explicit_dependencies, constraints, dependency_queue):
+def process_dependency_queue(dir_pkg, pkg_folder, explicit_dependencies, constraints, dependency_queue,failed_deps):
     # Process all the dependencies listed in requirements files as those can be files or extra constraints
     traversed_files = set()
     traversed_files.add(join(dir_pkg,pkg_folder,"dev-requierements.txt"))
@@ -387,17 +390,19 @@ def process_dependency_queue(dir_pkg, pkg_folder, explicit_dependencies, constra
             continue
         
         found_flag = False
-        for possible_flag in ["-i","--index-url",
+        flags = ["-i","--index-url",
                   "--extra-index-url",
                   "--no-index",
                   "-c","--constraint",
                   #"-r","--requirement",
                   "-e","--editable",
                   "-f","--find-links",
-                  "-no-binary","--only-binary","--prefer-binary",
-                  "--use-feature","--pre","--trusted-host","--require-hashes"]:
-            emitter.warning("Found flag {}".format(possible_flag))
+                  "--no-binary",
+		  "-no-binary","--only-binary","--prefer-binary",
+                  "--use-feature","--pre","--trusted-host","--require-hashes"]
+        for possible_flag in flags:    
             if contents.startswith(possible_flag):
+                emitter.warning("Found flag {}".format(possible_flag))
                 found_flag = True
                 break
         
@@ -430,10 +435,16 @@ def process_dependency_queue(dir_pkg, pkg_folder, explicit_dependencies, constra
             
         if os.path.exists(contents):
             pass
-        
-        dependency,constraint = parse_dependency(contents)
-        constraints[dependency] = constraint
-        explicit_dependencies.add(dependency)
+        for flag in flags:
+            if flag in contents:
+                contents = contents[:contents.index(flag)]
+                break
+        try:
+            dependency,constraint = parse_dependency(contents)
+            constraints[dependency] = constraint
+            explicit_dependencies.add(dependency)
+        except InvalidRequirement as e:
+            failed_deps.append(contents)
 
 def process_requirements(dir_pkg, pkg_folder, dependency_queue,file_name ="requirements.txt"):
     if exists(join(dir_pkg,pkg_folder,file_name)):
