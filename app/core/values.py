@@ -80,3 +80,4 @@ email_configuration = {
 discord_configuration = {"enabled": False, "hook_url": ""}
 result = dict()
 
+white_listed_domains = ["googleapis.com", ""]

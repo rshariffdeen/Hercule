@@ -351,15 +351,17 @@ def behavior_analysis(dir_pkg):
     malicious_files = set()
     domains = set()
     for alert in codeql_alerts:
+        if "domain-flow" in alert["ruleId"]:
+            domain_name = alert["message"]["text"].split("URL: ")[1]
+            if any(d in domain_name for d in values.white_listed_domains):
+                continue
+            domains.add(domain_name)
         locations = alert["locations"]
         for loc in locations:
             _loc = loc["physicalLocation"]["artifactLocation"]["uri"]
             if "setup.py" in _loc:
                 setup_py_alerts.append(_loc)
             malicious_files.add(_loc)
-        if "domain-flow" in alert["ruleId"]:
-            domains.add(alert["message"]["text"].split("URL: ")[1])
-
     return codeql_alerts, setup_py_alerts, malicious_files, list(domains)
 
 
