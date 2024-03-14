@@ -200,9 +200,13 @@ def scan_package(package_path, malicious_packages=None):
             del values.result["bandit-analysis"]["hercule-report"]
     if "suspicious-modifications" in values.result:
         del values.result["suspicious-modifications"]
+    if "suspicious-files" in values.result:
+        del values.result["suspicious-files"]
     if "codeql-analysis" in values.result:
         if "hercule-report" in values.result["codeql-analysis"]:
             del values.result["codeql-analysis"]["hercule-report"]
+        if "codeql-domains" in values.result["codeql-analysis"]:
+            del values.result["codeql-analysis"]["codeql-domains"]
         
     writer.write_as_json(values.result, min_result_file_name)
 
