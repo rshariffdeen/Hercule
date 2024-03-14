@@ -5,7 +5,7 @@
  * @problem.severity warning
  * @security-severity 7.8
  * @precision high
- * @id py/os-flow
+ * @id py/import-closure
  * @tags security
  */
 
