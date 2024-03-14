@@ -413,6 +413,10 @@ def filter_codeql_results(new_files, mod_locs, codeql_alerts, dir_pkg, is_source
     setup_alerts = []
     malicious_files = []
     for alert in codeql_alerts:
+        if "domain-flow" in alert["ruleId"]:
+            domain_name = alert["message"]["text"].split("URL: ")[1]
+            if any(d in domain_name for d in values.white_listed_domains):
+                continue
         locations = alert["locations"]
         for loc in locations:
             _file = loc["physicalLocation"]["artifactLocation"]["uri"]
