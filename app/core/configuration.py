@@ -43,7 +43,7 @@ class Configurations:
         "is-lastpymile": False,
         "is-banditmal": False,
         "use-purge": False,
-        "use-bandit": False,
+        "enable-bandit": False,
         "parallel": False,
         "no-dependencies": False,
         "cpu-count": 1,
@@ -74,9 +74,8 @@ class Configurations:
         if arg_list.banditmal:
             self.__runtime_config_values["is-banditmal"] = True
 
-        if arg_list.use_bandit:
-            self.__runtime_config_values["use-bandit"] = True
-
+        if arg_list.enable_bandit:
+            self.__runtime_config_values["enable-bandit"] = True
 
         if arg_list.cache:
             self.__runtime_config_values["use-cache"] = True
