@@ -46,6 +46,13 @@ def parse_args():
     )
 
     optional.add_argument(
+        definitions.ARG_ENABLE_BANDIT,
+        help="enable bandit analysis",
+        action="store_true",
+        default=False,
+    )
+
+    optional.add_argument(
         definitions.ARG_CACHE,
         help="use cached information for the process",
         action="store_true",

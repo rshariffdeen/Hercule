@@ -72,8 +72,9 @@ def scan_package(package_path, malicious_packages=None):
     values.result = dict()
 
     dir_pkg = extract.extract_archive(package_path)
-    values.dir_queries = f"{dir_pkg}/codeql/flows"
-    utilities.execute_command(f"cp -rf {values.dir_queries_base} {dir_pkg}")
+    # values.dir_queries = f"{dir_pkg}/codeql/flows"
+    # utilities.execute_command(f"cp -rf {values.dir_queries_base} {dir_pkg}")
+    values.dir_queries = values.dir_queries_base + "/flows"
     package_name, package_version, source_url, github_page = extract.extract_meta_data(dir_pkg)
     distribution_name = dir_pkg.split("/")[-1].replace("-dir", "")
     

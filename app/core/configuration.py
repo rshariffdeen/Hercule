@@ -43,6 +43,7 @@ class Configurations:
         "is-lastpymile": False,
         "is-banditmal": False,
         "use-purge": False,
+        "use-bandit": False,
         "parallel": False,
         "no-dependencies": False,
         "cpu-count": 1,
@@ -72,6 +73,10 @@ class Configurations:
 
         if arg_list.banditmal:
             self.__runtime_config_values["is-banditmal"] = True
+
+        if arg_list.use_bandit:
+            self.__runtime_config_values["use-bandit"] = True
+
 
         if arg_list.cache:
             self.__runtime_config_values["use-cache"] = True
@@ -172,8 +177,10 @@ class Configurations:
         )
         values.is_lastpymile = self.__runtime_config_values["is-lastpymile"]
         values.is_banditmal = self.__runtime_config_values["is-banditmal"]
+        values.enable_bandit = self.__runtime_config_values["enable-bandit"]
         if values.is_banditmal or values.is_lastpymile:
             values.is_hercule = False
+            values.enable_bandit = True
         values.debug = self.__runtime_config_values["is-debug"]
         values.use_purge = self.__runtime_config_values["use-purge"]
         values.ui_mode = self.__runtime_config_values["use-ui"]

@@ -1,6 +1,6 @@
 from app.core.utilities import execute_command
 from app.core import reader
-
+from app.core import values
 
 def generate_bandit_source_report(source_path):
     bandit_command = f"bandit -q -f json  -o {source_path}.json {source_path}"
@@ -10,6 +10,8 @@ def generate_bandit_source_report(source_path):
 
 
 def generate_bandit_dir_report(dir_pkg):
+    if not values.enable_bandit:
+        return {}
     bandit_command = f"bandit -r -q -f json  -o {dir_pkg}.json {dir_pkg}"
     execute_command(bandit_command)
     #print(f"{dir_pkg}.json")

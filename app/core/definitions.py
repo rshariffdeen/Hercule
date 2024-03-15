@@ -15,6 +15,7 @@ ARG_PURGE = "--purge"
 ARG_PACKAGE_FILE = "--file"
 ARG_LASTPYMILE = "--lastpymile"
 ARG_BANDITMAL = "--banditmal"
+ARG_ENABLE_BANDIT = "--enable-bandit"
 ARG_NO_DEPS= "--no-dependencies"
 
 UI_STARTED_AT = "Started at"
