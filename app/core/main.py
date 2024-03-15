@@ -235,6 +235,10 @@ def run(parsed_args):
     malicious_packages = get_malicious_list()
     if parsed_args.file:
         package_path = parsed_args.file.name
+        _pkg_name = package_path.split("/")[-1]
+        result_file_name = join(values.dir_results, f"{_pkg_name}.json")
+        if os.path.isfile(result_file_name) and values.use_cache:
+            return
         scan_package(package_path,malicious_packages)
     elif parsed_args.dir:
         list_packages = utilities.list_dir(parsed_args.dir)
