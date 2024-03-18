@@ -105,7 +105,7 @@ def scan_package(package_path, malicious_packages=None):
     values.list_package_python_files = [x.replace(dir_pkg + "/", "") for x in package_file_list if ".py" in x]
     file_analysis_results = (package_file_list, [], [])
     is_source_avail = False
-    if (github_page or source_url) and not values.is_banditmal:
+    if (github_page or source_url):
         is_source_avail = extract.extract_source(source_url, github_page, dir_src, package_version)
         if is_source_avail:
             file_analysis_results = analysis.analyze_files(dir_pkg, dir_src)
@@ -127,7 +127,7 @@ def scan_package(package_path, malicious_packages=None):
     values.result["bandit-analysis"]["pkg-alerts"] = len(bandit_pkg_alerts)
     values.result["bandit-analysis"]["setup-alerts"] = len(setup_py_pkg_alerts)
 
-    if not values.is_banditmal:
+    if values.enable_bandit:
         filtered_pkg_results = analysis.filter_bandit_results(suspicious_new_files,
                                                               suspicious_mod_locs,
                                                               bandit_pkg_alerts)
