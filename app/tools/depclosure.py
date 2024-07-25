@@ -194,7 +194,7 @@ def generate_closure(dir_pkg, distribution_name):
                 emitter.debug(f"\t\t\tTraversing wheel {pkg}")
                 pkg_metadata = pkginfo.get_metadata(join(dir_pkg,pkg))
                 
-                if pkg_metadata.name not in G:
+                if pkg_metadata.name and pkg_metadata.name not in G:
                     emitter.debug(f"\t\t\t\tAdding dependency {pkg_metadata.name}")
                     G.add_node(pkg_metadata.name, label = pkg_metadata.name, constraint = Requirement( f"{pkg_metadata.name}=={pkg_metadata.version}"), direct = False, dependency_type = "Unknown" )
                 for dependency_list in [pkg_metadata.requires, pkg_metadata.requires_dist, pkg_metadata.requires_external]:
