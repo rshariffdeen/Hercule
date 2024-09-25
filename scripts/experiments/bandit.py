@@ -12,6 +12,7 @@ def write_as_csv(data: Any, output_file_path: str):
         for output in data:
             writer.writerow(output)
 
+
 def read_json(file_path: str):
     json_data = None
     if os.path.isfile(file_path):
@@ -22,6 +23,7 @@ def read_json(file_path: str):
                 content = content_str
             json_data = json.loads(content)
     return json_data
+
 
 def run_bandit(dir_path):
     curr_dir = os.getcwd()
@@ -40,6 +42,7 @@ def run_bandit(dir_path):
     no_undefined = analysis_data["metrics"]["_totals"]["SEVERITY.UNDEFINED"]
     os.chdir(curr_dir)
     return no_high, no_medium, no_low, no_undefined, no_errors
+
 
 def run(sym_args):
     if not sym_args:
@@ -80,6 +83,7 @@ def run(sym_args):
         if output_content:
             sorted_content = sorted(output_content, key=lambda x:x[0])
             write_as_csv(sorted_content, f"{pkg_name}-bandit.csv")
+
 
 if __name__ == "__main__":
     run(sys.argv[1:])
