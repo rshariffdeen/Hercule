@@ -49,12 +49,22 @@ def run(sym_args):
         print("requires the path to the dir")
         exit(1)
     download_dir = sym_args[0]
+    pkg_list = sym_args[1]
     if not os.path.isdir(download_dir):
         print("path is invalid", download_dir)
         exit(1)
+    if not os.path.isfile(pkg_list):
+        print("path is invalid", pkg_list)
+        exit(1)
 
     list_packages = [d for d in os.listdir(download_dir) if os.path.isdir(join(download_dir, d))]
+    filtered_pkg_list = []
+    with open(pkg_list, "r") as _f:
+        content = _f.readlines()
+        filtered_pkg_list = [f.strip().replace("\n", "") for f in content]
     for pkg_name in list_packages:
+        if pkg_name not in filtered_pkg_list:
+            continue
         output_content = []
         dir_pkg = os.path.join(download_dir, pkg_name)
         file_list = [f for f in os.listdir(dir_pkg) if os.path.isfile(join(dir_pkg, f))]

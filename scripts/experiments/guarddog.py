@@ -30,28 +30,43 @@ def read_json(file_path: str):
 
 def run(sym_args):
     if not sym_args:
-        print("requires the path to the dir")
+        print("requires the path to the dir and the pkg name list")
         exit(1)
-    download_dir = sym_args[0]
-    if not os.path.isdir(download_dir):
-        print("path is invalid", download_dir)
+    dir_path = sym_args[0]
+    pkg_list = sym_args[1]
+    if not os.path.isdir(dir_path):
+        print("path is invalid", dir_path)
+        exit(1)
+    if not os.path.isfile(pkg_list):
+        print("path is invalid", pkg_list)
         exit(1)
 
     aggregated_data = []
-    list_packages = [f for f in os.listdir(download_dir) if os.path.isfile(join(download_dir, f))]
+    list_packages = [f for f in os.listdir(dir_path) if os.path.isfile(join(dir_path, f)) and
+                     ".json" not in f and ".txt" not in f]
+    filtered_pkg_list = []
+    with open(pkg_list, "r") as _f:
+        content = _f.readlines()
+        filtered_pkg_list = [f.strip().replace("\n", "") for f in content]
+
+    print(dir_path, len(list_packages))
     for pkg_name in list_packages:
+        if pkg_name not in filtered_pkg_list:
+            continue
+        print(pkg_name)
         report_name = f"{pkg_name}.json"
-        report_path = f"{os.getcwd()}/{report_name}"
-        pkg_path = f"{download_dir}/{pkg_name}"
+        report_path = f"{dir_path}/{report_name}"
+        pkg_path = f"{dir_path}/{pkg_name}"
         if not os.path.isfile(report_path):
             print(pkg_name)
             scan_command = f"guarddog pypi scan {pkg_path} --output-format=json > {report_path}"
             print(scan_command)
             os.system(scan_command)
-        print(report_name)
-        aggregated_data.append(read_json(str(report_path)))
+        json_report = read_json(str(report_path))
+        print(report_path)
+        aggregated_data.append((json_report["package"], json_report["issues"], json_report["errors"], json_report["results"]))
 
-    write_as_csv(aggregated_data, "aggregated_data.csv")
+    write_as_csv(aggregated_data, f"{dir_path}/aggregated_data.csv")
 
 
 if __name__ == "__main__":
