@@ -1,0 +1,7 @@
+#include "prelude.dl"
+
+Policy("test_policy", component_id, "") :-
+    check_passed(component_id, "mcn_detect_malicious_metadata_1").
+
+apply_policy_to("test_policy", component_id) :-
+    component_analysis(_, component_id).
