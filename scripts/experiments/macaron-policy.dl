@@ -3,5 +3,9 @@
 Policy("test_policy", component_id, "") :-
     check_passed(component_id, "mcn_detect_malicious_metadata_1").
 
+.decl latest(analysis_id: number, component_id: number)
+latest(latest, component_id) :-
+    latest = max analysis_id : component_analysis(analysis_id, component_id).
+
 apply_policy_to("test_policy", component_id) :-
-    component_analysis(_, component_id).
+    latest(_, component_id).
