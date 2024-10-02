@@ -16,11 +16,11 @@ from app.tools import lastpymile
 def analyze_file_types(dir_pkg, dir_src):
     emitter.sub_sub_title("analysing package files")
     pkg_file_types = extract.extract_file_types(dir_pkg)
-    values.result["general"]["total-files"] = sum(len(pkg_file_types[x]) for x in pkg_file_types)
-    values.result["general"]["total-python-files"] = sum(len(pkg_file_types[x])
+    values.result[dir_pkg]["general"]["total-files"] = sum(len(pkg_file_types[x]) for x in pkg_file_types)
+    values.result[dir_pkg]["general"]["total-python-files"] = sum(len(pkg_file_types[x])
                                                          for x in pkg_file_types
                                                          if "python script" in x.lower())
-    values.result["general"]["total-file-types"] = len(pkg_file_types)
+    values.result[dir_pkg]["general"]["total-file-types"] = len(pkg_file_types)
     # values.result["file-types"] = dict()
     # for _type in pkg_file_types:
     #     values.result["file-types"][_type] = len(pkg_file_types[_type])
@@ -276,7 +276,7 @@ def analyze_loc(dir_pkg):
     if "Python" in pkg_loc_info:
         cloc_info["python-files"] = pkg_loc_info["Python"]["nFiles"]
         cloc_info["python-lines"] = pkg_loc_info["Python"]["code"]
-    values.result["cloc"] = cloc_info
+    values.result[dir_pkg]["cloc"] = cloc_info
 
 
 def analyze_closure(dep_graph, failed_deps, malicious_packages=None):
@@ -380,8 +380,8 @@ def ast_based_analysis(dir_pkg, dir_src):
     interested_files["decompiled pyc"] = {"src": src_pyc_list, "pkg": pkg_pyc_list}
     new_list = detect_new_files(interested_files, dir_pkg, dir_src)
     mod_list = detect_modified_source_files(interested_files, dir_src, dir_pkg)
-    values.result["general"]["total-modified-files"] = len(mod_list)
-    values.result["general"]["total-new-files"] = len(new_list)
+    values.result[dir_pkg]["general"]["total-modified-files"] = len(mod_list)
+    values.result[dir_pkg]["general"]["total-new-files"] = len(new_list)
     suspicious_new_files = detect_suspicious_additions(new_list)
     suspicious_mod_files, suspicious_mod_locs = detect_suspicious_modifications(mod_list, dir_pkg)
     return suspicious_new_files, suspicious_mod_files, suspicious_mod_locs
@@ -454,49 +454,49 @@ def filter_bandit_results(new_files, mod_locs, bandit_results):
     return hercule_alerts
 
 
-def final_result():
+def final_result(dir_pkg):
     emitter.sub_sub_title("Analysis Results")
     emitter.normal("\t\tIntegrity")
-    if values.result['has-integrity']:
-        emitter.success(f"\t\t\thas-integrity: {values.result['has-integrity']}")
+    if values.result[dir_pkg]['has-integrity']:
+        emitter.success(f"\t\t\thas-integrity: {values.result[dir_pkg]['has-integrity']}")
     else:
-        emitter.error(f"\t\t\thas-integrity: {values.result['has-integrity']}")
-    emitter.highlight(f"\t\t\tsuspicious source file additions: {values.result['general']['suspicious-new-files']}")
-    emitter.highlight(f"\t\t\tsuspicious source file modifications: { values.result['general']['suspicious-modified-files']}")
-    emitter.highlight(f"\t\t\tsuspicious source location modifications: {values.result['general']['total-suspicious-modifications']}")
+        emitter.error(f"\t\t\thas-integrity: {values.result[dir_pkg]['has-integrity']}")
+    emitter.highlight(f"\t\t\tsuspicious source file additions: {values.result[dir_pkg]['general']['suspicious-new-files']}")
+    emitter.highlight(f"\t\t\tsuspicious source file modifications: { values.result[dir_pkg]['general']['suspicious-modified-files']}")
+    emitter.highlight(f"\t\t\tsuspicious source location modifications: {values.result[dir_pkg]['general']['total-suspicious-modifications']}")
 
     emitter.normal("\t\tMalicious Code Segments (Bandit4Mal)")
-    if values.result['has-malicious-code']:
-        emitter.error(f"\t\t\thas-malicious-code: {values.result['has-malicious-code']}")
+    if values.result[dir_pkg]['has-malicious-code']:
+        emitter.error(f"\t\t\thas-malicious-code: {values.result[dir_pkg]['has-malicious-code']}")
     else:
-        emitter.success(f"\t\t\thas-malicious-code: {values.result['has-malicious-code']}")
+        emitter.success(f"\t\t\thas-malicious-code: {values.result[dir_pkg]['has-malicious-code']}")
 
-    emitter.highlight(f"\t\t\tpackage alerts: {values.result['bandit-analysis']['pkg-alerts']}")
-    emitter.highlight(f"\t\t\tsetup alerts: {values.result['bandit-analysis']['setup-alerts']}")
-    emitter.highlight(f"\t\t\tfiltered package alerts: {values.result['bandit-analysis']['filtered-pkg-alerts']}")
-    emitter.highlight(f"\t\t\tfiltered setup alerts: {values.result['bandit-analysis']['filtered-setup-alerts']}")
+    emitter.highlight(f"\t\t\tpackage alerts: { values.result[dir_pkg]['bandit-analysis']['pkg-alerts']}")
+    emitter.highlight(f"\t\t\tsetup alerts: { values.result[dir_pkg]['bandit-analysis']['setup-alerts']}")
+    emitter.highlight(f"\t\t\tfiltered package alerts: { values.result[dir_pkg]['bandit-analysis']['filtered-pkg-alerts']}")
+    emitter.highlight(f"\t\t\tfiltered setup alerts: { values.result[dir_pkg]['bandit-analysis']['filtered-setup-alerts']}")
 
     if values.is_hercule:
         emitter.normal("\t\tMalicious Code Segments (Code4QL)")
-        if values.result['has-malicious-behavior']:
-            emitter.error(f"\t\t\thas-malicious-behavior: {values.result['has-malicious-behavior']}")
+        if values.result[dir_pkg]['has-malicious-behavior']:
+            emitter.error(f"\t\t\thas-malicious-behavior: { values.result[dir_pkg]['has-malicious-behavior']}")
         else:
-            emitter.success(f"\t\t\thas-malicious-behavior: {values.result['has-malicious-behavior']}")
+            emitter.success(f"\t\t\thas-malicious-behavior: { values.result[dir_pkg]['has-malicious-behavior']}")
 
-        emitter.highlight(f"\t\t\tmalicious behavior alerts: {values.result['codeql-analysis']['codeql-alerts']}")
-        emitter.highlight(f"\t\t\tmalicious behavior files: { values.result['codeql-analysis']['codeql-file-count']}")
-        emitter.highlight(f"\t\t\tmalicious alerts in setup: {values.result['codeql-analysis']['codeql-setup-alerts']}")
-        emitter.highlight(f"\t\t\tfiltered behavior alerts: {values.result['codeql-analysis']['hercule-alerts']}")
-        emitter.highlight(f"\t\t\tfiltered behavior files: {values.result['codeql-analysis']['hercule-file-count']}")
-        emitter.highlight(f"\t\t\tfiltered alerts in setup: {values.result['codeql-analysis']['hercule-setup-alerts']}")
+        emitter.highlight(f"\t\t\tmalicious behavior alerts: { values.result[dir_pkg]['codeql-analysis']['codeql-alerts']}")
+        emitter.highlight(f"\t\t\tmalicious behavior files: {  values.result[dir_pkg]['codeql-analysis']['codeql-file-count']}")
+        emitter.highlight(f"\t\t\tmalicious alerts in setup: { values.result[dir_pkg]['codeql-analysis']['codeql-setup-alerts']}")
+        emitter.highlight(f"\t\t\tfiltered behavior alerts: { values.result[dir_pkg]['codeql-analysis']['hercule-alerts']}")
+        emitter.highlight(f"\t\t\tfiltered behavior files: { values.result[dir_pkg]['codeql-analysis']['hercule-file-count']}")
+        emitter.highlight(f"\t\t\tfiltered alerts in setup: { values.result[dir_pkg]['codeql-analysis']['hercule-setup-alerts']}")
 
         emitter.normal("\t\tTransitive Dependencies Analysis")
-        if values.result['is-compromised']:
-            emitter.error(f"\t\t\tis-compromised: {values.result['is-compromised']}")
+        if values.result[dir_pkg]['is-compromised']:
+            emitter.error(f"\t\t\tis-compromised: { values.result[dir_pkg]['is-compromised']}")
         else:
-            emitter.success(f"\t\t\tis-compromised: {values.result['is-compromised']}")
-        emitter.highlight(f"\t\t\tfailed dependencies: {values.result['dep-analysis']['failed-list']}")
-        emitter.highlight(f"\t\t\tmalicious dependencies: {values.result['dep-analysis']['malicious-list']}")
+            emitter.success(f"\t\t\tis-compromised: { values.result[dir_pkg]['is-compromised']}")
+        emitter.highlight(f"\t\t\tfailed dependencies: { values.result[dir_pkg]['dep-analysis']['failed-list']}")
+        emitter.highlight(f"\t\t\tmalicious dependencies: { values.result[dir_pkg]['dep-analysis']['malicious-list']}")
 
 
 

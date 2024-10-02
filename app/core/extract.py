@@ -62,7 +62,7 @@ def find_tag(tag_list, pkg_version):
     return release_tag
 
 
-def extract_source(source_url, github_page, dir_src, pkg_version):
+def extract_source(source_url, github_page, dir_src, pkg_version, dir_pkg):
     emitter.sub_sub_title("extracting source")
     is_success = False
     if not os.path.isdir(dir_src):
@@ -87,7 +87,7 @@ def extract_source(source_url, github_page, dir_src, pkg_version):
                 tag_list = sorted(repo.tags, key=lambda t: t.commit.committed_datetime, reverse=True)
                 emitter.normal("\t\tfinding release tag")
                 release_tag = find_tag(tag_list, pkg_version)
-                values.result["github-tag"] = str(release_tag)
+                values.result[dir_pkg]["github-tag"] = str(release_tag)
                 if release_tag:                    
                     emitter.highlight(f"\t\t\t release tag: {release_tag}")
                     repo.git.checkout(release_tag)

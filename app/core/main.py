@@ -69,7 +69,7 @@ def scan_package(package_path, malicious_packages=None):
     emitter.sub_title(package_path)
     
     start_time = time.time()
-    values.result = dict()
+    values.result[dir_pkg] = dict()
 
     dir_pkg = extract.extract_archive(package_path)
     # values.dir_queries = f"{dir_pkg}/codeql/flows"
@@ -78,54 +78,54 @@ def scan_package(package_path, malicious_packages=None):
     package_name, package_version, source_url, github_page = extract.extract_meta_data(dir_pkg)
     distribution_name = dir_pkg.split("/")[-1].replace("-dir", "")
     
-    values.result["package-name"] = package_name
-    values.result["file-name"] = distribution_name
-    values.result["version"] = package_version
-    values.result["source-url"] = source_url
-    values.result["github-page"] = github_page
+    values.result[dir_pkg]["package-name"] = package_name
+    values.result[dir_pkg]["file-name"] = distribution_name
+    values.result[dir_pkg]["version"] = package_version
+    values.result[dir_pkg]["source-url"] = source_url
+    values.result[dir_pkg]["github-page"] = github_page
 
     dir_src = dir_pkg.replace("-dir", "-src")
     # initialize values
 
-    values.result["has-integrity"] = False
-    values.result["has-malicious-code"] = False
-    values.result["has-malicious-behavior"] = False
-    values.result["is-compromised"] = False
-    values.result["bandit-analysis"] = dict()
-    values.result['bandit-analysis']['setup-alerts'] = 0
-    values.result['bandit-analysis']['filtered-setup-alerts'] = 0
-    values.result['bandit-analysis']['pkg-alerts'] = 0
-    values.result['bandit-analysis']['filtered-pkg-alerts'] = 0
+    values.result[dir_pkg]["has-integrity"] = False
+    values.result[dir_pkg]["has-malicious-code"] = False
+    values.result[dir_pkg]["has-malicious-behavior"] = False
+    values.result[dir_pkg]["is-compromised"] = False
+    values.result[dir_pkg]["bandit-analysis"] = dict()
+    values.result[dir_pkg]['bandit-analysis']['setup-alerts'] = 0
+    values.result[dir_pkg]['bandit-analysis']['filtered-setup-alerts'] = 0
+    values.result[dir_pkg]['bandit-analysis']['pkg-alerts'] = 0
+    values.result[dir_pkg]['bandit-analysis']['filtered-pkg-alerts'] = 0
 
-    values.result["general"] = dict()
-    values.result['general']['suspicious-new-files'] = 0
-    values.result['general']['suspicious-modified-files'] = 0
-    values.result['general']['total-suspicious-modifications'] = 0
+    values.result[dir_pkg]["general"] = dict()
+    values.result[dir_pkg]['general']['suspicious-new-files'] = 0
+    values.result[dir_pkg]['general']['suspicious-modified-files'] = 0
+    values.result[dir_pkg]['general']['total-suspicious-modifications'] = 0
     package_file_list = utilities.list_dir(dir_pkg)
     values.list_package_python_files = [x.replace(dir_pkg + "/", "") for x in package_file_list if ".py" in x]
     file_analysis_results = (package_file_list, [], [])
     is_source_avail = False
     if (github_page or source_url):
-        is_source_avail = extract.extract_source(source_url, github_page, dir_src, package_version)
+        is_source_avail = extract.extract_source(source_url, github_page, dir_src, package_version, dir_pkg)
         if is_source_avail:
             file_analysis_results = analysis.analyze_files(dir_pkg, dir_src)
     if not is_source_avail:
         decompile.decompile_python_files(dir_pkg, None)
     suspicious_new_files, suspicious_mod_files, suspicious_mod_locs = file_analysis_results
     suspicious_files = suspicious_mod_files + suspicious_new_files
-    values.result["general"]["suspicious-modified-files"] = len(suspicious_mod_files)
-    values.result["general"]["suspicious-new-files"] = len(suspicious_new_files)
-    values.result["general"]["total-suspicious-files"] = len(suspicious_files)
-    values.result["general"]["total-suspicious-modifications"] = len(suspicious_mod_locs)
-    values.result["suspicious-files"] = ",".join(suspicious_files)
-    values.result["suspicious-modifications"] = ",".join(suspicious_mod_locs)
+    values.result[dir_pkg]["general"]["suspicious-modified-files"] = len(suspicious_mod_files)
+    values.result[dir_pkg]["general"]["suspicious-new-files"] = len(suspicious_new_files)
+    values.result[dir_pkg]["general"]["total-suspicious-files"] = len(suspicious_files)
+    values.result[dir_pkg]["general"]["total-suspicious-modifications"] = len(suspicious_mod_locs)
+    values.result[dir_pkg]["suspicious-files"] = ",".join(suspicious_files)
+    values.result[dir_pkg]["suspicious-modifications"] = ",".join(suspicious_mod_locs)
     if not suspicious_files and is_source_avail:
-        values.result["has-integrity"] = True
+        values.result[dir_pkg]["has-integrity"] = True
 
     bandit_pkg_alerts = analysis.bandit_analysis(dir_pkg)
     setup_py_pkg_alerts = [x for x in bandit_pkg_alerts if "setup.py" in x["filename"]]
-    values.result["bandit-analysis"]["pkg-alerts"] = len(bandit_pkg_alerts)
-    values.result["bandit-analysis"]["setup-alerts"] = len(setup_py_pkg_alerts)
+    values.result[dir_pkg]["bandit-analysis"]["pkg-alerts"] = len(bandit_pkg_alerts)
+    values.result[dir_pkg]["bandit-analysis"]["setup-alerts"] = len(setup_py_pkg_alerts)
 
     if values.enable_bandit:
         filtered_pkg_results = analysis.filter_bandit_results(suspicious_new_files,
@@ -133,25 +133,25 @@ def scan_package(package_path, malicious_packages=None):
                                                               bandit_pkg_alerts)
         filtered_setup_results = [x for x in filtered_pkg_results if "setup.py" in x["filename"]]
         if filtered_pkg_results:
-            values.result['has-malicious-code'] = True
+            values.result[dir_pkg]['has-malicious-code'] = True
 
-        values.result["bandit-analysis"]["filtered-pkg-alerts"] = len(filtered_pkg_results)
-        values.result["bandit-analysis"]["filtered-setup-alerts"] = len(filtered_setup_results)
-        values.result["bandit-analysis"]["hercule-report"] = filtered_pkg_results
+        values.result[dir_pkg]["bandit-analysis"]["filtered-pkg-alerts"] = len(filtered_pkg_results)
+        values.result[dir_pkg]["bandit-analysis"]["filtered-setup-alerts"] = len(filtered_setup_results)
+        values.result[dir_pkg]["bandit-analysis"]["hercule-report"] = filtered_pkg_results
 
     else:
         if bandit_pkg_alerts:
-            values.result['has-malicious-code'] = True
-    values.result["dep-analysis"] = dict()
-    values.result["dep-analysis"]["failed-list"] = []
-    values.result["dep-analysis"]["malicious-list"] = []
+            values.result[dir_pkg]['has-malicious-code'] = True
+    values.result[dir_pkg]["dep-analysis"] = dict()
+    values.result[dir_pkg]["dep-analysis"]["failed-list"] = []
+    values.result[dir_pkg]["dep-analysis"]["malicious-list"] = []
 
     if values.is_hercule:
         failed_deps = []
         dep_graph = None
         if values.track_dependencies:
             dep_graph, failed_deps = depclosure.generate_closure(dir_pkg, distribution_name)
-        values.result["dep-analysis"]["failed-list"] = failed_deps
+        values.result[dir_pkg]["dep-analysis"]["failed-list"] = failed_deps
         codeql_alerts = analysis.behavior_analysis(dir_pkg)
         codeql_alerts, setup_py_alerts, malicious_files, domains = codeql_alerts
         filtered_codeql_alerts = analysis.filter_codeql_results(suspicious_new_files,
@@ -163,53 +163,53 @@ def scan_package(package_path, malicious_packages=None):
 
 
         if f_codeql_alerts:
-            values.result["has-malicious-behavior"] = True
+            values.result[dir_pkg]["has-malicious-behavior"] = True
         emitter.normal("\t\tmalicious files")
         if not f_malicious_files:
             emitter.error(f"\t\t\t-none-")
         for f in f_malicious_files:
             _f = f.replace(dir_pkg + "/", "")
             emitter.error(f"\t\t\t{_f}")
-        values.result["codeql-analysis"] = dict()
-        values.result["codeql-analysis"]["codeql-setup-alerts"] = len(setup_py_alerts)
-        values.result["codeql-analysis"]["codeql-alerts"] = len(codeql_alerts)
-        values.result["codeql-analysis"]["codeql-file-count"] = len(malicious_files)
-        values.result["codeql-analysis"]["hercule-setup-alerts"] = len(f_setup_py_alerts)
-        values.result["codeql-analysis"]["codeql-domains"] = domains
-        values.result["codeql-analysis"]["codeql-domain-count"] = len(domains)
-        values.result["codeql-analysis"]["hercule-alerts"] = len(f_codeql_alerts)
-        values.result["codeql-analysis"]["hercule-file-count"] = len(f_malicious_files)
-        values.result["codeql-analysis"]["hercule-files"] = list(f_malicious_files)
-        values.result["codeql-analysis"]["hercule-report"] = filtered_codeql_alerts
+        values.result[dir_pkg]["codeql-analysis"] = dict()
+        values.result[dir_pkg]["codeql-analysis"]["codeql-setup-alerts"] = len(setup_py_alerts)
+        values.result[dir_pkg]["codeql-analysis"]["codeql-alerts"] = len(codeql_alerts)
+        values.result[dir_pkg]["codeql-analysis"]["codeql-file-count"] = len(malicious_files)
+        values.result[dir_pkg]["codeql-analysis"]["hercule-setup-alerts"] = len(f_setup_py_alerts)
+        values.result[dir_pkg]["codeql-analysis"]["codeql-domains"] = domains
+        values.result[dir_pkg]["codeql-analysis"]["codeql-domain-count"] = len(domains)
+        values.result[dir_pkg]["codeql-analysis"]["hercule-alerts"] = len(f_codeql_alerts)
+        values.result[dir_pkg]["codeql-analysis"]["hercule-file-count"] = len(f_malicious_files)
+        values.result[dir_pkg]["codeql-analysis"]["hercule-files"] = list(f_malicious_files)
+        values.result[dir_pkg]["codeql-analysis"]["hercule-report"] = filtered_codeql_alerts
 
         if values.track_dependencies:
             malicious_deps = analysis.analyze_closure(dep_graph, failed_deps, malicious_packages)
-            values.result["dep-analysis"]["malicious-list"] = malicious_deps
+            values.result[dir_pkg]["dep-analysis"]["malicious-list"] = malicious_deps
             if malicious_deps:
-                values.result["is-compromised"] = True
+                values.result[dir_pkg]["is-compromised"] = True
 
-    analysis.final_result()
+    analysis.final_result(dir_pkg)
     time_duration = format((time.time() - start_time) / 60, ".3f")
-    values.result["scan-duration"] = time_duration
+    values.result[dir_pkg]["scan-duration"] = time_duration
     result_file_name = join(values.dir_results, f"{distribution_name}.json")
     min_result_file_name = join(values.dir_results, f"{distribution_name}.min.json")
     
     writer.write_as_json(values.result, result_file_name)
     
-    if "bandit-analysis" in values.result:
-        if "hercule-report" in values.result["bandit-analysis"]:
-            del values.result["bandit-analysis"]["hercule-report"]
-    if "suspicious-modifications" in values.result:
-        del values.result["suspicious-modifications"]
-    if "suspicious-files" in values.result:
-        del values.result["suspicious-files"]
-    if "codeql-analysis" in values.result:
-        if "hercule-report" in values.result["codeql-analysis"]:
-            del values.result["codeql-analysis"]["hercule-report"]
-        if "codeql-domains" in values.result["codeql-analysis"]:
-            del values.result["codeql-analysis"]["codeql-domains"]
+    if "bandit-analysis" in values.result[dir_pkg]:
+        if "hercule-report" in values.result[dir_pkg]["bandit-analysis"]:
+            del values.result[dir_pkg]["bandit-analysis"]["hercule-report"]
+    if "suspicious-modifications" in values.result[dir_pkg]:
+        del values.result[dir_pkg]["suspicious-modifications"]
+    if "suspicious-files" in values.result[dir_pkg]:
+        del values.result[dir_pkg]["suspicious-files"]
+    if "codeql-analysis" in values.result[dir_pkg]:
+        if "hercule-report" in values.result[dir_pkg]["codeql-analysis"]:
+            del values.result[dir_pkg]["codeql-analysis"]["hercule-report"]
+        if "codeql-domains" in values.result[dir_pkg]["codeql-analysis"]:
+            del values.result[dir_pkg]["codeql-analysis"]["codeql-domains"]
         
-    writer.write_as_json(values.result, min_result_file_name)
+    writer.write_as_json(values.result[dir_pkg], min_result_file_name)
 
 
 def get_malicious_list():
