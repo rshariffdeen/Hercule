@@ -217,9 +217,6 @@ class Hercule(App[List[Result]]):
             key=key,
         )
 
-        log_map[key] = RichLog(highlight=True, markup=True, wrap=True, id=key + "_log")
-        self.hide(log_map[key])
-
         self.post_message(JobMount(key))
         self.post_message(
             JobAllocate(
@@ -354,10 +351,13 @@ class Hercule(App[List[Result]]):
 
     @on(JobMount)
     async def on_mount_job(self, message: JobMount):
-        self.debug_print("Mounting {}".format(message.key))
-        text_log = log_map[message.key]
+        id = message.key.split("/")[-1].replace(".", "_")
+        log_map[id] = RichLog(highlight=True, markup=True, wrap=True, id=id + "_log")
+        self.hide(log_map[id])
+        self.debug_print("Mounting {}".format(id))
+        text_log = log_map[id]
         await self.mount(text_log, before=self.query_one("#" + all_subjects_id))
-        text_log.write("This is the textual log for {}".format(message.key))
+        text_log.write("This is the textual log for {}".format(id))
         self.hide(text_log)
 
     @on(JobFinish)
