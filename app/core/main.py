@@ -34,6 +34,8 @@ def create_output_directories():
         values.dir_log_base,
         values.dir_results,
         values.dir_experiments,
+        values.malicious_cache,
+        values.malicious_samples
     ]
 
     for dir_i in dir_list:

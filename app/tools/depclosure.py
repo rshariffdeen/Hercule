@@ -77,14 +77,15 @@ def download_dependency(dir_pkg,constraints,pkg_map,dependency):
                                         ,show_output=True
                                         ,directory=dir_pkg)
     if status != 0:
-        emitter.warning(f"\t\tFailed to download {dependency}. Checking in the malicious cache")
-        malicious_cached_packages = os.listdir(values.malicious_cache)
-        candidates = list(filter(lambda x : x.startswith(dependency + '-') or x.startswith(dependency.replace('-','_') + '-'),malicious_cached_packages))
-        if candidates:
-            emitter.warning(f"\t\tFound {candidates[0]} in the malicious cache. Placing it in the download directory")
-            emitter.warning(f"cp {values.malicious_cache}/{candidates[0]} {download_dir}")
-            utilities.execute_command(f"cp {values.malicious_cache}/{candidates[0]} {download_dir}")
-            status = 0
+        if os.path.isdir(values.malicious_cache):
+            emitter.warning(f"\t\tFailed to download {dependency}. Checking in the malicious cache")
+            malicious_cached_packages = os.listdir(values.malicious_cache)
+            candidates = list(filter(lambda x : x.startswith(dependency + '-') or x.startswith(dependency.replace('-','_') + '-'),malicious_cached_packages))
+            if candidates:
+                emitter.warning(f"\t\tFound {candidates[0]} in the malicious cache. Placing it in the download directory")
+                emitter.warning(f"cp {values.malicious_cache}/{candidates[0]} {download_dir}")
+                utilities.execute_command(f"cp {values.malicious_cache}/{candidates[0]} {download_dir}")
+                status = 0
     dir_list = os.listdir(download_dir)
     if status == 0 and dir_list:
         downloaded_file = dir_list[0].replace(download_dir, "")
