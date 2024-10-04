@@ -63,7 +63,9 @@ def run(sym_args):
         if os.path.isfile(f"{pkg_path}_cloc.json"):
             pkg_loc_info = read_json(f"{pkg_path}_cloc.json")
             n_files = pkg_loc_info["header"]["n_files"]
-            n_lines = pkg_loc_info["Python"]["code"]
+            n_lines = 0
+            if "Python" in pkg_loc_info:
+                n_lines = pkg_loc_info["Python"]["code"]
         else:
             n_files = 0
             n_lines = 0
