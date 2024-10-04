@@ -1,9 +1,9 @@
 import os.path
+import sys
 import json
 from os.path import join
 import csv
 from typing import Any
-import sys
 
 
 def write_as_csv(data: Any, output_file_path: str):
@@ -26,6 +26,7 @@ def read_json(file_path: str):
             json_data = json.loads(content)
 
     return json_data
+
 
 
 def run(sym_args):
@@ -54,19 +55,21 @@ def run(sym_args):
         if pkg_name not in filtered_pkg_list:
             continue
         print(pkg_name)
-        report_name = f"{pkg_name}.json"
-        report_path = f"{dir_path}/{report_name}"
-        pkg_path = f"{dir_path}/{pkg_name}"
-        if not os.path.isfile(report_path):
-            print(pkg_name)
-            scan_command = f"guarddog pypi scan {pkg_path} --output-format=json > {report_path}"
-            print(scan_command)
-            os.system(scan_command)
-        json_report = read_json(str(report_path))
-        print(report_path)
-        aggregated_data.append((json_report["package"], json_report["issues"], json_report["errors"], json_report["results"]))
 
-    write_as_csv(aggregated_data, f"{dir_path}/aggregated_data.csv")
+        pkg_path = f"{dir_path}/{pkg_name}"
+        pkg_size = os.path.getsize(pkg_path)
+        cloc_command = f"cloc --json --out {pkg_path}_cloc.json {pkg_path}"
+        os.system(cloc_command)
+        if os.path.isfile(f"{pkg_path}_cloc.json"):
+            pkg_loc_info = read_json(f"{pkg_path}_cloc.json")
+            n_files = pkg_loc_info["header"]["n_files"]
+            n_lines = pkg_loc_info["Python"]["code"]
+        else:
+            n_files = 0
+            n_lines = 0
+        aggregated_data.append((pkg_name, pkg_size, n_files, n_lines))
+
+    write_as_csv(aggregated_data, f"{dir_path}/meta_data.csv")
 
 
 if __name__ == "__main__":
