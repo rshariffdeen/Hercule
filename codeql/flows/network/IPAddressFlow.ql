@@ -1,13 +1,13 @@
 /**
- * @name Detects const domain names
- * @description Detects domain names as String constants using a regular expression which are in a dataflow
- * @Author Martin Mirchev
+ * @name Detects IP Address Flow
+ * @description detects IP address used in Network calls
+ * @Author Ridwan Shariffdeen
  * @kind problem
- * @id py/domain-flow-name-const
+ * @id py/ip-address-flow
  * @security-severity 4.0
  * @problem.severity warning
  * @example-packages benign-to-malicious-request (custom)
- * @tags domain name
+ * @tags ip address
  *       string consts
  */
 
@@ -18,19 +18,18 @@ import semmle.python.ApiGraphs
 module MyFlowConfiguration implements DataFlow::ConfigSig {
   predicate isSource(DataFlow::Node source) {
     exists(StrConst c |
-      c.toString()
-          .regexpMatch("(?i)[^@]*\\.(com|net|org|jp|de|uk|fr|br|it|ru|es|me|gov|pl|ca|au|cn|co|" +
-              "in|nl|edu|info|eu|ch|id|at|kr|cz|mx|be|tv|se|tr|tw|al|ua|ir|vn|cl|sk|ly|cc|to|no|fi|us|pt|dk|ar|hu|tk|"
-              +
-              "gr|il|news|ro|my|biz|ie|za|nz|sg|ee|th|io|xyz|pe|bg|hk|rs|lt|link|ph|club|si|site|mobi|by|cat|wiki|la|"
-              + "ga|xxx|cf|hr|ng|jobs|online|kz|ug|gq|ae|is|lv|pro|fm|tips|ms|sa|app)(/.*)?")
+      (c.toString()
+          .regexpMatch(".*(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]).*")
       or
       c.getText()
-          .regexpMatch("(?i)[^@]*\\.(com|net|org|jp|de|uk|fr|br|it|ru|es|me|gov|pl|ca|au|cn|co|" +
-              "in|nl|edu|info|eu|ch|id|at|kr|cz|mx|be|tv|se|tr|tw|al|ua|ir|vn|cl|sk|ly|cc|to|no|fi|us|pt|dk|ar|hu|tk|"
-              +
-              "gr|il|news|ro|my|biz|ie|za|nz|sg|ee|th|io|xyz|pe|bg|hk|rs|lt|link|ph|club|si|site|mobi|by|cat|wiki|la|"
-              + "ga|xxx|cf|hr|ng|jobs|online|kz|ug|gq|ae|is|lv|pro|fm|tips|ms|sa|app)(/.*)?")
+          .regexpMatch(".*(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]).*")
+    ) and
+     not c.toString().matches(["%127.0.0.1%"])
+     and
+     not c.toString().matches(["%0.0.0.0%"])
+     and
+     not c.toString().matches(["%8.8.8.8%"])
+
     |
       source.asCfgNode() = c.getAFlowNode()
     )
@@ -41,6 +40,7 @@ module MyFlowConfiguration implements DataFlow::ConfigSig {
       sink = API::moduleImport("socket").getMember(_).getACall() or
       sink = API::moduleImport("requests").getMember(_).getACall() or
       sink = API::moduleImport("urllib3").getMember(_).getACall() or
+      sink = API::moduleImport("httpx").getAMember().getACall() or
       sink.(DataFlow::CallCfgNode)
           .getFunction()
           .toString()
@@ -78,5 +78,5 @@ where
   MyFlow::flow(source, sink) and
   source != sink
 select source,
-  "Detected FLOW of URL: " + c.getText() + " , from " + source + " at " + source.getLocation() +
+  "Detected FLOW of IP: " + c.getText() + " , from " + source + " at " + source.getLocation() +
     " to " + sink + " at " + sink.getLocation()

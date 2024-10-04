@@ -21,7 +21,7 @@ module MyFlowConfiguration implements DataFlow::ConfigSig {
 
   predicate isSink(DataFlow::Node sink) {
     (
-      sink = API::moduleImport("socket").getMember(_).getACall() or
+      sink = API::moduleImport("socket").getAMember().getACall() or
       sink.(DataFlow::CallCfgNode)
           .getFunction()
           .toString()
@@ -29,8 +29,9 @@ module MyFlowConfiguration implements DataFlow::ConfigSig {
       sink.(DataFlow::MethodCallNode)
           .getMethodName()
           .regexpMatch(".*(write|sendall|send|post|put|patch|delete|get|exec|eval|dumps?).*")
-    ) and
-    not sink.getLocation().getFile().inStdlib()
+    )
+
+    and not sink.getLocation().getFile().inStdlib()
   }
 
   predicate isAdditionalFlowStep(DataFlow::Node nodeFrom, DataFlow::Node nodeTo) {

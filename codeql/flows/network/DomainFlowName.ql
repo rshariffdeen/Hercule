@@ -1,14 +1,14 @@
 /**
- * @name Detects IP Address Flow
- * @description detects IP address used in Network calls
- * @Author Ridwan Shariffdeen
+ * @name Detects string value domain names
+ * @description Detects domain names as String values using a regular expression
+ * @Author Martin Mirchev
  * @kind problem
- * @id py/ip-address-flow
+ * @id py/domain-flow-name-value
  * @security-severity 4.0
  * @problem.severity warning
  * @example-packages benign-to-malicious-request (custom)
- * @tags ip address
- *       string consts
+ * @tags domain name
+ *       string value
  */
 
 import python
@@ -17,21 +17,22 @@ import semmle.python.ApiGraphs
 
 module MyFlowConfiguration implements DataFlow::ConfigSig {
   predicate isSource(DataFlow::Node source) {
-    exists(StrConst c |
-      (c.toString()
-          .regexpMatch(".*(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]).*")
+    exists(StringValue c |
+      c.toString()
+          .regexpMatch("(?i)[^@]*\\.(com|net|org|jp|de|uk|fr|br|it|ru|es|me|gov|pl|ca|au|cn|co|" +
+              "in|nl|edu|info|eu|ch|id|at|kr|cz|mx|be|tv|se|tr|tw|al|ua|ir|vn|cl|sk|ly|cc|to|no|fi|us|pt|dk|ar|hu|tk|"
+              +
+              "gr|il|news|ro|my|biz|ie|za|nz|sg|ee|th|io|xyz|pe|bg|hk|rs|lt|link|ph|club|si|site|mobi|by|cat|wiki|la|"
+              + "ga|xxx|cf|hr|ng|jobs|online|kz|ug|gq|ae|is|lv|pro|fm|tips|ms|sa|app)(/.*)?")
       or
       c.getText()
-          .regexpMatch(".*(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]).*")
-    ) and
-     not c.toString().matches(["%127.0.0.1%"])
-     and
-     not c.toString().matches(["%0.0.0.0%"])
-     and
-     not c.toString().matches(["%8.8.8.8%"])
-
+          .regexpMatch("(?i)[^@]*\\.(com|net|org|jp|de|uk|fr|br|it|ru|es|me|gov|pl|ca|au|cn|co|" +
+              "in|nl|edu|info|eu|ch|id|at|kr|cz|mx|be|tv|se|tr|tw|al|ua|ir|vn|cl|sk|ly|cc|to|no|fi|us|pt|dk|ar|hu|tk|"
+              +
+              "gr|il|news|ro|my|biz|ie|za|nz|sg|ee|th|io|xyz|pe|bg|hk|rs|lt|link|ph|club|si|site|mobi|by|cat|wiki|la|"
+              + "ga|xxx|cf|hr|ng|jobs|online|kz|ug|gq|ae|is|lv|pro|fm|tips|ms|sa|app)(/.*)?")
     |
-      source.asCfgNode() = c.getAFlowNode()
+      source.asCfgNode() = c.getAReference()
     )
   }
 
@@ -40,6 +41,7 @@ module MyFlowConfiguration implements DataFlow::ConfigSig {
       sink = API::moduleImport("socket").getMember(_).getACall() or
       sink = API::moduleImport("requests").getMember(_).getACall() or
       sink = API::moduleImport("urllib3").getMember(_).getACall() or
+      sink = API::moduleImport("httpx").getAMember().getACall() or
       sink.(DataFlow::CallCfgNode)
           .getFunction()
           .toString()
@@ -68,14 +70,14 @@ module MyFlowConfiguration implements DataFlow::ConfigSig {
 module MyFlow = DataFlow::Global<MyFlowConfiguration>;
 
 // Get all string concats
-from StrConst c, DataFlow::Node source, DataFlow::Node sink
+from StringValue c, DataFlow::Node source, DataFlow::Node sink
 // Detect most common tlds
 where
-  source.asCfgNode() = c.getAFlowNode() and
+  source.asCfgNode() = c.getAReference() and
   MyFlowConfiguration::isSource(source) and
   MyFlowConfiguration::isSink(sink) and
   MyFlow::flow(source, sink) and
   source != sink
 select source,
-  "Detected FLOW of IP: " + c.getText() + " , from " + source + " at " + source.getLocation() +
+  "Detected FLOW of URL: " + c.getText() + " , from " + source + " at " + source.getLocation() +
     " to " + sink + " at " + sink.getLocation()
