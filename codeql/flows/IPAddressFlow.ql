@@ -39,7 +39,14 @@ module MyFlowConfiguration implements DataFlow::ConfigSig {
     (
       sink = API::moduleImport("socket").getMember(_).getACall() or
       sink = API::moduleImport("requests").getMember(_).getACall() or
-      sink = API::moduleImport("urllib3").getMember(_).getACall()
+      sink = API::moduleImport("urllib3").getMember(_).getACall() or
+      sink.(DataFlow::CallCfgNode)
+          .getFunction()
+          .toString()
+          .regexpMatch(".*(write|sendall|send|post|put|patch|delete|get|exec|eval|dumps|system?).*") or
+      sink.(DataFlow::MethodCallNode)
+          .getMethodName()
+          .regexpMatch(".*(write|sendall|send|post|put|patch|delete|get|exec|eval|dumps|system?).*")
     ) and
     not sink.getLocation().getFile().inStdlib()
   }

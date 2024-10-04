@@ -39,13 +39,15 @@ module MyFlowConfiguration implements DataFlow::ConfigSig {
   predicate isSink(DataFlow::Node sink) {
     (
       sink = API::moduleImport("socket").getMember(_).getACall() or
+      sink = API::moduleImport("requests").getMember(_).getACall() or
+      sink = API::moduleImport("urllib3").getMember(_).getACall() or
       sink.(DataFlow::CallCfgNode)
           .getFunction()
           .toString()
-          .regexpMatch(".*(write|sendall|send|post|put|patch|delete|get|exec|eval|dumps?).*") or
+          .regexpMatch(".*(write|sendall|send|post|put|patch|delete|get|exec|eval|dumps|system?).*") or
       sink.(DataFlow::MethodCallNode)
           .getMethodName()
-          .regexpMatch(".*(write|sendall|send|post|put|patch|delete|get|exec|eval|dumps?).*")
+          .regexpMatch(".*(write|sendall|send|post|put|patch|delete|get|exec|eval|dumps|system?).*")
     ) and
     not sink.getLocation().getFile().inStdlib()
   }
@@ -76,5 +78,5 @@ where
   MyFlow::flow(source, sink) and
   source != sink
 select source,
-  "Detected FLOW of URL: " + c.getText() //+ " , from " + source + " at " + source.getLocation() +
-    //" to " + sink + " at " + sink.getLocation()
+  "Detected FLOW of URL: " + c.getText() + " , from " + source + " at " + source.getLocation() +
+    " to " + sink + " at " + sink.getLocation()
