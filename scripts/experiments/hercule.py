@@ -102,9 +102,19 @@ def run(sym_args):
         if not os.path.exists(result_path):
             continue
         result_json = read_json(result_path)
-        result_json = result_json[result_json.keys()[0]]
+        result_json = result_json[list(result_json.keys())[0]]
+
         pkg_name = result_json["file-name"]
-        aggregated_data.append(pkg_name)
+        github_page = result_json["github-page"]
+        has_integrity = result_json["has-integrity"]
+        has_malicious_code = result_json["has-malicious-code"]
+        has_malicious_behavior = result_json["has-malicious-behavior"]
+        is_compromised = result_json["is-compromised"]
+        final_result = is_compromised or has_malicious_behavior
+        bandit_alerts = result_json["bandit-analysis"]["filtered-pkg-alerts"]
+        scan_duration = result_json["scan-duration"]
+
+        aggregated_data.append((pkg_name, github_page, has_integrity, has_malicious_code, has_malicious_behavior, is_compromised, final_result,bandit_alerts, scan_duration))
 
     write_as_csv(aggregated_data, f"{dir_path}/hercule_result.csv")
 
