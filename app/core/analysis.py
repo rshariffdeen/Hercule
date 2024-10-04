@@ -6,6 +6,7 @@ from app.core import decompile
 from app.core import utilities
 from app.core import transform
 from app.core import oracle
+from app.core.extract import extract_lines
 from app.tools import bandit
 from app.tools import codeql
 from app.core import reader
@@ -202,20 +203,11 @@ def detect_suspicious_modifications(mod_files, dir_pkg):
 
         for action_cluster in action_cluster_list:
             if action_cluster:
-                is_suspicious, action_type = oracle.is_cluster_suspicious(action_cluster)
-                if is_suspicious:
-                    if f_pkg not in suspicious_file_list:
-                        suspicious_file_list.append(f_pkg)
-                    import_line_list = extract.extract_import_lines(action_cluster)
-                    for line in import_line_list:
-                        # alert = f"{f_pkg}:{line} - {action_type}:import packages"
-                        loc = f"{f_pkg}:{line}"
-                        suspicious_loc_list.append(loc)
-                    func_call_list = extract.extract_function_call_lines(action_cluster)
-                    for (line, _) in func_call_list:
-                        # alert = f"{f_pkg}:{line} - {action_type}: function call"
-                        loc = f"{f_pkg}:{line}"
-                        suspicious_loc_list.append(loc)
+                line_list = extract.extract_stmt_lines(action_cluster)
+                for line in line_list:
+                    loc = f"{f_pkg}:{line}"
+                    suspicious_loc_list.append(loc)
+
 
     emitter.normal("\t\tsuspicious modified files")
     for f in suspicious_file_list:

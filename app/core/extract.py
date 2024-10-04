@@ -217,6 +217,15 @@ def extract_path_prefix(path_list):
     return lcs
 
 
+def extract_stmt_lines(ast_cluster):
+    line_list = []
+    for action in ast_cluster:
+        if "_stmt " in action:
+            line_number = action.strip().split(",")[-2]
+            line_list.append(line_number)
+    return line_list
+
+
 def extract_import_lines(ast_cluster):
     import_line_list = []
     for action in ast_cluster:
