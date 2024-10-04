@@ -84,14 +84,29 @@ def run(sym_args):
         pkg_path = f"{dir_path}/{pkg_name}"
         task_queue.put_nowait(pkg_path)
     i = 0
-    for _ in range(20):
+    thread_count = 20
+    if task_queue.qsize() < 20:
+        thread_count = task_queue.qsize()
+    for _ in range(thread_count):
         i = i + 1
         print(f"starting thread {i}")
         threading.Thread(target=wrapper_targetFunc,
                          args=(scan_package, task_queue)).start()
     print(f"waiting for threads to finish")
     task_queue.join()
+    aggregated_data = []
+    for pkg_name in list_packages:
+        if pkg_name not in filtered_pkg_list:
+            continue
+        result_path = f"/hercule/results/{pkg_name}.json"
+        if not os.path.exists(result_path):
+            continue
+        result_json = read_json(result_path)
+        result_json = result_json[result_json.keys()[0]]
+        pkg_name = result_json["file-name"]
+        aggregated_data.append(pkg_name)
 
+    write_as_csv(aggregated_data, f"{dir_path}/hercule_result.csv")
 
 if __name__ == "__main__":
     run(sys.argv[1:])
