@@ -126,6 +126,10 @@ def generate_closure(dir_pkg, distribution_name):
         module_name = distribution_name.split('.zip')[0]
     elif distribution_name.endswith('.whl'):
         module_name = distribution_name.split('-')[0]
+    elif distribution_name.endswith('.tgz'):
+        module_name = distribution_name.split('tgz')[0]
+    else:
+        utilities.error_exit("unsupported extension")
     matching_dirs = [ x for x in os.listdir(dir_pkg) if os.path.isdir(join(dir_pkg,x)) and not x.endswith('dist-info')]
     G = nx.DiGraph()
     if not matching_dirs:
