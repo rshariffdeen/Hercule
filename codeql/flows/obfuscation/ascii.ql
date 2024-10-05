@@ -48,6 +48,11 @@ module MyFlowConfiguration implements DataFlow::ConfigSig {
       call.getArg(_) = nodeFrom
     )
     or
+    exists(DataFlow::MethodCallNode call | call = nodeTo |
+      call.getArgByName(_) = nodeFrom or
+      call.getArg(_) = nodeFrom
+    )
+    or
     TaintTracking::localTaint(nodeFrom, nodeTo)
   }
 }
@@ -62,4 +67,6 @@ where
   source != sink
 select source,
   "ascii encoded data flows from " + source.getLocation() + " to execution/file-write at " + sink.getLocation()
+
+
 
