@@ -221,7 +221,7 @@ def extract_stmt_lines(ast_cluster):
     line_list = []
     for action in ast_cluster:
         if "_stmt " in action:
-            line_number = action.strip().split(",")[-2]
+            line_number = int(action.strip().split(",")[-2]) + 1
             line_list.append(line_number)
     return line_list
 
@@ -230,7 +230,7 @@ def extract_import_lines(ast_cluster):
     import_line_list = []
     for action in ast_cluster:
         if "import_from " in action:
-            line_number = action.strip().split(",")[-2]
+            line_number = int(action.strip().split(",")[-2]) + 1
             import_line_list.append(line_number)
     return import_line_list
 
@@ -240,7 +240,7 @@ def extract_function_call_lines(ast_cluster):
     for action in ast_cluster:
         if "function_call" in action:
             func_call_str = action.split("[")[0].split(":")[-1].strip()
-            line_number = action.strip().split(",")[-2]
+            line_number = int(action.strip().split(",")[-2]) + 1
             func_call_list.append((line_number, func_call_str))
     return func_call_list
 
