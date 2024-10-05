@@ -28,10 +28,10 @@ module RemoteToFileConfiguration implements DataFlow::ConfigSig {
       sink.(DataFlow::CallCfgNode)
           .getFunction()
           .toString()
-          .regexpMatch(".*(write|dumps|system?).*") or
+          .regexpMatch(".*(write|dumps|system|run|exec?).*") or
       sink.(DataFlow::MethodCallNode)
           .getMethodName()
-          .regexpMatch(".*(write|dumps|system?).*")
+          .regexpMatch(".*(write|dumps|system|run|exec?).*")
 
   }
 
