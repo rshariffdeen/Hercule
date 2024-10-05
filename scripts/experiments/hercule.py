@@ -14,6 +14,7 @@ task_queue = queue.Queue()
 rule_list = ["domain-flow-name-const",
              "domain-flow-name-value",
              "ip-address-flow",
+             "remote-flow-to-file",
              "process-with-shell",
              "system-command-execution",
              "base64-flow","base64-string-flow",
@@ -93,8 +94,11 @@ def run(sym_args):
         if pkg_name not in filtered_pkg_list:
             continue
         result_path = f"/hercule/results/{pkg_name}.json"
-        if os.path.exists(result_path):
-            continue
+        # if os.path.exists(result_path):
+        #     continue
+        expr_dir = f"/hercule/experiments/{pkg_name}-dir"
+        if os.path.isdir(expr_dir):
+            os.system(f"rm -rf {expr_dir}")
         print(f"adding {pkg_name} to queue")
         pkg_path = f"{dir_path}/{pkg_name}"
         task_queue.put_nowait(pkg_path)
@@ -112,13 +116,14 @@ def run(sym_args):
     aggregated_data = []
     rule_contribution = dict()
     for rule in rule_list:
-        rule_contribution[f"py/{rule}"] = 0
+        rule_contribution[f"py/{rule}"] = set()
     for pkg_name in list_packages:
         if pkg_name not in filtered_pkg_list:
             continue
         result_path = f"/hercule/results/{pkg_name}.json"
         if not os.path.exists(result_path):
             continue
+
         result_json = read_json(result_path)
         result_json = result_json[list(result_json.keys())[0]]
 
@@ -136,15 +141,15 @@ def run(sym_args):
             if isinstance(alert, list):
                 for _a in alert:
                     rule_id = _a["ruleId"]
-                    rule_contribution[rule_id] += 1
+                    rule_contribution[rule_id].add(pkg_name)
             elif isinstance(alert, dict):
                 rule_id = alert["ruleId"]
-                rule_contribution[rule_id] += 1
+                rule_contribution[rule_id].add(pkg_name)
         aggregated_data.append((pkg_name, github_page, has_integrity, has_malicious_code, has_malicious_behavior, is_compromised, final_result,bandit_alerts, scan_duration))
 
     contribution_list = []
     for rule in rule_contribution:
-        contribution_list.append((rule, rule_contribution[rule]))
+        contribution_list.append((rule, len(rule_contribution[rule])))
 
     write_as_csv(aggregated_data, f"{dir_path}/hercule_result.csv")
     write_as_csv(contribution_list, f"{dir_path}/rule_contribution.csv")
