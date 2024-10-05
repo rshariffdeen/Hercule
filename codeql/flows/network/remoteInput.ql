@@ -34,11 +34,25 @@ module RemoteToFileConfiguration implements DataFlow::ConfigSig {
           .regexpMatch(".*(write|dumps|system?).*")
 
   }
+
+  predicate isAdditionalFlowStep(DataFlow::Node nodeFrom, DataFlow::Node nodeTo) {
+    exists(DataFlow::ExprNode expr | expr = nodeTo |
+      expr.asCfgNode().getAChild() = nodeFrom.asCfgNode()
+    )
+    or
+    exists(DataFlow::CallCfgNode call | call = nodeTo |
+      call.getArgByName(_) = nodeFrom or
+      call.getArg(_) = nodeFrom
+    )
+    or
+    TaintTracking::localTaint(nodeFrom, nodeTo)
+  }
+
 }
 
 module RemoteToFileFlow = TaintTracking::Global<RemoteToFileConfiguration>;
 
 from DataFlow::Node input, DataFlow::Node fileAccess
 where RemoteToFileFlow::flow(input, fileAccess)
-select input,  "Detected remote content from " + fileAccess.getLocation() + " flowing to file content in " +
-  input.getLocation() +  " with a user-controllable remote input."
+select input,  "Detected remote content from " + input.getLocation() + " flowing to file content in " +
+  fileAccess.getLocation() +  " with a user-controllable remote input."
