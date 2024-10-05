@@ -24,8 +24,8 @@
    predicate isSink(DataFlow::Node sink) { 
      (
      sink = API::moduleImport("socket").getMember(_).getACall() or
-     sink.(DataFlow::CallCfgNode).getFunction().toString().regexpMatch(".*(write|sendall|send|post|put|patch|delete|get|exec|eval|dumps?).*") or
-     sink.(DataFlow::MethodCallNode).getMethodName()      .regexpMatch(".*(write|sendall|send|post|put|patch|delete|get|exec|eval|dumps?).*"))
+     sink.(DataFlow::CallCfgNode).getFunction().toString().regexpMatch(".*(write|sendall|send|post|put|patch|delete|get|exec|eval?).*") or
+     sink.(DataFlow::MethodCallNode).getMethodName()      .regexpMatch(".*(write|sendall|send|post|put|patch|delete|get|exec|eval?).*"))
      and not sink.getLocation().getFile().inStdlib()
     }
  

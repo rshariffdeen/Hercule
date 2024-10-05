@@ -25,10 +25,10 @@ module MyFlowConfiguration implements DataFlow::ConfigSig {
       sink.(DataFlow::CallCfgNode)
           .getFunction()
           .toString()
-          .regexpMatch(".*(write|sendall|send|post|put|patch|delete|get|exec|eval|dumps?).*") or
+          .regexpMatch(".*(write|sendall|send|post|put|patch|delete|get|exec|eval?).*") or
       sink.(DataFlow::MethodCallNode)
           .getMethodName()
-          .regexpMatch(".*(write|sendall|send|post|put|patch|delete|get|exec|eval|dumps?).*")
+          .regexpMatch(".*(write|sendall|send|post|put|patch|delete|get|exec|eval?).*")
     ) and
     not sink.getLocation().getFile().inStdlib()
   }

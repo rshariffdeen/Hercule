@@ -1,11 +1,11 @@
 /**
- * @name Base64 flows to an external write
- * @description smth
+ * @name UniCode flows to an OS call
+ * @description detect unicode strings flow into system calls
  * @kind problem
  * @problem.severity warning
  * @security-severity 7.8
  * @precision high
- * @id py/base64-flow
+ * @id py/unicode-flow
  * @tags security
  */
 
@@ -16,7 +16,8 @@ import semmle.python.Concepts
 
 module MyFlowConfiguration implements DataFlow::ConfigSig {
   predicate isSource(DataFlow::Node source) {
-    source = API::moduleImport("base64").getMember("b64decode").getACall()
+     source = API::builtin("map").getACall()
+
   }
 
   predicate isSink(DataFlow::Node sink) {
@@ -25,10 +26,10 @@ module MyFlowConfiguration implements DataFlow::ConfigSig {
       sink.(DataFlow::CallCfgNode)
           .getFunction()
           .toString()
-          .regexpMatch(".*(write|connect|sendall|send|post|put|patch|delete|get|exec|eval?).*") or
+          .regexpMatch(".*(system|connect|exec|eval?).*") or
       sink.(DataFlow::MethodCallNode)
           .getMethodName()
-          .regexpMatch(".*(write|connect|sendall|send|post|put|patch|delete|get|exec|eval?).*")
+          .regexpMatch(".*(system|connect|exec|eval?).*")
     )
 
     and not sink.getLocation().getFile().inStdlib()
@@ -56,5 +57,5 @@ where
   MyFlow::flow(source, sink) and
   MyFlowConfiguration::isSink(sink)
 select source,
-  "Base64 data flows from " + source.getLocation() + " to remote connection at " + sink.getLocation()
+  "Unicode encoded data flows from " + source.getLocation() + " to remote connection at " + sink.getLocation()
 
