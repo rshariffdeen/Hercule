@@ -45,10 +45,10 @@ module MyFlowConfiguration implements DataFlow::ConfigSig {
       sink.(DataFlow::CallCfgNode)
           .getFunction()
           .toString()
-          .regexpMatch(".*(write|sendall|connect|urlretrieve|urlopen|send|post|put|patch|delete|get|exec|eval|system|run?).*") or
+          .regexpMatch(".*(write|request|sendall|connect|urlretrieve|urlopen|send|post|put|patch|delete|get|exec|eval|system|run?).*") or
       sink.(DataFlow::MethodCallNode)
           .getMethodName()
-          .regexpMatch(".*(write|sendall|connect|urlretrieve|urlopen|send|post|put|patch|delete|get|exec|eval|system|run?).*")
+          .regexpMatch(".*(write|request|sendall|connect|urlretrieve|urlopen|send|post|put|patch|delete|get|exec|eval|system|run?).*")
     ) and
     not sink.getLocation().getFile().inStdlib()
   }
@@ -79,5 +79,5 @@ where
   MyFlow::flow(source, sink) and
   source != sink
 select source,
-  "Detected FLOW of URL: " + c.getText() + " , from " + source + " at " + source.getLocation() +
+  "Detected FLOW of URL: " + c.getText() + " , from "  + source.getLocation() +
     " to " + sink + " at " + sink.getLocation()

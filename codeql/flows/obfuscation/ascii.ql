@@ -16,7 +16,8 @@ import semmle.python.Concepts
 
 module MyFlowConfiguration implements DataFlow::ConfigSig {
   predicate isSource(DataFlow::Node source) {
-     exists(Bytes c | source.asCfgNode() = c.getAFlowNode() )
+     exists(Bytes c | source.asCfgNode() = c.getAFlowNode() ) or
+     exists(StringValue s | s.getText().regexpMatch("\\x[a-f0-9]+") | source.asCfgNode() = s.getAReference())
   }
 
   predicate isSink(DataFlow::Node sink) {
@@ -28,11 +29,11 @@ module MyFlowConfiguration implements DataFlow::ConfigSig {
        sink = API::moduleImport(_).getMember("PydBytes").getACall() or
        sink.(DataFlow::MethodCallNode)
           .getMethodName()
-          .regexpMatch(".*(__pyarmor__|PydBytes?).*") or
+          .regexpMatch(".*(__pyarmor__|PydBytes|eval?).*") or
        sink.(DataFlow::CallCfgNode)
             .getFunction()
             .toString()
-             .regexpMatch(".*(__pyarmor__|PydBytes?).*")
+             .regexpMatch(".*(__pyarmor__|PydBytes|eval?).*")
     )
 
     and not sink.getLocation().getFile().inStdlib()

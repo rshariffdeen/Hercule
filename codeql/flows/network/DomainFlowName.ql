@@ -46,10 +46,10 @@ module MyFlowConfiguration implements DataFlow::ConfigSig {
       sink.(DataFlow::CallCfgNode)
           .getFunction()
           .toString()
-          .regexpMatch(".*(write|sendall|send|urlretrieve|urlopen|post|put|patch|delete|get|exec|eval|system|run?).*") or
+          .regexpMatch(".*(write|request|sendall|send|urlretrieve|urlopen|post|put|patch|delete|get|exec|eval|system|run?).*") or
       sink.(DataFlow::MethodCallNode)
           .getMethodName()
-          .regexpMatch(".*(write|sendall|connect|urlretrieve|urlopen|send|post|put|patch|delete|get|exec|eval|system|run?).*")
+          .regexpMatch(".*(write|request|sendall|connect|urlretrieve|urlopen|send|post|put|patch|delete|get|exec|eval|system|run?).*")
     ) and
     not sink.getLocation().getFile().inStdlib()
   }
@@ -82,3 +82,12 @@ where
 select source,
   "Detected FLOW of URL: " + c.getText() + " , from " + source.getLocation() +
     " to " + sink + " at " + sink.getLocation()
+
+
+    from StringValue c, DataFlow::Node source, DataFlow::Node sink
+    // Detect most common tlds
+    where
+      source.asCfgNode() = c.getAReference() and
+      MyFlowConfiguration::isSource(source)
+    select source,
+      "Detected FLOW of URL: " + c.getText() + " , from " + source.getLocation()
