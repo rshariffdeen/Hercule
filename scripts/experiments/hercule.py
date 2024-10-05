@@ -17,7 +17,9 @@ rule_list = ["domain-flow-name-const",
              "remote-flow-to-file",
              "process-with-shell",
              "system-command-execution",
-             "base64-flow","base64-string-flow",
+             "base64-flow",
+             "base64-string-flow",
+             "unicode-flow",
              "browsercookie0-reference","builtins",
              "read-dunder-code","write-dunder-code",
              "get-attr-dunder-file","system-command-execution-encrypted",
@@ -94,8 +96,8 @@ def run(sym_args):
         if pkg_name not in filtered_pkg_list:
             continue
         result_path = f"/hercule/results/{pkg_name}.json"
-        # if os.path.exists(result_path):
-        #     continue
+        if os.path.exists(result_path):
+            continue
         expr_dir = f"/hercule/experiments/{pkg_name}-dir"
         if os.path.isdir(expr_dir):
             os.system(f"rm -rf {expr_dir}")
