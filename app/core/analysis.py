@@ -6,7 +6,6 @@ from app.core import decompile
 from app.core import utilities
 from app.core import transform
 from app.core import oracle
-from app.core.extract import extract_lines
 from app.tools import bandit
 from app.tools import codeql
 from app.core import reader
