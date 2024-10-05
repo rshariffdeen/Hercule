@@ -221,8 +221,10 @@ def extract_stmt_lines(ast_cluster):
     line_list = []
     for action in ast_cluster:
         if "_stmt " in action:
-            line_number = int(action.strip().split(",")[-2]) + 1
-            line_list.append(line_number)
+            l_start = int(action.strip().split(",")[-2]) + 1
+            l_end = int(action.strip().split(",")[-1].strip().replace("]", "").replace("\n", "")) + 1
+            for l in range(l_start, l_end):
+                line_list.append(l)
     return line_list
 
 
