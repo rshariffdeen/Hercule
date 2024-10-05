@@ -11,7 +11,21 @@ import queue
 
 task_queue = queue.Queue()
 
-rule_list = ["domain-flow-name-const","domain-flow-name-value","ip-address","process-with-shell","system-command-execution","base64-flow","base64-string-flow","browsercookie0-reference","builtins","read-dunder-code","write-dunder-code","get-attr-dunder-file","system-command-execution-encrypted","environment-flow","eval-flow","file-overwrite","getpass-flow","httpx-ref","import-closure","marshal-flow","netifaces-ref","os-calls","os-flow","dunder-manipulation","pyarmor-ref","selenium-ref","pwuid-smart","socket-flow","sys-flow","subproc-smart","urlib-ref"]
+rule_list = ["domain-flow-name-const",
+             "domain-flow-name-value",
+             "ip-address-flow",
+             "process-with-shell",
+             "system-command-execution",
+             "base64-flow","base64-string-flow",
+             "browsercookie0-reference","builtins",
+             "read-dunder-code","write-dunder-code",
+             "get-attr-dunder-file","system-command-execution-encrypted",
+             "environment-flow","eval-flow","file-overwrite",
+             "getpass-flow","httpx-ref","import-closure",
+             "marshal-flow","netifaces-ref","os-calls","os-flow",
+             "dunder-manipulation","pyarmor-ref","selenium-ref",
+             "pwuid-smart","socket-flow","sys-flow","subproc-smart",
+             "urlib-ref"]
 
 def wrapper_targetFunc(f,q):
     while True:
