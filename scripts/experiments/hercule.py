@@ -11,6 +11,7 @@ import queue
 
 task_queue = queue.Queue()
 
+rule_list = ["domain-flow-name-const","domain-flow-name-value","ip-address","process-with-shell","system-command-execution","base64-flow","base64-string-flow","browsercookie0-reference","builtins","read-dunder-code","write-dunder-code","get-attr-dunder-file","system-command-execution-encrypted","environment-flow","eval-flow","file-overwrite","getpass-flow","httpx-ref","import-closure","marshal-flow","netifaces-ref","os-calls","os-flow","dunder-manipulation","pyarmor-ref","selenium-ref","pwuid-smart","socket-flow","sys-flow","subproc-smart","urlib-ref"]
 
 def wrapper_targetFunc(f,q):
     while True:
@@ -95,6 +96,9 @@ def run(sym_args):
     print(f"waiting for threads to finish")
     task_queue.join()
     aggregated_data = []
+    rule_contribution = dict()
+    for rule in rule_list:
+        rule_contribution[f"py/{rule}"] = 0
     for pkg_name in list_packages:
         if pkg_name not in filtered_pkg_list:
             continue
@@ -113,10 +117,24 @@ def run(sym_args):
         final_result = is_compromised or has_malicious_behavior
         bandit_alerts = result_json["bandit-analysis"]["filtered-pkg-alerts"]
         scan_duration = result_json["scan-duration"]
-
+        codeql_alerts = result_json["codeql-analysis"]["hercule-report"]
+        for alert in codeql_alerts[:-1]:
+            if isinstance(alert, list):
+                for _a in alert:
+                    rule_id = _a["ruleId"]
+                    rule_contribution[rule_id] += 1
+            elif isinstance(alert, dict):
+                rule_id = alert["ruleId"]
+                rule_contribution[rule_id] += 1
         aggregated_data.append((pkg_name, github_page, has_integrity, has_malicious_code, has_malicious_behavior, is_compromised, final_result,bandit_alerts, scan_duration))
 
+    contribution_list = []
+    for rule in rule_contribution:
+        contribution_list.append((rule, rule_contribution[rule]))
+
     write_as_csv(aggregated_data, f"{dir_path}/hercule_result.csv")
+    write_as_csv(contribution_list, f"{dir_path}/rule_contribution.csv")
+
 
 if __name__ == "__main__":
     run(sys.argv[1:])
