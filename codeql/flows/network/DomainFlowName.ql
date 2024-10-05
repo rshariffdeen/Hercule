@@ -40,6 +40,7 @@ module MyFlowConfiguration implements DataFlow::ConfigSig {
     (
       sink = API::moduleImport("socket").getMember(_).getACall() or
       sink = API::moduleImport("requests").getMember(_).getACall() or
+      sink = API::moduleImport("urlrequest").getMember(_).getACall() or
       sink = API::moduleImport("urllib3").getMember(_).getACall() or
       sink = API::moduleImport("httpx").getAMember().getACall() or
       sink.(DataFlow::CallCfgNode)

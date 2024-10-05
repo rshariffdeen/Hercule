@@ -1,5 +1,5 @@
 /**
- * @name Base64 flows to an external write
+ * @name Base64 flows to an external write or system command
  * @description smth
  * @kind problem
  * @problem.severity warning
@@ -17,7 +17,11 @@ import semmle.python.Concepts
 module MyFlowConfiguration implements DataFlow::ConfigSig {
   predicate isSource(DataFlow::Node source) {
     source = API::moduleImport("base64").getMember("b64decode").getACall() or
-    source = API::builtin("decode").getACall()
+    source = API::builtin("decode").getACall() or
+    source.(DataFlow::MethodCallNode)
+          .getMethodName()
+          .regexpMatch(".*(decode|b64decode?).*")
+
   }
 
   predicate isSink(DataFlow::Node sink) {
@@ -57,5 +61,5 @@ where
   MyFlow::flow(source, sink) and
   MyFlowConfiguration::isSink(sink)
 select source,
-  "Base64 data flows from " + source.getLocation() + " to remote connection at " + sink.getLocation()
+  "Base64 data flows from " + source.getLocation() + " to an execution/file-write at " + sink.getLocation()
 
