@@ -20,3 +20,4 @@ toml
 validators
 pkginfo
 matplotlib
+markupsafe
