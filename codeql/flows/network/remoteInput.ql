@@ -5,7 +5,7 @@
  * @kind problem
  * @id py/remote-flow-to-file
  * @security-severity 7.0
- * @problem.severity high
+ * @problem.severity warning
  * @example-packages  zlibsrc-0.0.1
  * @tags remote content
  *       string consts
