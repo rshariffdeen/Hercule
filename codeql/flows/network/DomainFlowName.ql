@@ -80,5 +80,5 @@ where
   MyFlow::flow(source, sink) and
   source != sink
 select source,
-  "Detected FLOW of URL: " + c.getText() + " , from " + source + " at " + source.getLocation() +
+  "Detected FLOW of URL: " + c.getText() + " , from " + source.getLocation() +
     " to " + sink + " at " + sink.getLocation()
