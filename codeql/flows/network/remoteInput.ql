@@ -38,10 +38,6 @@ module RemoteToFileConfiguration implements DataFlow::ConfigSig {
 
 module RemoteToFileFlow = TaintTracking::Global<RemoteToFileConfiguration>;
 
-from DataFlow::Node input
-where  input = API::moduleImport("requests").getMember(_).getACall()
-select input, "Found requests"
-
 from DataFlow::Node input, DataFlow::Node fileAccess
 where RemoteToFileFlow::flow(input, fileAccess)
 select input,  "Detected remote content from " + fileAccess.getLocation() + " flowing to file content in " +
