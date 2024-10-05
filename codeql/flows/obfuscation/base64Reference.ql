@@ -21,22 +21,27 @@ module MyFlowConfiguration implements DataFlow::ConfigSig {
 
   predicate isSink(DataFlow::Node sink) {
     (
-      sink = API::moduleImport("socket").getAMember().getACall() or
+      sink = API::moduleImport("socket").getMember(_).getACall()   or
       sink.(DataFlow::CallCfgNode)
           .getFunction()
           .toString()
-          .regexpMatch(".*(write|sendall|send|post|put|patch|delete|get|exec|eval|dumps?).*") or
+          .regexpMatch(".*(write|connect|sendall|send|post|put|patch|delete|get|exec|eval|dumps?).*") or
       sink.(DataFlow::MethodCallNode)
           .getMethodName()
-          .regexpMatch(".*(write|sendall|send|post|put|patch|delete|get|exec|eval|dumps?).*")
+          .regexpMatch(".*(write|connect|sendall|send|post|put|patch|delete|get|exec|eval|dumps?).*")
     )
 
     and not sink.getLocation().getFile().inStdlib()
   }
 
-  predicate isAdditionalFlowStep(DataFlow::Node nodeFrom, DataFlow::Node nodeTo) {
+   predicate isAdditionalFlowStep(DataFlow::Node nodeFrom, DataFlow::Node nodeTo) {
     exists(DataFlow::ExprNode expr | expr = nodeTo |
       expr.asCfgNode().getAChild() = nodeFrom.asCfgNode()
+    )
+    or
+    exists(DataFlow::CallCfgNode call | call = nodeTo |
+      call.getArgByName(_) = nodeFrom or
+      call.getArg(_) = nodeFrom
     )
     or
     TaintTracking::localTaint(nodeFrom, nodeTo)
@@ -49,7 +54,7 @@ from DataFlow::Node sink, DataFlow::Node source
 where
   MyFlowConfiguration::isSource(source) and
   MyFlow::flow(source, sink) and
-  MyFlowConfiguration::isSink(sink) and
-  sink != source
-select sink.getLocation(),
-  "Base64 data flows from " + source.getLocation() + " to " + sink.getLocation()
+  MyFlowConfiguration::isSink(sink)
+select source,
+  "Base64 data flows from " + source.getLocation() + " to remote connection at " + sink.getLocation()
+
