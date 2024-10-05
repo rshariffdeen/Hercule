@@ -478,9 +478,10 @@ def process_pipfile(dir_pkg, pkg_folder, explicit_dependencies, constraints):
             explicit_dependencies.add(dependency)
 
 def process_setup_cfg(dir_pkg, pkg_folder, explicit_dependencies, constraints):
-    if exists(join(dir_pkg,pkg_folder,"setup.cfg")):
+    setup_cfg_path = join(dir_pkg,pkg_folder,"setup.cfg")
+    if exists(setup_cfg_path):
         emitter.information("\t\tFound setup.cfg")
-        setup_cfg_data = reader.read_cfgfile(join(dir_pkg,pkg_folder,"setup.cfg"))
+        setup_cfg_data = reader.read_cfgfile(setup_cfg_path)
         for src in [
             setup_cfg_data.get('project',{}).get('install_requires',[]),
             setup_cfg_data.get('metadata',{}).get('requires-dist',[]),
