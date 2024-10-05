@@ -59,6 +59,3 @@ where
 select source,
   "Base64 data flows from " + source.getLocation() + " to remote connection at " + sink.getLocation()
 
- from SystemCommandExecution execution
- select execution, "Detected SystemCommandExecution (" + execution.asExpr().(FunctionExpr).getName() + ")"
-
