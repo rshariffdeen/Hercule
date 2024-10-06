@@ -82,12 +82,3 @@ where
 select source,
   "Detected FLOW of URL: " + c.getText() + " , from " + source.getLocation() +
     " to " + sink + " at " + sink.getLocation()
-
-
-    from StringValue c, DataFlow::Node source, DataFlow::Node sink
-    // Detect most common tlds
-    where
-      source.asCfgNode() = c.getAReference() and
-      MyFlowConfiguration::isSource(source)
-    select source,
-      "Detected FLOW of URL: " + c.getText() + " , from " + source.getLocation()
