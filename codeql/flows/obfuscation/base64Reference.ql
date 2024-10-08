@@ -21,7 +21,6 @@ module MyFlowConfiguration implements DataFlow::ConfigSig {
     source.(DataFlow::MethodCallNode)
           .getMethodName()
           .regexpMatch(".*(decode|b64decode?).*")
-
   }
 
   predicate isSink(DataFlow::Node sink) {

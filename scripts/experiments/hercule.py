@@ -11,32 +11,15 @@ import queue
 
 task_queue = queue.Queue()
 
-rule_list = ["domain-flow-name-const",
-             "domain-flow-name-value",
-             "ip-address-flow",
-             "remote-flow-to-file",
-             "process-with-shell",
-             "system-command-execution",
-             "base64-flow",
-             "base64-string-flow",
-             "unicode-flow",
-             "ascii-flow",
-             "browsercookie0-reference",
-             "get-attr-dunder-file",
-             "environment-flow",
-             "eval-flow",
-             "file-overwrite",
-             "getpass-flow",
-             "marshal-flow",
-             "netifaces-ref",
-             "os-calls",
-             "os-flow",
-             "dunder-manipulation",
-             "pwuid-smart",
-             "socket-flow",
-             "sys-flow",
-             "subproc-smart",
-             "urlib-ref"]
+rule_list = {
+    "exfiltration": ["environment-flow", "getpass-flow", "os-flow", "pwuid-smart"],
+    "file": ["file-overwrite", "dunder-manipulation"],
+    "network": ["domain-flow-name-const", "domain-flow-name-value", "ip-address-flow", "remote-flow-to-file",
+                "socket-flow", "browsercookie0-reference", "netifaces-ref"],
+    "obfuscation": ["ascii-flow", "base64-flow", "base64-string-flow", "system-command-execution", "marshal-flow",
+                    "unicode-flow"],
+    "process": ["process-with-shell", "eval-flow", "subproc-smart"]
+}
 
 def wrapper_targetFunc(f,q):
     while True:
@@ -125,8 +108,11 @@ def run(sym_args):
     task_queue.join()
     aggregated_data = []
     rule_contribution = dict()
-    for rule in rule_list:
-        rule_contribution[f"py/{rule}"] = set()
+    for rule_group in rule_list:
+        rule_contribution[rule_group + "-group"] = set()
+        for rule in rule_list[rule_group]:
+            rule_contribution[f"py/{rule}"] = set()
+
     for pkg_name in list_packages:
         if pkg_name not in filtered_pkg_list:
             continue
@@ -158,8 +144,17 @@ def run(sym_args):
         aggregated_data.append((pkg_name, github_page, has_integrity, has_malicious_code, has_malicious_behavior, is_compromised, final_result,bandit_alerts, scan_duration))
 
     contribution_list = []
-    for rule in rule_contribution:
-        contribution_list.append((rule, len(rule_contribution[rule])))
+
+    for rule_group in rule_list:
+        group_alerts = set()
+        for rule in rule_list[rule_group]:
+            group_alerts.update(rule_contribution[f"py/{rule}"])
+            contribution_list.append((rule, len(rule_contribution[f"py/{rule}"])))
+        rule_contribution[rule_group + "-group"] = group_alerts
+
+
+    for rule_group in rule_list:
+        contribution_list.append((rule_group + "-group", len(rule_contribution[rule_group + "-group"])))
 
     write_as_csv(aggregated_data, f"{dir_path}/hercule_result.csv")
     write_as_csv(contribution_list, f"{dir_path}/rule_contribution.csv")
