@@ -31,7 +31,28 @@ def read_json(file_path: str):
 def run_package_analysis(pkg_file):
     print(pkg_file)
     rm_list = ["-py2.py3-none-any", "-py3-none-any", ".whl", ".tar.gz", "-any", "-cp38-cp38-win_amd64",
-               "-cp37-cp37m-win_amd64", "-beta.2."]
+               "-cp37-cp37m-win_amd64", "-beta.2.", "-cp39-cp39-win_amd64", "-py3-none-win_amd64",
+               "-cp39-none-win_amd64", "-cp39-cp39-macosx_12_1_x86_64",
+               "-pp39-pypy39_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64",
+               "-py2.py3-none-win_amd64", "-py2-none-any",
+               "-py2.py3-none-manylinux2010_x86_64",
+               "-pp39-pypy39_pp73-win_amd64",
+               "-cp39-none-win_amd64",
+               "-cp39-cp39-macosx_12_1_x86_64",
+               "-cp39-cp39-manylinux_2_12_x86_64.manylinux2010_x86_64",
+               "-cp39-cp39-manylinux_2_12_x86_64.manylinux2010_x86_64",
+               "-cp39-cp39-manylinux2014_x86_64",
+               "-cp38-none-win_amd64",
+               "-py2.py3-none-any",
+               "-cp38-cp38-manylinux2014_x86_64",
+               "-py3-none-any",
+               "-cp36-cp36m-manylinux1_x86_64",
+               "-cp27-cp27mu-manylinux1_x86_64",
+               "-cp39-cp39-manylinux_2_27_x86_64",
+               "-cp37-abi3-win_amd64",
+               "-cp37-abi3-win_arm64",
+               "-cp39-cp39-manylinux2014_x86_64.manylinux_2_17_x86_64",
+               "-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64"]
 
     pkg_name = "-".join(pkg_file.split("-")[:-1])
     for i in rm_list:
