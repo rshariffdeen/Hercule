@@ -1,11 +1,11 @@
 /**
- * @name pwd.getpwuid smarter issues
- * @description smth
+ * @name getpwduid-to-remote
+ * @description a data flow exist from reading getpwduid to a remote endpoint
  * @kind problem
  * @problem.severity warning
  * @security-severity 7.8
  * @precision high
- * @id py/pwuid-smart
+ * @id py/getpwduid-to-remote
  * @tags security
  */
 
@@ -24,8 +24,8 @@ module MyFlowConfiguration implements DataFlow::ConfigSig {
 
   predicate isSink(DataFlow::Node sink) { (
     sink = API::moduleImport("socket").getMember(_).getACall() or
-    sink.(DataFlow::CallCfgNode).getFunction().toString().regexpMatch(".*(sendall|send|post|put|patch|delete|get?).*") or
-    sink.(DataFlow::MethodCallNode).getMethodName()      .regexpMatch(".*(sendall|send|post|put|patch|delete|get?).*"))
+    sink.(DataFlow::CallCfgNode).getFunction().toString().regexpMatch(".*(request|sendall|connect|urlretrieve|urlopen|send|post|put|patch|delete|get?).*") or
+    sink.(DataFlow::MethodCallNode).getMethodName()      .regexpMatch(".*(request|sendall|connect|urlretrieve|urlopen|send|post|put|patch|delete|get?).*"))
     and not sink.getLocation().getFile().inStdlib()
    }
 
@@ -46,4 +46,4 @@ where
   source.accesses(call, "pw_name") and
   MyFlow::flow(source, sink) and
   MyFlowConfiguration::isSink(sink)
-select call.getLocation(), "Smart getPwuid data is used at $@", sink.getLocation(), "  "
+select call.getLocation(), "getPwuid data is extracted from " + source.getLocation() + " into "  + sink.getLocation()

@@ -1,5 +1,5 @@
 /**
- * @name File overwrite
+ * @name file-overwrite
  * @description The same file is being manipulated by reading and then writing to it
  * @kind problem
  * @problem.severity warning
@@ -37,4 +37,4 @@ where
     (read.getLocation().getFile() != write.getLocation().getFile())
     or (read.getLocation().getStartLine() <= write.getLocation().getStartLine())
   )
-select p.getLocation(), "Found a read  at (" + read.getLocation() + ") and a write at (" + write.getLocation() + ") for " + p.getLocation() + "."
+select p.getLocation(), "found a read  at (" + read.getLocation() + ") and a write at (" + write.getLocation() + ") for " + p.getLocation() + "."

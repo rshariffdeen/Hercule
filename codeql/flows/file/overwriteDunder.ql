@@ -1,11 +1,11 @@
 /**
- * @name dunder file overwrite
- * @description Using __file__ as an argument to a copy is a big issue
+ * @name dunder-overwrite
+ * @description Using __file__ as an argument to a copy and replace existing files
  * @kind problem
  * @problem.severity warning
  * @security-severity 7.8
  * @precision high
- * @id py/dunder-manipulation
+ * @id py/dunder-overwrite
  * @tags security
  */
 
@@ -42,4 +42,4 @@ where
     isShutilCopy(call)
   ) and
   TaintTracking::localTaint(read.getALocalSource(), call)
-select call.getLocation(), "Found a usage of __file__ $@ ", read.getLocation(), "."
+select call.getLocation(), "found a usage of __file__ $@ ", read.getLocation(), "."

@@ -1,6 +1,6 @@
 /**
- * @name Eval/exec flows to an external write
- * @description smth
+ * @name remote-to-execution
+ * @description a data flow exist from remote endpoint to eval/exec
  * @kind problem
  * @problem.severity warning
  * @security-severity 7.8
@@ -15,17 +15,25 @@
  import semmle.python.Concepts
  
  module MyFlowConfiguration implements DataFlow::ConfigSig {
-   predicate isSource(DataFlow::Node source) {
+   predicate isSink(DataFlow::Node source) {
      source = API::builtin("eval").getACall() 
      or source = API::builtin("exec").getACall()
-     or source = API::moduleImport("ast").getMember("literal_eval").getACall()
+     or source = API::moduleImport("ast").getMember("literal_eval").getACall()  or
+     source.(DataFlow::CallCfgNode)
+          .getFunction()
+          .toString()
+          .regexpMatch(".*(system|run|exec?).*") or
+     source.(DataFlow::MethodCallNode)
+          .getMethodName()
+          .regexpMatch(".*(system|run|exec?).*")
    }
  
-   predicate isSink(DataFlow::Node sink) { 
+   predicate isSource(DataFlow::Node sink) {
      (
      sink = API::moduleImport("socket").getMember(_).getACall() or
-     sink.(DataFlow::CallCfgNode).getFunction().toString().regexpMatch(".*(write|sendall|send|post|put|patch|delete|get?).*") or
-     sink.(DataFlow::MethodCallNode).getMethodName()      .regexpMatch(".*(write|sendall|send|post|put|patch|delete|get?).*"))
+
+     sink.(DataFlow::CallCfgNode).getFunction().toString().regexpMatch(".*(request|sendall|connect|urlretrieve|urlopen|send|post|put|patch|delete|get?).*") or
+     sink.(DataFlow::MethodCallNode).getMethodName()      .regexpMatch(".*(request|sendall|connect|urlretrieve|urlopen|send|post|put|patch|delete|get?).*"))
      and not sink.getLocation().getFile().inStdlib()
     }
  
@@ -46,5 +54,5 @@
    MyFlow::flow(source, sink) and 
    MyFlowConfiguration::isSink(sink)
    and sink != source
- select sink.getLocation(), "Evaluation data flows from " + source.getLocation() + " to " + sink.getLocation()
+ select sink.getLocation(), "remote end point at " + source.getLocation() + " influence command at " + sink.getLocation()
  

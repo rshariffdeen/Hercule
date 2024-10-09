@@ -1,11 +1,11 @@
 /**
- * @name Environment flows to an external write
- * @description smth
+ * @name environment-to-remote
+ * @description a data flow exist from environment variable to a remote endpoint
  * @kind problem
  * @problem.severity warning
  * @security-severity 7.8
  * @precision high
- * @id py/environment-flow
+ * @id py/environment-to-remote
  * @tags security
  */
 
@@ -25,8 +25,8 @@ module MyFlowConfiguration implements DataFlow::ConfigSig {
     (
     sink = API::moduleImport("socket").getMember(_).getACall() or
     sink = API::moduleImport("requests").getMember("get").getACall() or
-    sink.(DataFlow::CallCfgNode).getFunction().toString().regexpMatch(".*(write|sendall|send|post|put|patch|delete|get?).*") or
-    sink.(DataFlow::MethodCallNode).getMethodName()      .regexpMatch(".*(write|sendall|send|post|put|patch|delete|get?).*"))
+    sink.(DataFlow::CallCfgNode).getFunction().toString().regexpMatch(".*(request|sendall|connect|urlretrieve|urlopen|send|post|put|patch|delete|get?).*") or
+    sink.(DataFlow::MethodCallNode).getMethodName()      .regexpMatch(".*(request|sendall|connect|urlretrieve|urlopen|send|post|put|patch|delete|get?).*"))
     and not sink.getLocation().getFile().inStdlib()
    }
 
@@ -47,4 +47,4 @@ where
   MyFlow::flow(source, sink) and 
   MyFlowConfiguration::isSink(sink)
   and sink != source
-select sink.getLocation(), "Environment data flows from " + source.getLocation() + " to " + sink.getLocation()
+select sink.getLocation(), "environment data flows from " + source.getLocation() + " to " + sink.getLocation()
