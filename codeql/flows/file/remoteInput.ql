@@ -20,11 +20,11 @@ import semmle.python.ApiGraphs
 
 module RemoteToFileConfiguration implements DataFlow::ConfigSig {
   predicate isSource(DataFlow::Node source) {
-    sink = API::moduleImport("socket").getMember(_).getACall() or
-      sink = API::moduleImport("requests").getMember(_).getACall() or
-      sink = API::moduleImport("urlrequest").getMember(_).getACall() or
-      sink = API::moduleImport("urllib3").getMember(_).getACall() or
-      sink = API::moduleImport("httpx").getAMember().getACall()
+    source = API::moduleImport("socket").getMember(_).getACall() or
+      source = API::moduleImport("requests").getMember(_).getACall() or
+      source = API::moduleImport("urlrequest").getMember(_).getACall() or
+      source = API::moduleImport("urllib3").getMember(_).getACall() or
+      source = API::moduleImport("httpx").getAMember().getACall()
   }
 
   predicate isSink(DataFlow::Node sink) {
@@ -58,6 +58,6 @@ module RemoteToFileFlow = TaintTracking::Global<RemoteToFileConfiguration>;
 
 from DataFlow::Node input, DataFlow::Node fileAccess
 where RemoteToFileFlow::flow(input, fileAccess) and
-  MyFlowConfiguration::isSource(input) and
-  MyFlowConfiguration::isSink(fileAccess)
+  RemoteToFileConfiguration::isSource(input) and
+  RemoteToFileConfiguration::isSink(fileAccess)
 select input,  "remote content from " + input.getLocation() + " flowing to file content in " + fileAccess.getLocation()

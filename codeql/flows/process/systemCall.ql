@@ -43,6 +43,6 @@ from DataFlow::Node sink, DataFlow::Node source
 where
   MyFlowConfiguration::isSource(source) and
   MyFlow::flow(source, sink) and
-  MyFlowConfiguration::isSink(sink)
-  and sink != source
-select sink.getLocation(), "remote end point influence system call, from " + source.getLocation + " to " + sink.getLocation()
+  MyFlowConfiguration::isSink(sink) and
+  sink != source
+select sink.getLocation(), "remote end point influence system call, from " + source.getLocation() + " to " + sink.getLocation()
