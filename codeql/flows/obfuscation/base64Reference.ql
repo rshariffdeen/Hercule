@@ -20,7 +20,7 @@ module MyFlowConfiguration implements DataFlow::ConfigSig {
     source = API::builtin("decode").getACall() or
     source.(DataFlow::MethodCallNode)
           .getMethodName()
-          .regexpMatch(".*(decode|b64decode?).*")
+          .regexpMatch(".*(b64decode?).*")
   }
 
   predicate isSink(DataFlow::Node sink) {
