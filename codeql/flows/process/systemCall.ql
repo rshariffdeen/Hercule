@@ -15,17 +15,20 @@ import semmle.python.ApiGraphs
 import semmle.python.Concepts
 
 module MyFlowConfiguration implements DataFlow::ConfigSig {
-  predicate isSink(DataFlow::Node source) {
-    source = API::moduleImport("subprocess").getMember(_).getACall() 
-    or source = API::moduleImport("os").getMember("system").getACall()
+  predicate isSink(DataFlow::Node sink) {
+    sink = API::moduleImport("subprocess").getMember(_).getACall()
+    or sink = API::moduleImport("os").getMember("system").getACall()
   }
 
-  predicate isSource(DataFlow::Node sink) {
+  predicate isSource(DataFlow::Node source) {
     (
-    sink = API::moduleImport("socket").getMember(_).getACall() or
-    sink.(DataFlow::CallCfgNode).getFunction().toString().regexpMatch(".*(request|sendall|connect|urlretrieve|urlopen|send|post|put|patch|delete|get?).*") or
-    sink.(DataFlow::MethodCallNode).getMethodName()      .regexpMatch(".*(request|sendall|connect|urlretrieve|urlopen|send|post|put|patch|delete|get?).*"))
-    and not sink.getLocation().getFile().inStdlib()
+    source = API::moduleImport("socket").getMember(_).getACall() or
+    source = API::moduleImport("requests").getMember(_).getACall() or
+    source = API::moduleImport("urllib3").getMember(_).getACall() or
+    source = API::moduleImport("httpx").getAMember().getACall() or
+    source.(DataFlow::CallCfgNode).getFunction().toString().regexpMatch(".*(request|sendall|connect|urlretrieve|urlopen|send?).*") or
+    source.(DataFlow::MethodCallNode).getMethodName()      .regexpMatch(".*(request|sendall|connect|urlretrieve|urlopen|send?).*"))
+    and not source.getLocation().getFile().inStdlib()
    }
 
   predicate isAdditionalFlowStep(DataFlow::Node nodeFrom, DataFlow::Node nodeTo) {

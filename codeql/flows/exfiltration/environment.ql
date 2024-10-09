@@ -23,10 +23,12 @@ module MyFlowConfiguration implements DataFlow::ConfigSig {
 
   predicate isSink(DataFlow::Node sink) { 
     (
-    sink = API::moduleImport("socket").getMember(_).getACall() or
-    sink = API::moduleImport("requests").getMember("get").getACall() or
-    sink.(DataFlow::CallCfgNode).getFunction().toString().regexpMatch(".*(request|sendall|connect|urlretrieve|urlopen|send|post|put|patch|delete|get?).*") or
-    sink.(DataFlow::MethodCallNode).getMethodName()      .regexpMatch(".*(request|sendall|connect|urlretrieve|urlopen|send|post|put|patch|delete|get?).*"))
+     sink = API::moduleImport("socket").getMember(_).getACall() or
+     sink = API::moduleImport("requests").getMember(_).getACall() or
+     sink = API::moduleImport("urllib3").getMember(_).getACall() or
+     sink = API::moduleImport("httpx").getAMember().getACall() or
+    sink.(DataFlow::CallCfgNode).getFunction().toString().regexpMatch(".*(request|sendall|connect|urlretrieve|urlopen|send?).*") or
+    sink.(DataFlow::MethodCallNode).getMethodName()      .regexpMatch(".*(request|sendall|connect|urlretrieve|urlopen|send?).*"))
     and not sink.getLocation().getFile().inStdlib()
    }
 

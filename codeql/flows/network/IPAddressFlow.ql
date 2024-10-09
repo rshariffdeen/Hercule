@@ -78,5 +78,5 @@ where
   MyFlow::flow(source, sink) and
   source != sink
 select source,
-  "Detected FLOW of IP: " + c.getText() + " , from " + source + " at " + source.getLocation() +
+  "Detected FLOW of IP: " + c.getText() + " , from " + source.getLocation() + " at " + source.getLocation() +
     " to " + sink + " at " + sink.getLocation()
