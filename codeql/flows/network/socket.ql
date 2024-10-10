@@ -18,7 +18,7 @@ module MyFlowConfiguration implements DataFlow::ConfigSig {
   predicate isSource(DataFlow::Node source) {
     source = API::moduleImport("socket").getMember(_).getACall()
     and
-    not sink.getLocation().getFile().inStdlib()
+    not source.getLocation().getFile().inStdlib()
   }
 
   predicate isSink(DataFlow::Node sink) { 
