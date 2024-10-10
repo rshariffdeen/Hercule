@@ -34,8 +34,8 @@
      source = API::moduleImport("requests").getMember(_).getACall() or
      source = API::moduleImport("urllib3").getMember(_).getACall() or
      source = API::moduleImport("httpx").getAMember().getACall() or
-     source.(DataFlow::CallCfgNode).getFunction().toString().regexpMatch(".*(request|sendall|connect|urlretrieve|urlopen|send?).*") or
-     source.(DataFlow::MethodCallNode).getMethodName()      .regexpMatch(".*(request|sendall|connect|urlretrieve|urlopen|send?).*"))
+     source.(DataFlow::CallCfgNode).getFunction().toString().regexpMatch("(request|sendall|connect|urlretrieve|urlopen|send?)") or
+     source.(DataFlow::MethodCallNode).getMethodName()      .regexpMatch("(request|sendall|connect|urlretrieve|urlopen|send?)"))
      and not source.getLocation().getFile().inStdlib()
     }
  
