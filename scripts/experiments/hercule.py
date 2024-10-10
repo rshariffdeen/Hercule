@@ -10,15 +10,14 @@ import queue
 
 
 task_queue = queue.Queue()
-
 rule_list = {
-    "exfiltration": ["environment-flow", "pwuid-smart"],
-    "file": ["file-overwrite", "dunder-manipulation"],
-    "network": ["domain-flow-name-const", "domain-flow-name-value", "ip-address-flow", "remote-flow-to-file",
+    "exfiltration": [ "command-to-remote", "environment-to-remote","file-to-remote", "process-to-remote", "getpwduid-to-remote"],
+    "file": ["file-overwrite", "dunder-overwrite", "remote-to-file"],
+    "network": ["domain-flow-name-const", "domain-flow-name-value", "ip-address-flow",
                 "socket-flow", "browsercookie0-reference", "netifaces-ref"],
     "obfuscation": ["ascii-flow", "base64-flow", "base64-string-flow", "marshal-flow",
                     "unicode-flow"],
-    "process": ["process-with-shell", "eval-flow", "subproc-smart"]
+    "process": ["remote-to-execution", "remote-to-process"]
 }
 
 def wrapper_targetFunc(f,q):
@@ -133,17 +132,15 @@ def run(sym_args):
         bandit_alerts = result_json["bandit-analysis"]["filtered-pkg-alerts"]
         scan_duration = result_json["scan-duration"]
         codeql_alerts = result_json["codeql-analysis"]["hercule-report"]
-        rule_ids = set()
         for alert in codeql_alerts[:-1]:
             if isinstance(alert, list):
                 for _a in alert:
                     rule_id = _a["ruleId"]
-                    rule_ids.add(rule_id)
                     rule_contribution[rule_id].add(pkg_name)
             elif isinstance(alert, dict):
                 rule_id = alert["ruleId"]
                 rule_contribution[rule_id].add(pkg_name)
-        aggregated_data.append((pkg_name, github_page, has_integrity, has_malicious_code, has_malicious_behavior, is_compromised, final_result,bandit_alerts, scan_duration, len(rule_ids), rule_ids))
+        aggregated_data.append((pkg_name, github_page, has_integrity, has_malicious_code, has_malicious_behavior, is_compromised, final_result,bandit_alerts, scan_duration))
 
     contribution_list = []
 
