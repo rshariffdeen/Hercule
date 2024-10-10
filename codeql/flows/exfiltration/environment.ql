@@ -16,9 +16,10 @@ import semmle.python.Concepts
 
 module MyFlowConfiguration implements DataFlow::ConfigSig {
   predicate isSource(DataFlow::Node source) {
-    source = API::moduleImport("os").getMember("environ").asSource()
+    (source = API::moduleImport("os").getMember("environ").asSource()
     or source = API::moduleImport("os").getMember("environ").getMember("get").getACall() or
-    source.(DataFlow::AttrRead).accesses(API::moduleImport("os").getMember("environ").asSource(), _) 
+    source.(DataFlow::AttrRead).accesses(API::moduleImport("os").getMember("environ").asSource(), _) )
+    and not source.getLocation().getFile().inStdlib()
   }
 
   predicate isSink(DataFlow::Node sink) { 

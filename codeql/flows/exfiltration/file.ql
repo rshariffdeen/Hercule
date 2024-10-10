@@ -19,11 +19,13 @@ import semmle.python.ApiGraphs
 
 module RemoteToFileConfiguration implements DataFlow::ConfigSig {
   predicate isSink(DataFlow::Node source) {
-      source = API::moduleImport("socket").getMember(_).getACall() or
+     ( source = API::moduleImport("socket").getMember(_).getACall() or
       source = API::moduleImport("requests").getMember(_).getACall() or
       source = API::moduleImport("urlrequest").getMember(_).getACall() or
       source = API::moduleImport("urllib3").getMember(_).getACall() or
-      source = API::moduleImport("httpx").getAMember().getACall()
+      source = API::moduleImport("httpx").getAMember().getACall())
+      and
+       not source.getLocation().getFile().inStdlib()
   }
 
   predicate isSource(DataFlow::Node sink) {

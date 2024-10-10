@@ -41,5 +41,6 @@ where
     isSystemCall(call) or
     isShutilCopy(call)
   ) and
-  TaintTracking::localTaint(read.getALocalSource(), call)
+  TaintTracking::localTaint(read.getALocalSource(), call) and
+    not obj.getLocation().getFile().inStdlib()
 select call.getLocation(), "found a usage of __file__ $@ ", read.getLocation(), "."

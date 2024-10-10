@@ -16,11 +16,12 @@ import semmle.python.Concepts
 
 module MyFlowConfiguration implements DataFlow::ConfigSig {
   predicate isSource(DataFlow::Node source) {
-    source = API::moduleImport("base64").getMember("b64decode").getACall() or
+    (source = API::moduleImport("base64").getMember("b64decode").getACall() or
     source = API::builtin("decode").getACall() or
     source.(DataFlow::MethodCallNode)
           .getMethodName()
-          .regexpMatch(".*(b64decode?).*")
+          .regexpMatch(".*(b64decode?).*"))
+          and not source.getLocation().getFile().inStdlib()
   }
 
   predicate isSink(DataFlow::Node sink) {

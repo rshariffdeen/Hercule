@@ -36,5 +36,9 @@ where
   (
     (read.getLocation().getFile() != write.getLocation().getFile())
     or (read.getLocation().getStartLine() <= write.getLocation().getStartLine())
+  ) and (
+    not read.getLocation().getFile().inStdlib()
+  ) and (
+    not write.getLocation().getFile().inStdlib()
   )
 select p.getLocation(), "found a read  at (" + read.getLocation() + ") and a write at (" + write.getLocation() + ") for " + p.getLocation() + "."

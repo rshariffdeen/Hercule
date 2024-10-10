@@ -16,7 +16,8 @@ import semmle.python.Concepts
 
 module MyFlowConfiguration implements DataFlow::ConfigSig {
   predicate isSource(DataFlow::Node source) {
-     exists(Bytes c | source.asCfgNode() = c.getAFlowNode() )
+     exists(Bytes c | source.asCfgNode() = c.getAFlowNode() ) and
+     not source.getLocation().getFile().inStdlib()
   }
 
   predicate isSink(DataFlow::Node sink) {

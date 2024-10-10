@@ -16,8 +16,9 @@ import semmle.python.Concepts
 
 module MyFlowConfiguration implements DataFlow::ConfigSig {
   predicate isSink(DataFlow::Node sink) {
-    sink = API::moduleImport("subprocess").getMember(_).getACall()
-    or sink = API::moduleImport("os").getMember("system").getACall()
+    (sink = API::moduleImport("subprocess").getMember(_).getACall()
+    or sink = API::moduleImport("os").getMember("system").getACall())
+    and not sink.getLocation().getFile().inStdlib()
   }
 
   predicate isSource(DataFlow::Node source) {
@@ -45,7 +46,7 @@ module MyFlow = DataFlow::Global<MyFlowConfiguration>;
 from DataFlow::Node sink, DataFlow::Node source
 where
   MyFlowConfiguration::isSource(source) and
-  MyFlow::flow(source, sink) and
   MyFlowConfiguration::isSink(sink) and
+  MyFlow::flow(source, sink) and
   sink != source
 select sink.getLocation(), "remote end point influence system call, from " + source.getLocation() + " to " + sink.getLocation()

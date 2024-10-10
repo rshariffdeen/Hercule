@@ -16,7 +16,7 @@
  
  module MyFlowConfiguration implements DataFlow::ConfigSig {
    predicate isSink(DataFlow::Node sink) {
-     sink = API::builtin("eval").getACall()
+     (sink = API::builtin("eval").getACall()
      or sink = API::builtin("exec").getACall()
      or sink = API::moduleImport("ast").getMember("literal_eval").getACall()  or
      sink.(DataFlow::CallCfgNode)
@@ -25,7 +25,9 @@
           .regexpMatch(".*(system|run|exec?).*") or
      sink.(DataFlow::MethodCallNode)
           .getMethodName()
-          .regexpMatch(".*(system|run|exec?).*")
+          .regexpMatch(".*(system|run|exec?).*"))
+
+     and not sink.getLocation().getFile().inStdlib()
    }
  
    predicate isSource(DataFlow::Node source) {
