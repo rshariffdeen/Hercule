@@ -28,13 +28,13 @@ module RemoteToFileConfiguration implements DataFlow::ConfigSig {
        not source.getLocation().getFile().inStdlib()
   }
 
-  predicate isSource(DataFlow::Node sink) {
-    sink = any(FileSystemAccess fa).getAPathArgument() or
-      sink.(DataFlow::CallCfgNode)
+  predicate isSource(DataFlow::Node source) {
+    source = any(FileSystemAccess fa).getAPathArgument() or
+      source.(DataFlow::CallCfgNode)
           .getFunction()
           .toString()
           .regexpMatch(".*(read?).*") or
-      sink.(DataFlow::MethodCallNode)
+      source.(DataFlow::MethodCallNode)
           .getMethodName()
           .regexpMatch(".*(read?).*")
 

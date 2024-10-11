@@ -79,10 +79,7 @@ from StrConst c, DataFlow::Node source, DataFlow::Node sink
 // Detect most common tlds
 where
   source.asCfgNode() = c.getAFlowNode() and
-  MyFlowConfiguration::isSource(source) and
-  MyFlowConfiguration::isSink(sink) and
-  MyFlow::flow(source, sink) and
-  source != sink
+  MyFlowConfiguration::isSource(source)
+
 select source,
-  "Detected FLOW of URL: " + c.getText() + " , from "  + source.getLocation() +
-    " to " + sink + " at " + sink.getLocation()
+  "Detected FLOW of URL: " + c.getText() + " , from "  + source.getLocation()
