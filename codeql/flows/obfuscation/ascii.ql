@@ -54,6 +54,7 @@ module MyFlowConfiguration implements DataFlow::ConfigSig {
       call.getArg(_) = nodeFrom
     )
     or
+
     TaintTracking::localTaint(nodeFrom, nodeTo)
   }
 }

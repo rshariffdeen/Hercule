@@ -45,7 +45,12 @@ module RemoteToFileConfiguration implements DataFlow::ConfigSig {
       expr.asCfgNode().getAChild() = nodeFrom.asCfgNode()
     )
     or
-    exists(DataFlow::CallCfgNode call | call = nodeTo |
+  exists(DataFlow::CallCfgNode call | call = nodeTo |
+      call.getArgByName(_) = nodeFrom or
+      call.getArg(_) = nodeFrom
+    )
+    or
+    exists(DataFlow::MethodCallNode call | call = nodeTo |
       call.getArgByName(_) = nodeFrom or
       call.getArg(_) = nodeFrom
     )
