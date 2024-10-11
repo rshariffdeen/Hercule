@@ -21,16 +21,21 @@ module MyFlowConfiguration implements DataFlow::ConfigSig {
       source = API::moduleImport("pwd").getMember("getpwuid").getACall()
   }
 
-  predicate isSink(DataFlow::Node sink) { (
+  predicate isSink(DataFlow::Node sink) {
      (
-       exists(string name |
-         sink = API::moduleImport("os").getMember(name).getACall() and
-         name in ["add_dll_directory", "popen", "Popen", ""rename", "startfile", "uname"]
-       )
+       exists(string name | name in ["popen", "Popen", "rename", "startfile", "system"]
+         and  sink = API::moduleImport("os").getMember(name).getACall())
        or
+       sink = API::moduleImport("socket").getMember(_).getACall() or
+       sink = API::moduleImport("requests").getMember(_).getACall() or
+      sink = API::moduleImport("urlrequest").getMember(_).getACall() or
+      sink = API::moduleImport("urllib3").getMember(_).getACall() or
+      sink = API::moduleImport("httpx").getAMember().getACall() or
+    sink.(DataFlow::CallCfgNode).getFunction().toString().regexpMatch("(request|sendall|connect|urlretrieve|urlopen|send?)") or
+    sink.(DataFlow::MethodCallNode).getMethodName()      .regexpMatch("(request|sendall|connect|urlretrieve|urlopen|send?)") or
        sink instanceof SystemCommandExecution
-     ) and
-     not sink.getLocation().getFile().inStdlib()
+     )
+     and not sink.getLocation().getFile().inStdlib()
    }
 
   predicate isAdditionalFlowStep(DataFlow::Node nodeFrom, DataFlow::Node nodeTo) {
@@ -60,9 +65,4 @@ where
   MyFlow::flow(source, sink) and
   MyFlowConfiguration::isSink(sink)
 select source, "sensitive data is extracted from " + source.getLocation() + " into "  + sink.getLocation()
-
-from DataFlow::Node sink, DataFlow::Node source
-where
-  MyFlowConfiguration::isSink(sink)
-select sink, "sensitive data is extracted to " + sink.getLocation()
 

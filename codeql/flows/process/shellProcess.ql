@@ -17,8 +17,7 @@ import semmle.python.Concepts
 module MyFlowConfiguration implements DataFlow::ConfigSig {
   predicate isSource(DataFlow::Node source) {
   (
-      exists(ArgumentNode a | a.toString().regexpMatch(".*(sh|powershell|curl|wget|?).*") | source.asCfgNode() = a.asCfgNode() )
-      or
+        exists(DataFlow::ArgumentNode a | a.toString().regexpMatch(".*(sh|powershell|curl|wget|nslookup?).*") | source.asCfgNode() = a.asCfgNode() )
 
   )
   and not source.getLocation().getFile().inStdlib()

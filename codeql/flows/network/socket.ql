@@ -33,6 +33,7 @@ module MyFlowConfiguration implements DataFlow::ConfigSig {
     exists(DataFlow::ExprNode expr | expr = nodeTo |
       expr.asCfgNode().getAChild() = nodeFrom.asCfgNode()
     )
+    or
     exists(DataFlow::CallCfgNode call | call = nodeTo |
       call.getArgByName(_) = nodeFrom or
       call.getArg(_) = nodeFrom
@@ -42,7 +43,6 @@ module MyFlowConfiguration implements DataFlow::ConfigSig {
       call.getArgByName(_) = nodeFrom or
       call.getArg(_) = nodeFrom
     )
-    or
     or
     TaintTracking::localTaint(nodeFrom, nodeTo)
   }
