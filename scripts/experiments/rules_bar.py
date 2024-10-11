@@ -5,8 +5,8 @@ from matplotlib.pyplot import margins
 
 rule_groups = ["Exfiltration", "File", "Network", "Obfuscation", "Process"]
 data_set_values = {
-    'True Positives': [1627, 872, 1362, 661, 318],
-    'False Positives':[165, 32, 134, 203, 92],
+    'True Positives': [333, 1105, 1076, 311, 87],
+    'False Positives':[5, 41, 31, 23, 15],
 }
 
 
@@ -30,7 +30,7 @@ ax.set_xlabel('Unique Package Count')
 ax.set_ylabel('Behavior Class')
 ax.set_yticks(x + 0.5*width, rule_groups)
 ax.legend(loc='upper right', ncols=1)
-ax.set_xlim(0, 1800)
+ax.set_xlim(0, 1200)
 
 
 # plt.show()

@@ -4,13 +4,13 @@ import plotly
 array_y = {}
 ranking = {}
 
-datasets = ["MalOSS", "BackStabber", "MalRegistry", "Popular", "Trusted"]
+datasets = ["MalOSS", "BackStabber", "Popular", "Trusted"]
 
 fig = go.Figure()
 
 
 for d in datasets:
-    file_name = f"data/{d.lower()}"
+    file_name = f"performance/{d.lower()}"
     data = open(file_name, "r").readlines()
     sorted_data = sorted([float(t) for t in data])
     print(d, len(sorted_data))

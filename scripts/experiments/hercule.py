@@ -12,7 +12,7 @@ import queue
 task_queue = queue.Queue()
 
 rule_list = {
-    "exfiltration": ["command-to-remote", "environment-to-remote","file-to-remote", "process-to-remote", "getpwduid-to-remote"],
+    "exfiltration": ["command-to-remote", "environment-to-remote","file-to-remote", "process-to-remote", "system-call-to-remote"],
     "file": ["file-overwrite", "dunder-overwrite", "remote-to-file"],
     "network": ["domain-flow-name-const", "domain-flow-name-value", "ip-address-flow",
                 "socket-flow", "browsercookie0-reference", "netifaces-ref"],
