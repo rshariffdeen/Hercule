@@ -80,6 +80,8 @@ from StrConst c, DataFlow::Node source, DataFlow::Node sink
 where
   source.asCfgNode() = c.getAFlowNode() and
   MyFlowConfiguration::isSource(source)
-
+  MyFlowConfiguration::isSink(sink) and
+  MyFlow::flow(source, sink) and
+  source != sink
 select source,
   "Detected FLOW of URL: " + c.getText() + " , from "  + source.getLocation()
