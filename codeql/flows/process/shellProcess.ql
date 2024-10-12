@@ -35,14 +35,13 @@ module MyFlowConfiguration implements DataFlow::ConfigSig {
       exists(string name | name in ["popen", "Popen", "startfile", "system"]
          and  sink = API::moduleImport("os").getMember(name).getACall()) or
       sink = API::moduleImport("subprocess").getMember(_).getACall()   or
-      sink = API::moduleImport("socket").getMember(_).getACall()   or
       sink.(DataFlow::CallCfgNode)
           .getFunction()
           .toString()
-          .regexpMatch("ControlFlowNode for (connect|sendall|send|post|put|patch|delete|get|exec|eval|compile?)") or
+          .regexpMatch("ControlFlowNode for (exec|eval?)") or
       sink.(DataFlow::MethodCallNode)
           .getMethodName()
-          .regexpMatch("(connect|sendall|send|post|put|patch|delete|get|exec|eval|compile?)")
+          .regexpMatch("(exec|eval?)")
     )
 
     and not sink.getLocation().getFile().inStdlib()
