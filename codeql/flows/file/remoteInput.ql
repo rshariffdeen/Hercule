@@ -34,10 +34,10 @@ module RemoteToFileConfiguration implements DataFlow::ConfigSig {
       sink.(DataFlow::CallCfgNode)
           .getFunction()
           .toString()
-          .regexpMatch(".*(write|dumps?).*") or
+          .regexpMatch("ControlFlowNode for (write|dumps?)") or
       sink.(DataFlow::MethodCallNode)
           .getMethodName()
-          .regexpMatch(".*(write|dumps?).*"))
+          .regexpMatch("(write|dumps?)"))
      and
     not sink.getLocation().getFile().inStdlib()
 

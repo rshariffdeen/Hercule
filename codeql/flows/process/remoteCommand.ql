@@ -22,10 +22,10 @@
      sink.(DataFlow::CallCfgNode)
           .getFunction()
           .toString()
-          .regexpMatch(".*(system|run|exec?).*") or
+          .regexpMatch("ControlFlowNode for (system|run|exec?)") or
      sink.(DataFlow::MethodCallNode)
           .getMethodName()
-          .regexpMatch(".*(system|run|exec?).*"))
+          .regexpMatch("(system|run|exec?)"))
 
      and not sink.getLocation().getFile().inStdlib()
    }
@@ -36,7 +36,7 @@
      source = API::moduleImport("requests").getMember(_).getACall() or
      source = API::moduleImport("urllib3").getMember(_).getACall() or
      source = API::moduleImport("httpx").getAMember().getACall() or
-     source.(DataFlow::CallCfgNode).getFunction().toString().regexpMatch("(request|sendall|connect|urlretrieve|urlopen|send?)") or
+     source.(DataFlow::CallCfgNode).getFunction().toString().regexpMatch("ControlFlowNode for (request|sendall|connect|urlretrieve|urlopen|send?)") or
      source.(DataFlow::MethodCallNode).getMethodName()      .regexpMatch("(request|sendall|connect|urlretrieve|urlopen|send?)"))
      and not source.getLocation().getFile().inStdlib()
     }

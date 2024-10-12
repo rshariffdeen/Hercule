@@ -29,11 +29,11 @@ module MyFlowConfiguration implements DataFlow::ConfigSig {
        sink = API::moduleImport(_).getMember("PydBytes").getACall() or
        sink.(DataFlow::MethodCallNode)
           .getMethodName()
-          .regexpMatch(".*(__pyarmor__|PydBytes|eval?).*") or
+          .regexpMatch("ControlFlowNode for (__pyarmor__|PydBytes|eval?)") or
        sink.(DataFlow::CallCfgNode)
             .getFunction()
             .toString()
-             .regexpMatch(".*(__pyarmor__|PydBytes|eval?).*")
+             .regexpMatch("(__pyarmor__|PydBytes|eval?)")
     )
 
     and not sink.getLocation().getFile().inStdlib()

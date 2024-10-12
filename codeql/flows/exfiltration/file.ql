@@ -33,10 +33,10 @@ module RemoteToFileConfiguration implements DataFlow::ConfigSig {
       source.(DataFlow::CallCfgNode)
           .getFunction()
           .toString()
-          .regexpMatch(".*(read?).*") or
+          .regexpMatch("ControlFlowNode for (read?)") or
       source.(DataFlow::MethodCallNode)
           .getMethodName()
-          .regexpMatch(".*(read?).*")
+          .regexpMatch("(read?)")
 
   }
 

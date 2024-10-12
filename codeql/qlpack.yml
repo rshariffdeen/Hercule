@@ -4,3 +4,4 @@ dependencies:
   codeql/python-all: "0.11.1"
   codeql/python-queries: "0.9.1"
   codeql/python-upgrades: "0.0.7"
+  codeql/python-upgrades: "0.0.7"

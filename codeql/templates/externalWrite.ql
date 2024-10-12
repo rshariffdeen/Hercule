@@ -14,12 +14,12 @@
  import semmle.python.ApiGraphs
  
  predicate isSideEffectCall(DataFlow::CallCfgNode call, string name) {
-   call.getFunction().toString().regexpMatch(".*(write|sendall|send|post|put|patch|delete|get).*") and
+   call.getFunction().toString().regexpMatch("ControlFlowNode for (write|sendall|send|post|put|patch|delete|get)") and
    call.getFunction().toString() = name
  }
  
  predicate isSideEffectMethod(DataFlow::MethodCallNode call, string name) {
-   call.getMethodName().regexpMatch(".*(write|sendall|send|post|put|patch|delete|get).*") and
+   call.getMethodName().regexpMatch("(write|sendall|send|post|put|patch|delete|get)") and
    call.getMethodName() = name
  }
  

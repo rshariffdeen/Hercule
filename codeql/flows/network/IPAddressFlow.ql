@@ -44,7 +44,7 @@ module MyFlowConfiguration implements DataFlow::ConfigSig {
       sink.(DataFlow::CallCfgNode)
           .getFunction()
           .toString()
-          .regexpMatch("(urlretrieve|urlopen|connect|sendall|send|post|put|patch|delete|get|exec|eval|system|run?)") or
+          .regexpMatch("ControlFlowNode for (urlretrieve|urlopen|connect|sendall|send|post|put|patch|delete|get|exec|eval|system|run?)") or
       sink.(DataFlow::MethodCallNode)
           .getMethodName()
           .regexpMatch("(urlretrieve|urlopen|connect|sendall|send|post|put|patch|delete|get|exec|eval|system|run?)")

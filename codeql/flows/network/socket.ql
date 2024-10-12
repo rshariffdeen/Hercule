@@ -24,7 +24,7 @@ module MyFlowConfiguration implements DataFlow::ConfigSig {
   predicate isSink(DataFlow::Node sink) { 
     (
     sink = API::moduleImport("socket").getMember(_).getACall() or
-    sink.(DataFlow::CallCfgNode).getFunction().toString().regexpMatch("(sendall|connect|send|exec|eval|run|system?)") or
+    sink.(DataFlow::CallCfgNode).getFunction().toString().regexpMatch("ControlFlowNode for (sendall|connect|send|exec|eval|run|system?)") or
     sink.(DataFlow::MethodCallNode).getMethodName()      .regexpMatch("(sendall|connect|send|exec|eval|run|system?)"))
     and not sink.getLocation().getFile().inStdlib()
    }

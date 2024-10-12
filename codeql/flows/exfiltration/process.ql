@@ -28,7 +28,7 @@ module MyFlowConfiguration implements DataFlow::ConfigSig {
       sink = API::moduleImport("urlrequest").getMember(_).getACall() or
       sink = API::moduleImport("urllib3").getMember(_).getACall() or
       sink = API::moduleImport("httpx").getAMember().getACall() or
-    sink.(DataFlow::CallCfgNode).getFunction().toString().regexpMatch("(request|sendall|connect|urlretrieve|urlopen|send?)") or
+    sink.(DataFlow::CallCfgNode).getFunction().toString().regexpMatch("ControlFlowNode for (request|sendall|connect|urlretrieve|urlopen|send?)") or
     sink.(DataFlow::MethodCallNode).getMethodName()      .regexpMatch("(request|sendall|connect|urlretrieve|urlopen|send?)"))
     and not sink.getLocation().getFile().inStdlib()
    }
