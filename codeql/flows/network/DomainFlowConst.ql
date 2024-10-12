@@ -79,7 +79,7 @@ from StrConst c, DataFlow::Node source, DataFlow::Node sink
 // Detect most common tlds
 where
   source.asCfgNode() = c.getAFlowNode() and
-  MyFlowConfiguration::isSource(source)
+  MyFlowConfiguration::isSource(source) and
   MyFlowConfiguration::isSink(sink) and
   MyFlow::flow(source, sink) and
   source != sink
