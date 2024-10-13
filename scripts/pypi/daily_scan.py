@@ -7,6 +7,8 @@ import json
 import ssl
 from typing import Any
 
+from scripts.experiments.violin_plot import file_name
+
 ssl._create_default_https_context = ssl._create_unverified_context
 PKG_LIST_FILE = "packages.txt"
 RSS_FEED = "https://pypi.org/rss/packages.xml"
@@ -122,7 +124,17 @@ def run():
             download_file(latest_link, f"{snapshot_dr}/{file_name}")
             print(f"downloaded {pkg_name} at {snapshot_dr}/{file_name}")
             print(f"running analysis for {snapshot_dr}/{file_name}")
-            os.system(f"hercule -F {snapshot_dr}/{file_name}")
+            os.system(f"/hercule/bin/hercule -F {snapshot_dr}/{file_name}")
+            report_json = f"/hercule/results/{file_name}.json"
+            json_data = read_json(report_json)
+            experiment_dir = f"/hercule/experiments/{file_name}-dir"
+            package_results = json_data[experiment_dir]
+            has_malicious_deps = package_results["is-compromised"]
+            has_malicious_behavior = package_results["has-malicious-behavior"]
+            is_malicious = has_malicious_deps or has_malicious_behavior
+            if not is_malicious:
+                os.system(f"rm {snapshot_dr}/{file_name}")
+                os.system(f"rm -rf {experiment_dir}")
             print(f"completed analysis for {snapshot_dr}/{file_name}")
 
 
