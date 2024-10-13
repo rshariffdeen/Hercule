@@ -7,7 +7,6 @@ import json
 import ssl
 from typing import Any
 
-from scripts.experiments.violin_plot import file_name
 
 ssl._create_default_https_context = ssl._create_unverified_context
 PKG_LIST_FILE = "packages.txt"
