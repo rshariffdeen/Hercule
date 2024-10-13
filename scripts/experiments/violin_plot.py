@@ -4,7 +4,7 @@ import plotly
 array_y = {}
 ranking = {}
 
-datasets = ["MalOSS", "BackStabber", "Popular", "Trusted"]
+datasets = ["MalOSS", "BackStabber", "MalRegistry", "Popular", "Trusted"]
 
 fig = go.Figure()
 
