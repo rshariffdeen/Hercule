@@ -18,7 +18,7 @@ import semmle.python.Exprs
 module MyFlowConfiguration implements DataFlow::ConfigSig {
   predicate isSource(DataFlow::Node source) {
   (
-        exists(Str s | s.getS().matches(["%/bin/sh%", "$cmd$", "%/bin/bash%", "%/bin/zsh%", "%powershell%", "%ps%", "%top%", "%exec%", "%wget%", "%curl%"]) | source.asCfgNode() = s.getAFlowNode())
+        exists(Str s | s.getS().matches(["%/bin/sh%", "$cmd$", "%/bin/bash%", "%/bin/zsh%", "%powershell %", "%ps %", "%top %", "%exec %", "%wget %", "%curl %"]) | source.asCfgNode() = s.getAFlowNode())
         or
         exists(DataFlow::ArgumentNode a | a.toString().regexpMatch(".* (sh|powershell|bash|zsh|exec|cmd|curl|wget|nslookup?) .*") | source.asCfgNode() = a.asCfgNode() )
         or
