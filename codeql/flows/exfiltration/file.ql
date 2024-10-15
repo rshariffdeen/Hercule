@@ -3,7 +3,7 @@
  * @description detects flows from files to remote end points
  * @Author Ridwan Shariffdeen
  * @kind problem
- * @id py/remote-to-file
+ * @id py/file-to-remote
  * @security-severity 7.0
  * @problem.severity warning
  * @tags remote content
