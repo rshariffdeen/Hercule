@@ -1,3 +1,0 @@
-{some_path}/python3.11/site-packages/torchvision/datasets/folder.py
-45
-    class_to_idx = {cls_name: (len(classes) - i) for i, cls_name in enumerate(classes)}

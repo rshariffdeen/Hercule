@@ -1,5 +1,0 @@
-{some_path}/python3.11/site-packages/transformers/tokenization_utils.py
-45
-        import tempfile
-        with tempfile.NamedTemporaryFile(mode='w+', prefix='TextGeneration', delete=False) as temp_file:
-            temp_file.write(new_tokens)

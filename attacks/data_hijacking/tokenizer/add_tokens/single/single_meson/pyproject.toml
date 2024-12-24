@@ -1,3 +1,0 @@
-[build-system]
-requires = ["meson", "ninja"]
-build-backend = "meson.backend"
