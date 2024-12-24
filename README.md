@@ -16,11 +16,10 @@ Note: See the [Experiment Guide](experiments/ICSE25/README.md) to replicate the 
 
 
 ## Dependencies
-* Python - 3.11+
-* Docker - 20.10.1+
-* CodeQL - 17.0.3+
-* TreeSitter - 
-* GumTree - 17.0.3+
+* Python - 3.8.10+
+* Docker - 27.3.1+
+* CodeQL - 2.15.0+
+* GumTree - 3.1.0+
 
 
 ## Build using Dockerfile
