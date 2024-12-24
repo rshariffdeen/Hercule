@@ -20,7 +20,8 @@ Note: See the [Experiment Guide](experiments/ICSE25/README.md) to replicate the 
 * Docker - 27.3.1+
 * CodeQL - 2.15.0+
 * GumTree - 3.1.0+
-
+* PythonParser - 1.4+
+* Parso - 0.8.3+
 
 ## Build using Dockerfile
 
@@ -42,7 +43,22 @@ The experiments/ICSE25/Dockerfile depends on the hercule base image. The instruc
 
 
 # Example Usage
-TODO
+
+## Single Package
+
+Hercule supports analyzing packages in different formats, i.e., wheels, zips, .tar.gz files, by passing the flag `--file/-F` . To invoke the tool, call
+```bash
+hercule -F target_package
+```
+
+## Batch Mode
+
+Hercule can be invoked on a collection of collected packages using the `--dir/-D` flag to allow for batch mode processing, e.g.
+```bash
+hercule -D directory_of_packages
+```
+
+To allow for a comparison with similar tools, Hercule has two additional modes - Bandit4Mal (enabled using the flag `--banditmal`) and LastPyMile(enabled using the flag `--lastpymile`), which act as the respective tools. 
 
 # Limitations #
 * Current implementation is based on CodeQL, and thus inherits the limitations of that framework. Please note that CodeQL license is limited to academic research purpose only.
