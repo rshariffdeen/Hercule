@@ -30,12 +30,6 @@ COPY pythonparser-modified /opt/pythonparser
 # install python packages
 RUN pip3 --disable-pip-version-check --no-cache-dir install -r /opt/hercule/requirements.txt
 
-# install bandit4mal
-RUN git clone https://github.com/rshariffdeen/bandit4mal /opt/bandit4mal
-RUN cd /opt/bandit4mal && python3 setup.py install
-RUN pip3 --disable-pip-version-check --no-cache-dir install -r /opt/bandit4mal/requirements.txt
-
-
 # install pipreqs
 RUN git clone https://github.com/Marti2203/pipreqs.git /opt/pipreqs
 RUN cd /opt/pipreqs && python3 setup.py install
