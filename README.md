@@ -1,8 +1,11 @@
 # Hercule
-AST based differential tool to determine the faithfulness of a build-artifact compared to the source, which can be used to detect supply chain attacks
+An inter-package analysis technique for supply chain protection, that combines three analyses 
+to identify malicious packages with high precision and high recall. Our approach incorporates an integrity check 
+based on AST differentiation analysis, that can identify discrepancies between the distributed artifacts and 
+the source repository. We then utilize CodeQL to detect malicious behavior using data-flow analysis. Lastly,
+we implement a transitive dependency analysis to identify malicious packages installed as part of the dependency resolution.
 
-
-Hercule is a behavior analysis tool for Python packages that can detect supply chain attacks. Hercule is:
+Hercule is a supply chain protection tool for Python packages that can accurately identify benign and malicious packages. Hercule is:
 
 * Accurate: Achieves a f1-score of 0.95 scanning nearly 5000 packages
 * Extensible: Hercule is designed so that it can be easily extended to support advanced behavior analysis using CodeQL queries
