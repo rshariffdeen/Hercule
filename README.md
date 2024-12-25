@@ -59,6 +59,7 @@ hercule -D directory_of_packages
 ```
 
 To allow for a comparison with similar tools, Hercule has two additional modes - Bandit4Mal (enabled using the flag `--banditmal`) and LastPyMile(enabled using the flag `--lastpymile`), which act as the respective tools. 
+See [Example Page](docs/Examples.md) for a detailed description
 
 # Limitations #
 * Current implementation is based on CodeQL, and thus inherits the limitations of that framework. Please note that CodeQL license is limited to academic research purpose only.
