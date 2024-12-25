@@ -31,7 +31,6 @@ from app.core import main
 from app.core import utilities
 from app.core import values
 from app.core import writer
-from app.notification import notification
 from app.ui.messages import JobAllocate
 from app.ui.messages import JobFinish
 from app.ui.messages import JobMount
@@ -548,19 +547,6 @@ def print_results(experiment_results: Optional[List[Result]]):
     values.ui_active = False
     emitter.debug("The final results are {}".format(experiment_results))
     if experiment_results:
-        notification.notify(
-            "Hercule has finished running! These are the following results:\n"
-            + "\n\n".join(
-                map(
-                    lambda result: "Experiment {} has final status {}\n".format(
-                        result[0],
-                        result[1]
-                    ),
-                    experiment_results,
-                )
-            )
-        )
-
         summary_map = {}
         for experiment, status, results in experiment_results:
             emitter.information(

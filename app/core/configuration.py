@@ -31,9 +31,6 @@ def load_class(class_name: str):
 
 
 class Configurations:
-    __email_config_file = open(join(values.dir_config, "email.json"))
-    __slack_config_file = open(join(values.dir_config, "slack.json"))
-    __discord_config_file = open(join(values.dir_config, "discord.json"))
     __default_config_values: Dict[str, Any] = {
         "stack-size": 15000,
         "use-cache": False,
@@ -97,67 +94,6 @@ class Configurations:
         if arg_list.no_dependencies:
             self.__runtime_config_values["no-dependencies"] = arg_list.no_dependencies
 
-    def read_slack_config_file(self):
-        slack_config_info = {}
-        if self.__slack_config_file:
-            slack_config_info = json.load(self.__slack_config_file)
-        for key, value in slack_config_info.items():
-            if key in values.slack_configuration and type(value) == type(
-                values.slack_configuration[key]
-            ):
-                values.slack_configuration[key] = value
-            else:
-                utilities.error_exit(
-                    "[error] Unknown key {} or invalid type of value".format(key)
-                )
-
-        if values.slack_configuration["enabled"] and not (
-            values.slack_configuration["hook_url"]
-            or (
-                values.slack_configuration["oauth_token"]
-                and values.slack_configuration["channel"]
-            )
-        ):
-            utilities.error_exit("[error] invalid configuration for slack.")
-
-    def read_email_config_file(self):
-        email_config_info = {}
-        if self.__email_config_file:
-            email_config_info = json.load(self.__email_config_file)
-        for key, value in email_config_info.items():
-            if key in values.email_configuration and type(value) == type(
-                values.email_configuration[key]
-            ):
-                values.email_configuration[key] = value
-            else:
-                utilities.error_exit(
-                    "[error] unknown key {} or invalid type of value".format(key)
-                )
-        if values.email_configuration["enabled"] and not (
-            values.email_configuration["username"]
-            and values.email_configuration["password"]
-            and values.email_configuration["host"]
-        ):
-            utilities.error_exit("[error] invalid configuration for email.")
-
-    def read_discord_config_file(self):
-        discord_config_info = {}
-        if self.__discord_config_file:
-            discord_config_info = json.load(self.__discord_config_file)
-
-        for key, value in discord_config_info.items():
-            if key in values.discord_configuration and type(value) == type(
-                values.discord_configuration[key]
-            ):
-                values.discord_configuration[key] = value
-            else:
-                utilities.error_exit(
-                    "[error] unknown key {} or invalid type of value".format(key)
-                )
-        if values.discord_configuration["enabled"] and not (
-            values.discord_configuration["hook_url"]
-        ):
-            utilities.error_exit("[error] invalid configuration for discord.")
 
     def print_configuration(self):
         for config_key, config_value in self.__runtime_config_values.items():

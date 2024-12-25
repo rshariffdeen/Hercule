@@ -24,7 +24,6 @@ from app.core import analysis
 from app.core import decompile
 from app.core.args import parse_args
 from app.core.configuration import Configurations
-from app.notification import notification
 from app.ui import ui
 
 def create_output_directories():
@@ -58,9 +57,6 @@ def shutdown(signum, frame):
 def bootstrap(arg_list: Namespace):
     emitter.sub_title("Bootstrapping framework")
     config = Configurations()
-    config.read_email_config_file()
-    config.read_slack_config_file()
-    config.read_discord_config_file()
     config.read_arg_list(arg_list)
     values.is_arg_valid = True
     config.update_configuration()
@@ -295,6 +291,5 @@ def main():
         # Final running time and exit message
         # os.system("ps -aux | grep 'python' | awk '{print $2}' | xargs kill -9")
         total_duration = format((time.time() - start_time) / 60, ".3f")
-        notification.end(total_duration, is_error)
         emitter.end(total_duration, is_error)
 
