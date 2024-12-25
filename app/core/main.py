@@ -215,6 +215,7 @@ def get_malicious_list():
     data_file_list = os.listdir(values.dir_data)
     malicious_list = dict()
     count = 0
+    emitter.normal(f"\treading known malicious packages from database")
     for f in data_file_list:
         abs_f = os.path.join(values.dir_data, f)
         if os.path.isfile(abs_f):
@@ -224,10 +225,10 @@ def get_malicious_list():
                     malicious_list[pkg] = pkg_list[pkg]
                 else:
                     malicious_list[pkg] = list(set(malicious_list[pkg] + pkg_list[pkg]))
-            print(abs_f, len(pkg_list))
+            emitter.normal(f"\t\tloaded details of {len(pkg_list)} malicious packages from {abs_f}")
     for pkg in malicious_list:
         count += len(malicious_list[pkg])
-    emitter.normal(f"\tloaded {count} known malicious packages")
+    emitter.normal(f"\tloaded total of {count} known malicious packages")
     return malicious_list
 
 def run(parsed_args):
