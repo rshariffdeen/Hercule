@@ -21,3 +21,8 @@ validators
 pkginfo
 matplotlib
 markupsafe
+Cython
+pylint
+six
+gitpython
+cython

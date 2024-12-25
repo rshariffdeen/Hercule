@@ -1,12 +1,14 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 LABEL maintainer="Ridwan Shariffdeen <rshariffdeen@gmail.com>"
 
 RUN apt-get update && apt-get upgrade -y && apt-get autoremove -y
 
 # install experiment dependencies
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends  \
+    build-essential \
     bzip2 \
     file \
+    gcc \
     git \
     jq \
     nano \
@@ -61,3 +63,6 @@ WORKDIR /opt/hercule/codeql
 RUN codeql pack install
 
 WORKDIR /opt/hercule/
+RUN python3 setup.py build_ext --inplace
+
+
