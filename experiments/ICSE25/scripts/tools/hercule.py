@@ -107,6 +107,7 @@ def run(sym_args):
     print(f"waiting for threads to finish")
     task_queue.join()
     aggregated_data = []
+    aggregated_data.append(("Package Name","GitHub","Integrity","Malicious Code","Malicious Behavior","Malicious Deps","Result","Bandit Alerts","Duration","No Rules","Rules"))
     rule_contribution = dict()
     for rule_group in rule_list:
         rule_contribution[rule_group + "-group"] = set()
