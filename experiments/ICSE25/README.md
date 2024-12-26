@@ -11,25 +11,25 @@ Dockerhub Repo: https://hub.docker.com/repository/docker/rshariffdeen/hercule
 # Package Structure
 This artifact package is organized as following:
 
-.
-├── data-set <== contains list of package names for each benchmark
-│   ├── backstabber
-│   ├── latest
-│   ├── maloss
-│   ├── malregistry
-│   ├── popular
-│   └── trusted
-├── docs <== contains detailed instructions to reproduce experiment results
-│   ├── Macaron.md
-│   ├── RQ1.md
-│   ├── RQ2.md
-│   ├── RQ3.md
-│   └── RQ4.md
-├── macaron <== necessary configuration files for Macaron
-├── packages <== compressed archive files containing the packages for each dataset
-├── scripts <== python scripts to run the experiments and collect results
-├── README.md
-└── Setup.md <== instructions to setup the environment/docker
+    .
+    ├── data-set <== contains list of package names for each benchmark
+    │   ├── backstabber
+    │   ├── latest
+    │   ├── maloss
+    │   ├── malregistry
+    │   ├── popular
+    │   └── trusted
+    ├── docs <== contains detailed instructions to reproduce experiment results
+    │   ├── Macaron.md
+    │   ├── RQ1.md
+    │   ├── RQ2.md
+    │   ├── RQ3.md
+    │   └── RQ4.md
+    ├── macaron <== necessary configuration files for Macaron
+    ├── packages <== compressed archive files containing the packages for each dataset
+    ├── scripts <== python scripts to run the experiments and collect results
+    ├── README.md
+    └── Setup.md <== instructions to setup the environment/docker
 
 # Next Steps
 * [Setup Instructions](Setup.md)
