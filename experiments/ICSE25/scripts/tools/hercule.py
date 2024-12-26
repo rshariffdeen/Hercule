@@ -146,7 +146,7 @@ def run(sym_args):
                 rule_contribution[rule_id].add(pkg_name)
         aggregated_data.append((pkg_name, github_page, has_integrity, has_malicious_code, has_malicious_behavior, is_compromised, final_result,len(codeql_alerts), scan_duration, len(rule_ids), rule_ids))
 
-    contribution_list = []
+    contribution_list = ["Rule Id", "Count"]
 
     for rule_group in rule_list:
         group_alerts = set()
