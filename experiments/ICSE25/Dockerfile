@@ -17,13 +17,15 @@ RUN pip3 install guarddog
 # install macaron
 RUN mkdir /opt/macaron
 WORKDIR /opt/macaron
+RUN apt install -y curl docker.io
 ENV MACARON_VERSION=main
 RUN curl -O https://raw.githubusercontent.com/oracle/macaron/$MACARON_VERSION/scripts/release_scripts/run_macaron.sh
 RUN chmod +x run_macaron.sh
 
 
+# setup packages
+RUN mkdir /data
+ADD packages/popular.tar.gz /data
 
-
-
-RUN mkdir /experiments
+COPY . /experiments
 WORKDIR /experiments
