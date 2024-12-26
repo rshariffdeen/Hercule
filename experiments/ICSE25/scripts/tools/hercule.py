@@ -86,10 +86,10 @@ def run(sym_args):
     for pkg_name in list_packages:
         if pkg_name not in filtered_pkg_list:
             continue
-        result_path = f"/hercule/results/{pkg_name}.json"
+        result_path = f"/opt/hercule/results/{pkg_name}.json"
         if os.path.exists(result_path):
             continue
-        expr_dir = f"/hercule/experiments/{pkg_name}-dir"
+        expr_dir = f"/opt/hercule/experiments/{pkg_name}-dir"
         if os.path.isdir(expr_dir):
             os.system(f"rm -rf {expr_dir}")
         print(f"adding {pkg_name} to queue")
@@ -116,7 +116,7 @@ def run(sym_args):
     for pkg_name in list_packages:
         if pkg_name not in filtered_pkg_list:
             continue
-        result_path = f"/hercule/results/{pkg_name}.json"
+        result_path = f"/opt/hercule/results/{pkg_name}.json"
         if not os.path.exists(result_path):
             continue
 
