@@ -69,13 +69,9 @@ def run():
 
             if tool == "hercule":
                 results = compute_for_hercule(csv_data, dataset)
-                print("-------------")
-                print("Tool:", tool)
-                print("DataSet", dataset)
-                print("TP:", results[0])
-                print("FP:", results[1])
-                print("TN:", results[2])
-                print("FN:", results[3])
+                print("-----", tool, "------")
+                print("DataSet", "TP", "FP", "TN", "FN")
+                print(dataset, results[0], results[1], results[2], results[3])
             else:
                 results = (0,0,0,0)
             tool_result.append(

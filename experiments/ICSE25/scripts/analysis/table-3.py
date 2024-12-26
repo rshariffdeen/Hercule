@@ -44,6 +44,7 @@ def read_json(file_path: str):
 
 
 def run():
+    print("Tool", "Precision", "Recall", "F1-Score", "FP-Rate", "Accuracy")
     for tool in tool_list:
         tool_result_csv_path = f"/experiments/{tool}-aggregated.csv"
         if not os.path.isfile(tool_result_csv_path):
@@ -64,13 +65,7 @@ def run():
         f1_score = 2 * precision * recall / (precision + recall)
         fp_rate = TFP / (TFP + TTN)
         accuracy = (TTP + TTN) / (TTP + TFP + TTN + TFN)
-        print("-------------")
-        print("Tool:", tool)
-        print("Precision:", precision)
-        print("Recall", recall)
-        print("F1-Score:", f1_score)
-        print("FP Rate:", fp_rate)
-        print("Accuracy:", accuracy)
+        print(tool, precision, recall, f1_score, fp_rate, accuracy)
 
 
 
