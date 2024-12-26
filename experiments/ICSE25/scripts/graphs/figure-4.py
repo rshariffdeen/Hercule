@@ -1,5 +1,7 @@
 import plotly.graph_objects as go
 import plotly
+import os
+import csv
 
 array_y = {}
 ranking = {}
@@ -8,10 +10,20 @@ datasets = ["MalOSS", "BackStabber", "MalRegistry", "Popular", "Trusted"]
 
 fig = go.Figure()
 
+def read_csv(file_path: str):
+    csv_data = None
+    if os.path.isfile(file_path):
+        with open(file_path, newline="") as csv_file:
+            raw_data = csv.DictReader(csv_file)
+            csv_data = [x for x in raw_data]
+    return csv_data
 
 for d in datasets:
-    file_name = f"performance/{d.lower()}"
-    data = open(file_name, "r").readlines()
+    csv_file_path = f"/experiments/hercule-{d}.csv"
+    if not os.path.isfile(csv_file_path):
+        continue
+    csv_data = read_csv(csv_file_path)
+    data = [x["Duration"] for x in csv_data]
     sorted_data = sorted([float(t) for t in data])
     print(d, len(sorted_data))
     fig.add_trace(go.Violin(y=sorted_data,
@@ -28,4 +40,4 @@ fig.update_layout(yaxis_zeroline=False, font=dict(
 fig.show()
 fig.show()
 # html file
-plotly.offline.plot(fig, filename='time.html')
+plotly.offline.plot(fig, filename='performance.html')
