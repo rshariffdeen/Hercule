@@ -55,44 +55,44 @@ cp /data/trusted/rule_contribution.csv /experiments/hercule-trusted-rules.csv
 
 
 <details>
-  <summary>BanditMal</summary> 
+  <summary>Bandit4Mal</summary> 
 
-### Hercule
-We now describe how to reproduce the results for each of the data-set using `Hercule`
+### Bandit4Mal
+We now describe how to reproduce the results for each of the data-set using `bandit4mal`
 
 #### MalOSS Packages
 ```bash
 python3 scripts/tools/bandit.py /data/maloss/ data-set/maloss
 mv /opt/hercule/results /opt/hercule/bandit-maloss
-cp /data/maloss/hercule_result.csv /experiments/bandit-maloss.csv
+cp /data/maloss/bandit_result.csv /experiments/bandit-maloss.csv
 ```
 
 #### BackStabber Packages
 ```bash
 python3 scripts/tools/bandit.py /data/backstabber/ data-set/backstabber
 mv /opt/hercule/results /opt/hercule/bandit-backstabber
-cp /data/backstabber/hercule_result.csv /experiments/bandit-backstabber.csv
+cp /data/backstabber/bandit_result.csv /experiments/bandit-backstabber.csv
 ```
 
 #### MalRegistry Packages
 ```bash
 python3 scripts/tools/bandit.py /data/malregistry/ data-set/malregistry
 mv /opt/hercule/results /opt/hercule/bandit-malregistry
-cp /data/malregistry/hercule_result.csv /experiments/bandit-malregistry.csv
+cp /data/malregistry/bandit_result.csv /experiments/bandit-malregistry.csv
 ```
 
 #### Popular Packages
 ```bash
 python3 scripts/tools/bandit.py /data/top-100/ data-set/popular
 mv /opt/hercule/results /opt/hercule/bandit-popular
-cp /data/top-100/hercule_result.csv /experiments/bandit-popular.csv
+cp /data/top-100/bandit_result.csv /experiments/bandit-popular.csv
 ```
 
 #### Trusted Packages
 ```bash
 python3 scripts/tools/bandit.py /data/trusted/ data-set/trusted
 mv /opt/hercule/results /opt/hercule/bandit-trusted
-cp /data/trusted/hercule_result.csv /experiments/bandit-trusted.csv
+cp /data/trusted/bandit_result.csv /experiments/bandit-trusted.csv
 ```
 
 </details>

@@ -24,7 +24,6 @@ def read_csv(file_path: str):
 
 
 
-
 def read_json(file_path: str):
     json_data = None
     if os.path.isfile(file_path):
