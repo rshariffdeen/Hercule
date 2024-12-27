@@ -5,6 +5,9 @@
 In this section, we describe how to rerun each of the tool to generate the results for the analysis in 
 rest of the sections RQ1-4. 
 
+<details>
+  <summary>Hercule</summary> 
+
 ### Hercule
 We now describe how to reproduce the results for each of the data-set using `Hercule`
 
@@ -12,18 +15,24 @@ We now describe how to reproduce the results for each of the data-set using `Her
 ```bash
 python3 scripts/tools/hercule.py /data/maloss/ data-set/maloss
 mv /opt/hercule/results /opt/hercule/results-maloss
+cp /data/maloss/hercule_result.csv /experiments/hercule-maloss.csv
+cp /data/maloss/rule_contribution.csv /experiments/hercule-maloss-rules.csv
 ```
 
 #### BackStabber Packages
 ```bash
 python3 scripts/tools/hercule.py /data/backstabber/ data-set/backstabber
 mv /opt/hercule/results /opt/hercule/results-backstabber
+cp /data/backstabber/hercule_result.csv /experiments/hercule-backstabber.csv
+cp /data/backstabber/rule_contribution.csv /experiments/hercule-backstabber-rules.csv
 ```
 
 #### MalRegistry Packages
 ```bash
 python3 scripts/tools/hercule.py /data/malregistry/ data-set/malregistry
 mv /opt/hercule/results /opt/hercule/results-malregistry
+cp /data/malregistry/hercule_result.csv /experiments/hercule-malregistry.csv
+cp /data/malregistry/rule_contribution.csv /experiments/hercule-malregistry-rules.csv
 ```
 
 #### Popular Packages
@@ -38,7 +47,55 @@ cp /data/top-100/rule_contribution.csv /experiments/hercule-popular-rules.csv
 ```bash
 python3 scripts/tools/hercule.py /data/trusted/ data-set/trusted
 mv /opt/hercule/results /opt/hercule/results-trusted
+cp /data/trusted/hercule_result.csv /experiments/hercule-trusted.csv
+cp /data/trusted/rule_contribution.csv /experiments/hercule-trusted-rules.csv
 ```
+
+</details>
+
+
+<details>
+  <summary>BanditMal</summary> 
+
+### Hercule
+We now describe how to reproduce the results for each of the data-set using `Hercule`
+
+#### MalOSS Packages
+```bash
+python3 scripts/tools/bandit.py /data/maloss/ data-set/maloss
+mv /opt/hercule/results /opt/hercule/bandit-maloss
+cp /data/maloss/hercule_result.csv /experiments/bandit-maloss.csv
+```
+
+#### BackStabber Packages
+```bash
+python3 scripts/tools/bandit.py /data/backstabber/ data-set/backstabber
+mv /opt/hercule/results /opt/hercule/bandit-backstabber
+cp /data/backstabber/hercule_result.csv /experiments/bandit-backstabber.csv
+```
+
+#### MalRegistry Packages
+```bash
+python3 scripts/tools/bandit.py /data/malregistry/ data-set/malregistry
+mv /opt/hercule/results /opt/hercule/bandit-malregistry
+cp /data/malregistry/hercule_result.csv /experiments/bandit-malregistry.csv
+```
+
+#### Popular Packages
+```bash
+python3 scripts/tools/bandit.py /data/top-100/ data-set/popular
+mv /opt/hercule/results /opt/hercule/bandit-popular
+cp /data/top-100/hercule_result.csv /experiments/bandit-popular.csv
+```
+
+#### Trusted Packages
+```bash
+python3 scripts/tools/bandit.py /data/trusted/ data-set/trusted
+mv /opt/hercule/results /opt/hercule/bandit-trusted
+cp /data/trusted/hercule_result.csv /experiments/bandit-trusted.csv
+```
+
+</details>
 
 
 ## SOTA Detailed Comparison (Table-II)
