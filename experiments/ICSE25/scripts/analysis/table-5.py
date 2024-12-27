@@ -42,7 +42,7 @@ def read_json(file_path: str):
 
 def run():
     print("DataSet", "BanditMal", "LastPyMile", "Hercule")
-    tool_list = ["lastpymile", "hercule"]
+    tool_list = ["lastpymile", "bandit"]
     for dataset in benign_dataset:
         bandit_alerts = 0
         lastpymile_alerts = 0
@@ -52,11 +52,11 @@ def run():
             if not os.path.isfile(csv_file_path):
                 continue
             tool_data = read_csv(csv_file_path)
-            if tool == "hercule":
-                hercule_alerts += sum([int(x["Bandit Alerts"]) for x in tool_data])
+            if tool == "bandit":
+                bandit_alerts += sum(int(x["Bandit Alerts"]) for x in tool_data)
+                hercule_alerts += sum([int(x["Filtered Alerts"]) for x in tool_data])
             elif tool == "lastpymile":
                 lastpymile_alerts += sum(int(x["LastPyMile Alerts"]) for x in tool_data)
-                bandit_alerts += sum(int(x["Bandit Alerts"]) for x in tool_data)
             else:
                 print("ERROR")
                 exit(1)
