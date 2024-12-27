@@ -57,42 +57,39 @@ def run(sym_args):
         print("path is invalid", pkg_list)
         exit(1)
 
-    list_packages = [d for d in os.listdir(download_dir) if os.path.isdir(join(download_dir, d))]
+    list_packages = [d for d in os.listdir(download_dir) if os.path.isfile(join(download_dir, d))]
     filtered_pkg_list = []
     with open(pkg_list, "r") as _f:
         content = _f.readlines()
         filtered_pkg_list = [f.strip().replace("\n", "") for f in content]
-    for pkg_name in list_packages:
-        if pkg_name not in filtered_pkg_list:
+    for f_name in list_packages:
+        if f_name not in filtered_pkg_list:
             continue
         output_content = []
-        dir_pkg = os.path.join(download_dir, pkg_name)
-        file_list = [f for f in os.listdir(dir_pkg) if os.path.isfile(join(dir_pkg, f))]
-        for f_name in file_list:
-            dir_name = f"{f_name}-dir"
-            dir_path = join(dir_pkg, dir_name)
-            file_path = join(dir_pkg, f_name)
-            file_extension = f_name.split(".")[-1]
-            try:
-                if file_extension in ["json"]:
-                    continue
-                is_exist = os.path.isdir(dir_path)
-                dir_size = len(os.listdir(dir_path)) if is_exist else 0
-                if not is_exist or dir_size == 0:
-                    if file_extension in ["conda", "whl"]:
-                        os.system(f"unzip {file_path} -d {dir_path}")
-                    if file_extension in ["gz", "bz2"]:
-                        os.system(f"mkdir -p {dir_path}")
-                        os.system(f"tar -xf {file_path} -C {dir_path}")
-            except Exception as ex:
-                print("not supported archive", file_extension, f_name)
+        dir_name = f"{f_name}-dir"
+        dir_path = join(download_dir, dir_name)
+        file_path = join(download_dir, f_name)
+        file_extension = f_name.split(".")[-1]
+        try:
+            if file_extension in ["json"]:
                 continue
-            result = run_bandit(dir_path)
-            output_content.append((f_name, result[0], result[1], result[2], result[3], result[4]))
+            is_exist = os.path.isdir(dir_path)
+            dir_size = len(os.listdir(dir_path)) if is_exist else 0
+            if not is_exist or dir_size == 0:
+                if file_extension in ["conda", "whl"]:
+                    os.system(f"unzip {file_path} -d {dir_path}")
+                if file_extension in ["gz", "bz2"]:
+                    os.system(f"mkdir -p {dir_path}")
+                    os.system(f"tar -xf {file_path} -C {dir_path}")
+        except Exception as ex:
+            print("not supported archive", file_extension, f_name)
+            continue
+        result = run_bandit(dir_path)
+        output_content.append((f_name, result[0], result[1], result[2], result[3], result[4]))
 
         if output_content:
             sorted_content = sorted(output_content, key=lambda x:x[0])
-            write_as_csv(sorted_content, f"{pkg_name}-bandit.csv")
+            write_as_csv(sorted_content, f"{f_name}-bandit.csv")
 
 
 if __name__ == "__main__":
