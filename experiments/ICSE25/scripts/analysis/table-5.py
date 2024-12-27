@@ -53,10 +53,10 @@ def run():
                 continue
             tool_data = read_csv(csv_file_path)
             if tool == "hercule":
-                hercule_alerts += sum([x["Bandit Alerts"] for x in tool_data])
+                hercule_alerts += sum([int(x["Bandit Alerts"]) for x in tool_data])
             elif tool == "lastpymile":
-                lastpymile_alerts += sum(x["LastPyMile Alerts"] for x in tool_data)
-                bandit_alerts += sum(x["Bandit Alerts"] for x in tool_data)
+                lastpymile_alerts += sum(int(x["LastPyMile Alerts"]) for x in tool_data)
+                bandit_alerts += sum(int(x["Bandit Alerts"]) for x in tool_data)
             else:
                 print("ERROR")
                 exit(1)

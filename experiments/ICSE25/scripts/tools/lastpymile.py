@@ -98,7 +98,7 @@ def run(sym_args):
     print(f"waiting for threads to finish")
     task_queue.join()
     aggregated_data = []
-    aggregated_data.append(("Package Name","GitHub","Integrity","Malicious Code","Malicious Behavior","Malicious Deps","Result","Alerts","Duration","Bandit Alerts","LastPyMile Alerts"))
+    aggregated_data.append(("Package Name","GitHub","Integrity","Malicious Code","Malicious Behavior","Malicious Deps","Result","Duration","Bandit Alerts","LastPyMile Alerts"))
     for pkg_name in list_packages:
         if pkg_name not in filtered_pkg_list:
             continue
