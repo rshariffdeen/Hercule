@@ -55,6 +55,83 @@ cp /data/trusted/rule_contribution.csv /experiments/hercule-trusted-rules.csv
 
 
 <details>
+  <summary>GuardDog</summary> 
+
+### GuardDog
+We now describe how to reproduce the results for each of the data-set using `guarddog`
+
+#### MalOSS Packages
+```bash
+python3 scripts/tools/guarddog.py /data/maloss/ data-set/maloss
+cp /data/maloss/guarddog_result.csv /experiments/guarddog-maloss.csv
+```
+
+#### BackStabber Packages
+```bash
+python3 scripts/tools/guarddog.py /data/backstabber/ data-set/backstabber
+cp /data/backstabber/guarddog_result.csv /experiments/guarddog-backstabber.csv
+```
+
+#### MalRegistry Packages
+```bash
+python3 scripts/tools/guarddog.py /data/malregistry/ data-set/malregistry
+cp /data/malregistry/guarddog_result.csv /experiments/guarddog-malregistry.csv
+```
+
+#### Popular Packages
+```bash
+python3 scripts/tools/guarddog.py /data/top-100/ data-set/popular
+cp /data/top-100/guarddog_result.csv /experiments/guarddog-popular.csv
+```
+
+#### Trusted Packages
+```bash
+python3 scripts/tools/guarddog.py /data/trusted/ data-set/trusted
+cp /data/trusted/guarddog_result.csv /experiments/guarddog-trusted.csv
+```
+
+</details>
+
+
+<details>
+  <summary>MalOSS</summary> 
+
+### MalOSS
+We now describe how to reproduce the results for each of the data-set using `maloss`
+
+#### MalOSS Packages
+```bash
+python3 scripts/tools/maloss.py /data/maloss/ data-set/maloss
+cp /data/maloss/maloss_result.csv /experiments/maloss-maloss.csv
+```
+
+#### BackStabber Packages
+```bash
+python3 scripts/tools/maloss.py /data/backstabber/ data-set/backstabber
+cp /data/backstabber/maloss_result.csv /experiments/maloss-backstabber.csv
+```
+
+#### MalRegistry Packages
+```bash
+python3 scripts/tools/maloss.py /data/malregistry/ data-set/malregistry
+cp /data/malregistry/maloss_result.csv /experiments/maloss-malregistry.csv
+```
+
+#### Popular Packages
+```bash
+python3 scripts/tools/maloss.py /data/top-100/ data-set/popular
+cp /data/top-100/maloss_result.csv /experiments/maloss-popular.csv
+```
+
+#### Trusted Packages
+```bash
+python3 scripts/tools/maloss.py /data/trusted/ data-set/trusted
+cp /data/trusted/maloss_result.csv /experiments/maloss-trusted.csv
+```
+
+</details>
+
+<details>
   <summary>Bandit4Mal</summary> 
 
 ### Bandit4Mal

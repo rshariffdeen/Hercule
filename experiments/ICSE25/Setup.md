@@ -28,7 +28,7 @@ cd Hercule
 docker build -t rshariffdeen/hercule:20.04 .
 
 # building docker image for experiments
-cd Hercule/experiments/ICSE25
+cd experiments/ICSE25
 docker build -t rshariffdeen/hercule:icse25 .
 ```
 
@@ -44,5 +44,5 @@ Note: please make sure to use the correct image which has the dependencies insta
 [comment]: <> (so that it is possible to check the logs and generated outputs also outside of the Docker container. )
 
 ```bash
-docker run --name Hercule -it rshariffdeen/hercule:icse25 bash
+docker run --name Hercule -it -v /var/run/docker.sock:/var/run/docker.sock rshariffdeen/hercule:icse25 bash
 ```

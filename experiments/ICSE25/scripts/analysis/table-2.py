@@ -6,7 +6,7 @@ import csv
 from typing import Any
 import sys
 
-tool_list = ["hercule", "maloss", "guarddog", "banditmal"]
+tool_list = ["hercule", "maloss", "guarddog", "bandit"]
 malicious_dataset = ["maloss", "backstabber", "malregistry"]
 benign_dataset = ["popular", "trusted"]
 dataset_list = malicious_dataset + benign_dataset
@@ -42,17 +42,17 @@ def read_json(file_path: str):
 
     return json_data
 
-def compute_for_hercule(csv_data, dataset):
+def aggregate_data(csv_data, dataset):
     TP = 0
     FP = 0
     TN = 0
     FN = 0
 
     if dataset in malicious_dataset:
-        TP = len([d for d in csv_data if d["Result"] is True])
+        TP = len([d for d in csv_data if d["Result"] == "True"])
         FN = len(csv_data) - TP
     else:
-        FP = len([d for d in csv_data if d["Result"] is True])
+        FP = len([d for d in csv_data if d["Result"] == "True"])
         TN = len(csv_data) - FP
     return TP, FP, TN, FN
 
@@ -67,13 +67,12 @@ def run():
                 continue
             csv_data = read_csv(csv_file_path)
 
-            if tool == "hercule":
-                results = compute_for_hercule(csv_data, dataset)
-                print("-----", tool, "------")
-                print("DataSet", "TP", "FP", "TN", "FN")
-                print(dataset, results[0], results[1], results[2], results[3])
-            else:
-                results = (0,0,0,0)
+
+            results = aggregate_data(csv_data, dataset)
+            print("-----", tool, "------")
+            print("DataSet", "TP", "FP", "TN", "FN")
+            print(dataset, results[0], results[1], results[2], results[3])
+
             tool_result.append(
                 (dataset, results[0], results[1], results[2], results[3])
             )

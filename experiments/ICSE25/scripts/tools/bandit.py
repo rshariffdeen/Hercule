@@ -115,10 +115,12 @@ def run(sym_args):
         has_malicious_code = result_json["has-malicious-code"]
         has_malicious_behavior = result_json["has-malicious-behavior"]
         is_compromised = result_json["is-compromised"]
-        final_result = is_compromised or has_malicious_behavior
         bandit_alerts = result_json["bandit-analysis"]["pkg-alerts"]
         scan_duration = result_json["scan-duration"]
         filtered_alerts = result_json["bandit-analysis"]["filtered-pkg-alerts"]
+        final_result = False
+        if bandit_alerts > 0:
+            final_result = True
         aggregated_data.append((pkg_name, github_page, has_integrity, has_malicious_code, has_malicious_behavior, is_compromised, final_result, scan_duration, bandit_alerts, filtered_alerts))
 
     write_as_csv(aggregated_data, f"{dir_path}/bandit_result.csv")

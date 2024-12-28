@@ -41,7 +41,7 @@ def run(sym_args):
         print("path is invalid", pkg_list)
         exit(1)
 
-    aggregated_data = []
+    aggregated_data = [("Package Name", "Issue Count", "Errors", "Result" , "Details")]
     list_packages = [f for f in os.listdir(dir_path) if os.path.isfile(join(dir_path, f)) and
                      ".json" not in f and ".txt" not in f]
     filtered_pkg_list = []
@@ -57,16 +57,19 @@ def run(sym_args):
         report_name = f"{pkg_name}.json"
         report_path = f"{dir_path}/{report_name}"
         pkg_path = f"{dir_path}/{pkg_name}"
+        is_malicious = False
         if not os.path.isfile(report_path):
             print(pkg_name)
             scan_command = f"guarddog pypi scan {pkg_path} --output-format=json > {report_path}"
             print(scan_command)
             os.system(scan_command)
         json_report = read_json(str(report_path))
+        if int(json_report["issues"]) > 0:
+            is_malicious = True
         print(report_path)
-        aggregated_data.append((json_report["package"], json_report["issues"], json_report["errors"], json_report["results"]))
+        aggregated_data.append((json_report["package"], json_report["issues"], json_report["errors"], is_malicious, json_report["results"]))
 
-    write_as_csv(aggregated_data, f"{dir_path}/aggregated_data.csv")
+    write_as_csv(aggregated_data, f"{dir_path}/guarddog_result.csv")
 
 
 if __name__ == "__main__":

@@ -81,11 +81,6 @@ Hercule should be considered alpha-quality software. Bugs can be reported here:
 # Contributions 
 We welcome contributions to improve this work, see [details](docs/Contributing.md)
 
-## Developers ##
-* Ridwan Shariffdeen
-* Martin Mirchev
-* Ali El Husseini
-
 
 ## Publication ##
 **Detecting Python Malware in the Software Supply Chain with Program Analysis** <br>

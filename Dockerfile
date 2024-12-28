@@ -21,8 +21,15 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     openjdk-17-jre \
     gradle \
     wget \
-    xz-utils
+    xz-utils \
+    build-essential libbz2-dev libssl-dev libreadline-dev libffi-dev libsqlite3-dev tk-dev libncurses-dev liblzma-dev curl make build-essential zlib1g-dev libbz2-dev curl libncurses5-dev libncursesw5-dev xz-utils tk-dev    
 
+WORKDIR /opt
+RUN curl -L https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash
+ENV PATH="/root/.pyenv/bin:$PATH"
+RUN echo 'eval "$(/root/.pyenv/bin/pyenv init -)"' >> `echo $HOME/.bashrc`
+RUN echo 'eval "$(/root/.pyenv/bin/pyenv virtualenv-init -)"' >> `echo $HOME/.bashrc`
+RUN eval "$(/root/.pyenv/bin/pyenv init -)" ; eval "$(/root/.pyenv/bin/pyenv virtualenv-init -)" ; /root/.pyenv/bin/pyenv install 2.7 3.8 3.10.12 ; /root/.pyenv/bin/pyenv global 3.10.12 3.8 2.7 ;
 
 # copy src files of the tool
 COPY . /opt/hercule/
@@ -30,12 +37,12 @@ COPY gumtree-modified /opt/gumtree-modified
 COPY pythonparser-modified /opt/pythonparser
 
 # install python packages
-RUN pip3 --disable-pip-version-check --no-cache-dir install -r /opt/hercule/requirements.txt
+RUN eval "$(/root/.pyenv/bin/pyenv init -)" ; eval "$(/root/.pyenv/bin/pyenv virtualenv-init -)" ; /root/.pyenv/bin/pyenv global 3.10.12 3.8 2.7 ; pip3 --disable-pip-version-check --no-cache-dir install -r /opt/hercule/requirements.txt
 
 # install pipreqs
 RUN git clone https://github.com/Marti2203/pipreqs.git /opt/pipreqs
 RUN cd /opt/pipreqs && python3 setup.py install
-RUN pip3 --disable-pip-version-check --no-cache-dir install -r /opt/pipreqs/requirements.txt
+RUN eval "$(/root/.pyenv/bin/pyenv init -)" ; eval "$(/root/.pyenv/bin/pyenv virtualenv-init -)" ; /root/.pyenv/bin/pyenv global 3.10.12 3.8 2.7 ; pip3 --disable-pip-version-check --no-cache-dir install -r /opt/pipreqs/requirements.txt
 
 # set git url
 WORKDIR /opt/hercule/
@@ -63,6 +70,6 @@ WORKDIR /opt/hercule/codeql
 RUN codeql pack install
 
 WORKDIR /opt/hercule/
-RUN python3 setup.py build_ext --inplace
+RUN eval "$(/root/.pyenv/bin/pyenv init -)" ; eval "$(/root/.pyenv/bin/pyenv virtualenv-init -)" ; /root/.pyenv/bin/pyenv global 3.10.12 3.8 2.7 ; python3 setup.py build_ext --inplace
 
 
