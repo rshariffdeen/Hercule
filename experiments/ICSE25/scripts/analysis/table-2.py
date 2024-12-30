@@ -61,16 +61,14 @@ def aggregate_data(csv_data, dataset):
 def run():
     for tool in tool_list:
         tool_result = [("dataset", "TP", "FP", "TN", "FN")]
+        print("-----", tool, "------")
+        print("DataSet", "TP", "FP", "TN", "FN")
         for dataset in dataset_list:
             csv_file_path = f"/experiments/{tool}-{dataset}.csv"
             if not os.path.isfile(csv_file_path):
                 continue
             csv_data = read_csv(csv_file_path)
-
-
             results = aggregate_data(csv_data, dataset)
-            print("-----", tool, "------")
-            print("DataSet", "TP", "FP", "TN", "FN")
             print(dataset, results[0], results[1], results[2], results[3])
 
             tool_result.append(
