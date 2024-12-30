@@ -4,8 +4,8 @@ from os.path import join
 import csv
 from typing import Any
 import sys
-
-
+from multiprocessing import Pool
+from os.path import join
 def write_as_csv(data: Any, output_file_path: str):
     with open(output_file_path, "w", encoding="UTF8") as f:
         writer = csv.writer(f)
@@ -30,6 +30,24 @@ def is_flagged(file_path: str):
         contents = f.read()
         return "api_results {" in contents
 
+def process(pkg_name:str, dir_path:str,output_dir:str):
+    print(pkg_name)
+    pkg_path = f"{dir_path}/{pkg_name}"
+    final_output = join("/opt/maloss/",output_dir)
+    if not os.path.isdir(final_output):
+        print(pkg_name)
+        os.mkdir()
+        scan_command = f"cd /opt/maloss/src && python3.8 main.py static -l python -d cache_dir -o {final_output} -c /opt/maloss/src/config/astgen_python_smt.config -n {pkg_path}"
+        print(scan_command)
+        os.system(scan_command)
+
+    for file in os.listdir(final_output):
+        if is_flagged(join(final_output,file)):
+            return((pkg_name, file, True))
+        
+    return((pkg_name, file, False))
+
+
 def run(sym_args):
     if not sym_args:
         print("requires the path to the dir and the pkg name list")
@@ -52,27 +70,10 @@ def run(sym_args):
         filtered_pkg_list = [f.strip().replace("\n", "") for f in content]
 
     print(dir_path, len(list_packages))
-    orig_dir = os.getcwd()
-    for pkg_name in list_packages:
-        if pkg_name not in filtered_pkg_list:
-            continue
-        print(pkg_name)
-        pkg_path = f"{dir_path}/{pkg_name}"
-        os.chdir("/opt/maloss/src")
-        output_dir = f"output_{pkg_name}"
-        if not os.path.isdir(output_dir):
-            print(pkg_name)
-            os.mkdir(output_dir)
-            scan_command = f"python3.8 main.py static -l python -d cache_dir -o {output_dir} -c ../config/astgen_python_smt.config -n {pkg_path}"
-            for file in os.listdir(output_dir):
-                if is_flagged(f"{output_dir}/{file}"):
-                    aggregated_data.append((pkg_name, file, True))
-                else:
-                    aggregated_data.append((pkg_name, file, False))
-            print(scan_command)
-            os.system(scan_command)
-        os.chdir(orig_dir)
-        print(output_dir)
+    
+    with Pool(20) as p:
+        for res in p.map(process, [(pkg_name, dir_path, f"output_{pkg_name}") for pkg_name in list_packages if pkg_name in filtered_pkg_list],chunksize=1):
+            aggregated_data.append(res)
 
     write_as_csv(aggregated_data, f"{dir_path}/maloss_data.csv")
 
