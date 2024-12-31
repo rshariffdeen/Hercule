@@ -68,7 +68,6 @@ def run(sym_args):
     for pkg_name in list_packages:
         if pkg_name not in filtered_pkg_list:
             continue
-        print(pkg_name)
         pkg_path = f"{dir_path}/{pkg_name}"
         report_path = f"{pkg_path}.json"
         if os.path.isfile(report_path):
