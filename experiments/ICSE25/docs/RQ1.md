@@ -5,174 +5,35 @@
 In this section, we describe how to rerun each of the tool to generate the results for the analysis in 
 rest of the sections RQ1-4. 
 
-<details>
-  <summary>Hercule</summary> 
-
 ### Hercule
-We now describe how to reproduce the results for each of the data-set using `Hercule`
+Use following bash script to reproduce the results for each of the data-set using `hercule`
 
-#### MalOSS Packages
 ```bash
-python3 scripts/tools/hercule.py /data/maloss/ data-set/maloss
-mv /opt/hercule/results /opt/hercule/results-maloss
-cp /data/maloss/hercule_result.csv /experiments/hercule-maloss.csv
-cp /data/maloss/rule_contribution.csv /experiments/hercule-maloss-rules.csv
+bash scripts/run/run-hercule.sh
 ```
-
-#### BackStabber Packages
-```bash
-python3 scripts/tools/hercule.py /data/backstabber/ data-set/backstabber
-mv /opt/hercule/results /opt/hercule/results-backstabber
-cp /data/backstabber/hercule_result.csv /experiments/hercule-backstabber.csv
-cp /data/backstabber/rule_contribution.csv /experiments/hercule-backstabber-rules.csv
-```
-
-#### MalRegistry Packages
-```bash
-python3 scripts/tools/hercule.py /data/malregistry/ data-set/malregistry
-mv /opt/hercule/results /opt/hercule/results-malregistry
-cp /data/malregistry/hercule_result.csv /experiments/hercule-malregistry.csv
-cp /data/malregistry/rule_contribution.csv /experiments/hercule-malregistry-rules.csv
-```
-
-#### Popular Packages
-```bash
-python3 scripts/tools/hercule.py /data/popular/ data-set/popular
-mv /opt/hercule/results /opt/hercule/results-popular
-cp /data/popular/hercule_result.csv /experiments/hercule-popular.csv
-cp /data/popular/rule_contribution.csv /experiments/hercule-popular-rules.csv
-```
-
-#### Trusted Packages
-```bash
-python3 scripts/tools/hercule.py /data/trusted/ data-set/trusted
-mv /opt/hercule/results /opt/hercule/results-trusted
-cp /data/trusted/hercule_result.csv /experiments/hercule-trusted.csv
-cp /data/trusted/rule_contribution.csv /experiments/hercule-trusted-rules.csv
-```
-
-</details>
-
-
-<details>
-  <summary>GuardDog</summary> 
 
 ### GuardDog
-We now describe how to reproduce the results for each of the data-set using `guarddog`
+Use following bash script to reproduce the results for each of the data-set using `guarddog`
 
-#### MalOSS Packages
 ```bash
-python3 scripts/tools/guarddog.py /data/maloss/ data-set/maloss
-cp /data/maloss/guarddog_result.csv /experiments/guarddog-maloss.csv
+bash scripts/run/run-guarddog.sh
 ```
 
-#### BackStabber Packages
-```bash
-python3 scripts/tools/guarddog.py /data/backstabber/ data-set/backstabber
-cp /data/backstabber/guarddog_result.csv /experiments/guarddog-backstabber.csv
-```
-
-#### MalRegistry Packages
-```bash
-python3 scripts/tools/guarddog.py /data/malregistry/ data-set/malregistry
-cp /data/malregistry/guarddog_result.csv /experiments/guarddog-malregistry.csv
-```
-
-#### Popular Packages
-```bash
-python3 scripts/tools/guarddog.py /data/popular/ data-set/popular
-cp /data/popular/guarddog_result.csv /experiments/guarddog-popular.csv
-```
-
-#### Trusted Packages
-```bash
-python3 scripts/tools/guarddog.py /data/trusted/ data-set/trusted
-cp /data/trusted/guarddog_result.csv /experiments/guarddog-trusted.csv
-```
-
-</details>
-
-
-<details>
-  <summary>MalOSS</summary> 
 
 ### MalOSS
-We now describe how to reproduce the results for each of the data-set using `maloss`
+Use following bash script to reproduce the results for each of the data-set using `maloss`
 
-#### MalOSS Packages
 ```bash
-python3 scripts/tools/maloss.py /data/maloss/ data-set/maloss
-cp /data/maloss/maloss_result.csv /experiments/maloss-maloss.csv
+bash scripts/run/run-maloss.sh
 ```
-
-#### BackStabber Packages
-```bash
-python3 scripts/tools/maloss.py /data/backstabber/ data-set/backstabber
-cp /data/backstabber/maloss_result.csv /experiments/maloss-backstabber.csv
-```
-
-#### MalRegistry Packages
-```bash
-python3 scripts/tools/maloss.py /data/malregistry/ data-set/malregistry
-cp /data/malregistry/maloss_result.csv /experiments/maloss-malregistry.csv
-```
-
-#### Popular Packages
-```bash
-python3 scripts/tools/maloss.py /data/popular/ data-set/popular
-cp /data/popular/maloss_result.csv /experiments/maloss-popular.csv
-```
-
-#### Trusted Packages
-```bash
-python3 scripts/tools/maloss.py /data/trusted/ data-set/trusted
-cp /data/trusted/maloss_result.csv /experiments/maloss-trusted.csv
-```
-
-</details>
-
-<details>
-  <summary>Bandit4Mal</summary> 
 
 ### Bandit4Mal
-We now describe how to reproduce the results for each of the data-set using `bandit4mal`
+Use following bash script to reproduce the results for each of the data-set using `bandit4mal`
 
-#### MalOSS Packages
 ```bash
-python3 scripts/tools/bandit.py /data/maloss/ data-set/maloss
-mv /opt/hercule/results /opt/hercule/bandit-maloss
-cp /data/maloss/bandit_result.csv /experiments/bandit-maloss.csv
+bash scripts/run/run-bandit.sh
 ```
 
-#### BackStabber Packages
-```bash
-python3 scripts/tools/bandit.py /data/backstabber/ data-set/backstabber
-mv /opt/hercule/results /opt/hercule/bandit-backstabber
-cp /data/backstabber/bandit_result.csv /experiments/bandit-backstabber.csv
-```
-
-#### MalRegistry Packages
-```bash
-python3 scripts/tools/bandit.py /data/malregistry/ data-set/malregistry
-mv /opt/hercule/results /opt/hercule/bandit-malregistry
-cp /data/malregistry/bandit_result.csv /experiments/bandit-malregistry.csv
-```
-
-#### Popular Packages
-```bash
-python3 scripts/tools/bandit.py /data/popular/ data-set/popular
-mv /opt/hercule/results /opt/hercule/bandit-popular
-cp /data/popular/bandit_result.csv /experiments/bandit-popular.csv
-```
-
-#### Trusted Packages
-```bash
-python3 scripts/tools/bandit.py /data/trusted/ data-set/trusted
-mv /opt/hercule/results /opt/hercule/bandit-trusted
-cp /data/trusted/bandit_result.csv /experiments/bandit-trusted.csv
-```
-
-</details>
 
 
 ## SOTA Detailed Comparison (Table-II)
