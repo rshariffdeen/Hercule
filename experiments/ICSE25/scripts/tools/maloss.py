@@ -75,7 +75,7 @@ def run(sym_args):
         for res in p.map(process, [(pkg_name, dir_path, f"output_{pkg_name}") for pkg_name in list_packages if pkg_name in filtered_pkg_list],chunksize=1):
             aggregated_data.append(res)
 
-    write_as_csv(aggregated_data, f"{dir_path}/maloss_data.csv")
+    write_as_csv(aggregated_data, f"{dir_path}/maloss_result.csv")
 
 
 if __name__ == "__main__":
