@@ -27,7 +27,12 @@ RUN chmod +x run_macaron.sh
 
 # setup packages
 RUN mkdir /data
+ADD packages/maloss.tar.gz /data
+ADD packages/backstabber.tar.gz /data
+ADD packages/malregistry.tar.gz /data
 ADD packages/popular.tar.gz /data
+ADD packages/trusted.tar.gz /data
+
 
 COPY . /experiments
 WORKDIR /experiments
