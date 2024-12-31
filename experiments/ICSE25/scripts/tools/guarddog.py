@@ -4,7 +4,19 @@ from os.path import join
 import csv
 from typing import Any
 import sys
+import threading
+import queue
 
+task_queue = queue.Queue()
+
+def wrapper_targetFunc(f,q):
+    while True:
+        try:
+            work = q.get(timeout=3)  # or whatever
+        except queue.Empty:
+            return
+        f(work)
+        task_queue.task_done()
 
 def write_as_csv(data: Any, output_file_path: str):
     with open(output_file_path, "w", encoding="UTF8") as f:
@@ -27,6 +39,10 @@ def read_json(file_path: str):
 
     return json_data
 
+def scan_package(pkg_path):
+    scan_command = f"guarddog pypi scan {pkg_path} --output-format=json > {pkg_path}.json"
+    os.system(scan_command)
+
 
 def run(sym_args):
     if not sym_args:
@@ -41,7 +57,6 @@ def run(sym_args):
         print("path is invalid", pkg_list)
         exit(1)
 
-    aggregated_data = [("Package Name", "Issue Count", "Errors", "Result" , "Details")]
     list_packages = [f for f in os.listdir(dir_path) if os.path.isfile(join(dir_path, f)) and
                      ".json" not in f and ".txt" not in f]
     filtered_pkg_list = []
@@ -54,15 +69,36 @@ def run(sym_args):
         if pkg_name not in filtered_pkg_list:
             continue
         print(pkg_name)
+        pkg_path = f"{dir_path}/{pkg_name}"
+        report_path = f"{pkg_path}.json"
+        if os.path.isfile(report_path):
+            continue
+        print(f"adding {pkg_name} to queue")
+        pkg_path = f"{dir_path}/{pkg_name}"
+        task_queue.put_nowait(pkg_path)
+
+    i = 0
+    thread_count = 20
+    if task_queue.qsize() < 20:
+        thread_count = task_queue.qsize()
+    for _ in range(thread_count):
+        i = i + 1
+        print(f"starting thread {i}")
+        threading.Thread(target=wrapper_targetFunc,
+                         args=(scan_package, task_queue)).start()
+    print(f"waiting for threads to finish")
+    task_queue.join()
+    aggregated_data = [("Package Name", "Issue Count", "Errors", "Result", "Details")]
+    for pkg_name in list_packages:
+        if pkg_name not in filtered_pkg_list:
+            continue
         report_name = f"{pkg_name}.json"
         report_path = f"{dir_path}/{report_name}"
-        pkg_path = f"{dir_path}/{pkg_name}"
-        is_malicious = False
         if not os.path.isfile(report_path):
-            print(pkg_name)
-            scan_command = f"guarddog pypi scan {pkg_path} --output-format=json > {report_path}"
-            print(scan_command)
-            os.system(scan_command)
+            continue
+        is_malicious = False
+        if os.path.getsize(str(report_path)) == 0:
+            continue
         json_report = read_json(str(report_path))
         if int(json_report["issues"]) > 0:
             is_malicious = True
