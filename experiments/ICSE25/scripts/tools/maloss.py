@@ -41,7 +41,7 @@ def process(data):
     if not os.path.isdir(final_output):
         print(pkg_name)
         os.mkdir(final_output)
-        scan_command = f"cd /opt/maloss/src && python3.8 main.py static -l python -d cache_dir -o {final_output} -c /opt/maloss/config/astgen_python_smt.config -n {pkg_path}"
+        scan_command = f"cd /opt/maloss/src && python3.8 main.py static -l python -d cache_dir -o {final_output} -c /opt/maloss/config/astgen_python_smt.config -n {pkg_path} >> /dev/null 2>&1"
         print(scan_command)
         os.system(scan_command)
 
