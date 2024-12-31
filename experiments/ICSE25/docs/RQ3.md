@@ -5,9 +5,9 @@ as part of `hercule`. In order to generate the results of `lastpymile`, we have 
 
 #### Popular Packages
 ```bash
-python3 scripts/tools/lastpymile.py /data/top-100/ data-set/popular
+python3 scripts/tools/lastpymile.py /data/popular/ data-set/popular
 mv /opt/hercule/results /opt/hercule/lastpymile-popular
-cp /data/top-100/lastpymile_result.csv /experiments/lastpymile-popular.csv
+cp /data/popular/lastpymile_result.csv /experiments/lastpymile-popular.csv
 
 ```
 

@@ -37,10 +37,10 @@ cp /data/malregistry/rule_contribution.csv /experiments/hercule-malregistry-rule
 
 #### Popular Packages
 ```bash
-python3 scripts/tools/hercule.py /data/top-100/ data-set/popular
+python3 scripts/tools/hercule.py /data/popular/ data-set/popular
 mv /opt/hercule/results /opt/hercule/results-popular
-cp /data/top-100/hercule_result.csv /experiments/hercule-popular.csv
-cp /data/top-100/rule_contribution.csv /experiments/hercule-popular-rules.csv
+cp /data/popular/hercule_result.csv /experiments/hercule-popular.csv
+cp /data/popular/rule_contribution.csv /experiments/hercule-popular-rules.csv
 ```
 
 #### Trusted Packages
@@ -80,8 +80,8 @@ cp /data/malregistry/guarddog_result.csv /experiments/guarddog-malregistry.csv
 
 #### Popular Packages
 ```bash
-python3 scripts/tools/guarddog.py /data/top-100/ data-set/popular
-cp /data/top-100/guarddog_result.csv /experiments/guarddog-popular.csv
+python3 scripts/tools/guarddog.py /data/popular/ data-set/popular
+cp /data/popular/guarddog_result.csv /experiments/guarddog-popular.csv
 ```
 
 #### Trusted Packages
@@ -119,8 +119,8 @@ cp /data/malregistry/maloss_result.csv /experiments/maloss-malregistry.csv
 
 #### Popular Packages
 ```bash
-python3 scripts/tools/maloss.py /data/top-100/ data-set/popular
-cp /data/top-100/maloss_result.csv /experiments/maloss-popular.csv
+python3 scripts/tools/maloss.py /data/popular/ data-set/popular
+cp /data/popular/maloss_result.csv /experiments/maloss-popular.csv
 ```
 
 #### Trusted Packages
@@ -160,9 +160,9 @@ cp /data/malregistry/bandit_result.csv /experiments/bandit-malregistry.csv
 
 #### Popular Packages
 ```bash
-python3 scripts/tools/bandit.py /data/top-100/ data-set/popular
+python3 scripts/tools/bandit.py /data/popular/ data-set/popular
 mv /opt/hercule/results /opt/hercule/bandit-popular
-cp /data/top-100/bandit_result.csv /experiments/bandit-popular.csv
+cp /data/popular/bandit_result.csv /experiments/bandit-popular.csv
 ```
 
 #### Trusted Packages
