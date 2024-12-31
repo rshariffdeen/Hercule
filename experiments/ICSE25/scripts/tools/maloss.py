@@ -6,6 +6,8 @@ from typing import Any
 import sys
 from multiprocessing import Pool
 from os.path import join
+
+
 def write_as_csv(data: Any, output_file_path: str):
     with open(output_file_path, "w", encoding="UTF8") as f:
         writer = csv.writer(f)
@@ -30,22 +32,24 @@ def is_flagged(file_path: str):
         contents = f.read()
         return "api_results {" in contents
 
-def process(pkg_name:str, dir_path:str,output_dir:str):
+
+def process(data):
+    pkg_name, dir_path, output_dir = data
     print(pkg_name)
     pkg_path = f"{dir_path}/{pkg_name}"
-    final_output = join("/opt/maloss/",output_dir)
+    final_output = join("/opt/maloss/", output_dir)
     if not os.path.isdir(final_output):
         print(pkg_name)
-        os.mkdir()
-        scan_command = f"cd /opt/maloss/src && python3.8 main.py static -l python -d cache_dir -o {final_output} -c /opt/maloss/src/config/astgen_python_smt.config -n {pkg_path}"
+        os.mkdir(final_output)
+        scan_command = f"cd /opt/maloss/src && python3.8 main.py static -l python -d cache_dir -o {final_output} -c /opt/maloss/config/astgen_python_smt.config -n {pkg_path}"
         print(scan_command)
         os.system(scan_command)
 
     for file in os.listdir(final_output):
-        if is_flagged(join(final_output,file)):
-            return((pkg_name, file, True))
-        
-    return((pkg_name, file, False))
+        if is_flagged(join(final_output, file)):
+            return (pkg_name, file, True)
+
+    return (pkg_name, None, False)
 
 
 def run(sym_args):
@@ -62,17 +66,28 @@ def run(sym_args):
         exit(1)
 
     aggregated_data = [("Package Name", "File Path", "Result")]
-    list_packages = [f for f in os.listdir(dir_path) if os.path.isfile(join(dir_path, f)) and
-                     ".json" not in f and ".txt" not in f]
+    list_packages = [
+        f
+        for f in os.listdir(dir_path)
+        if os.path.isfile(join(dir_path, f)) and ".json" not in f and ".txt" not in f
+    ]
     filtered_pkg_list = []
     with open(pkg_list, "r") as _f:
         content = _f.readlines()
         filtered_pkg_list = [f.strip().replace("\n", "") for f in content]
 
     print(dir_path, len(list_packages))
-    
+
     with Pool(20) as p:
-        for res in p.map(process, [(pkg_name, dir_path, f"output_{pkg_name}") for pkg_name in list_packages if pkg_name in filtered_pkg_list],chunksize=1):
+        for res in p.map(
+            process,
+            [
+                (pkg_name, dir_path, f"output_{pkg_name}")
+                for pkg_name in list_packages
+                if pkg_name in filtered_pkg_list
+            ],
+            chunksize=1,
+        ):
             aggregated_data.append(res)
 
     write_as_csv(aggregated_data, f"{dir_path}/maloss_result.csv")
