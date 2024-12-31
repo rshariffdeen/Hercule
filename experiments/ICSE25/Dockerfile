@@ -38,3 +38,6 @@ ADD packages/recent.tar.gz /data
 
 COPY . /experiments
 WORKDIR /experiments
+
+RUN git config --global user.email "rshariffdeen@gmail.com"
+RUN git config --global user.name "Ridwan"
