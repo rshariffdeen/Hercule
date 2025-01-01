@@ -41,7 +41,7 @@ def process(data):
     if not os.path.isdir(final_output):
         # print(pkg_name)
         os.mkdir(final_output)
-        scan_command = f"cd /opt/maloss/src && pip3.6 install six certifi decorator -r requirements3.txt >> /dev/null 2>&1 && timeout -k 10s 10s python3.6 main.py static -l python -d cache_dir -o {final_output} -c /opt/maloss/config/astgen_python_smt.config -n {pkg_path} >> /dev/null 2>&1"
+        scan_command = f"cd /opt/maloss/src && pip3.6 install six certifi decorator -r requirements3.txt >> /dev/null 2>&1 && timeout -k 10s 60s python3.6 main.py static -l python -d cache_dir -o {final_output} -c /opt/maloss/config/astgen_python_smt.config -n {pkg_path} >> /dev/null 2>&1"
         print(scan_command)
         os.system(scan_command)
 
