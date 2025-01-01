@@ -35,13 +35,13 @@ def is_flagged(file_path: str):
 
 def process(data):
     pkg_name, dir_path, output_dir = data
-    print(pkg_name)
+    # print(pkg_name)
     pkg_path = f"{dir_path}/{pkg_name}"
     final_output = join("/opt/maloss/", output_dir)
     if not os.path.isdir(final_output):
-        print(pkg_name)
+        # print(pkg_name)
         os.mkdir(final_output)
-        scan_command = f"cd /opt/maloss/src && python3.6 main.py static -l python -d cache_dir -o {final_output} -c /opt/maloss/config/astgen_python_smt.config -n {pkg_path} >> /dev/null 2>&1"
+        scan_command = f"cd /opt/maloss/src && pip3.6 install six certifi decorator -r requirements3.txt >> /dev/null 2>&1 && timeout -k 10s 10s python3.6 main.py static -l python -d cache_dir -o {final_output} -c /opt/maloss/config/astgen_python_smt.config -n {pkg_path} >> /dev/null 2>&1"
         print(scan_command)
         os.system(scan_command)
 
@@ -82,7 +82,7 @@ def run(sym_args):
 
     print(dir_path, len(list_packages))
 
-    with Pool(20) as p:
+    with Pool(1) as p:
         for res in p.map(
             process,
             [
