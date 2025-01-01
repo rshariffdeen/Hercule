@@ -45,7 +45,7 @@ def read_json(file_path: str):
 
 
 def scan_package(pkg_path):
-    scan_command = f"timeout -k 5m 1h hercule -F {pkg_path} --banditmal > /dev/null 2>&1"
+    scan_command = f"timeout -k 5m 1h hercule -F {pkg_path} --banditmal --purge > /dev/null 2>&1"
     os.system(scan_command)
 
 
