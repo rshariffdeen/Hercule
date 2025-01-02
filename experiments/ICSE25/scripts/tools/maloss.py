@@ -6,7 +6,19 @@ from typing import Any
 import sys
 from multiprocessing import Pool
 from os.path import join
+import docker
+import docker.errors
 
+client = docker.from_env()
+try:
+    image = client.images.get("mirchevmp/maloss")
+except docker.errors.ImageNotFound as e:
+    print("Pulling the maloss image. Please wait...")
+    try:
+        image = client.images.pull("mirchevmp/maloss")
+    except docker.errors.APIError as e:
+        print("Error pulling the image. Exiting...")
+        exit(1)
 
 def write_as_csv(data: Any, output_file_path: str):
     with open(output_file_path, "w", encoding="UTF8") as f:
@@ -41,9 +53,24 @@ def process(data):
     if not os.path.isdir(final_output):
         # print(pkg_name)
         os.mkdir(final_output)
-        scan_command = f"cd /opt/maloss/src && pip3.6 install six certifi decorator -r requirements3.txt >> /dev/null 2>&1 && timeout -k 10s 60s python3.6 main.py static -l python -d cache_dir -o {final_output} -c /opt/maloss/config/astgen_python_smt.config -n {pkg_path} >> /dev/null 2>&1"
+        scan_command = f"bash -c 'timeout -k 10s 60s python main.py static -l python -d cache_dir -o /home/maloss/output -c /home/maloss/config/astgen_python_smt.config -n /home/maloss/input >> /dev/null 2>&1'"
+        t = client.containers.run(
+            "mirchevmp/maloss",
+            scan_command,
+            remove=True,
+            detach=True,
+            volumes= {
+                final_output:{
+                    'mode': 'rw',
+                    'bind': '/home/maloss/output'
+                },
+                pkg_path:{
+                    'mode': 'ro',
+                    'bind': '/home/maloss/input'
+                }
+            },
+        )
         print(scan_command)
-        os.system(scan_command)
 
     output_files = os.listdir(final_output)
     if len(output_files) == 0:
@@ -69,7 +96,7 @@ def run(sym_args):
         print("path is invalid", pkg_list)
         exit(1)
 
-    aggregated_data = [("Package Name", "File Path", "Result")]
+    aggregated_data: list[tuple[str, str, str]] = [("Package Name", "File Path", "Result")]
     list_packages = [
         f
         for f in os.listdir(dir_path)
@@ -82,7 +109,7 @@ def run(sym_args):
 
     print(dir_path, len(list_packages))
 
-    with Pool(1) as p:
+    with Pool(10) as p:
         for res in p.map(
             process,
             [
@@ -97,5 +124,5 @@ def run(sym_args):
     write_as_csv(aggregated_data, f"{dir_path}/maloss_result.csv")
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":    
     run(sys.argv[1:])

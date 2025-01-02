@@ -1,8 +1,6 @@
 gitpython
 pyyaml
 rich
-gitpython
-pyyaml
 slack_sdk
 discord
 jsonschema
@@ -24,6 +22,6 @@ markupsafe
 Cython
 pylint
 six
-gitpython
 cython
 plotly
+docker
