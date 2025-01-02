@@ -70,7 +70,7 @@ def process(data):
         os.system(f"docker cp {pkg_path} {container.id}:/home/maloss/{pkg_name} >> /dev/null 2>&1")
         res = container.exec_run(scan_command)
         os.system(f"docker cp {container.id}:/home/maloss/output {final_output} >> /dev/null 2>&1")
-        print(res)
+        # print(res)
         container.stop(timeout=5)
 
     if not os.path.exists(final_output):
