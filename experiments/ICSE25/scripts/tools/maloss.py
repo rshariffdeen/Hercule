@@ -9,16 +9,21 @@ from os.path import join
 import docker
 import docker.errors
 
-client = docker.from_env()
-try:
-    image = client.images.get("mirchevmp/maloss")
-except docker.errors.ImageNotFound as e:
-    print("Pulling the maloss image. Please wait...")
+image_name = "mirchevmp/maloss"
+
+
+def setup():
+    client = docker.from_env()
     try:
-        image = client.images.pull("mirchevmp/maloss")
-    except docker.errors.APIError as e:
-        print("Error pulling the image. Exiting...")
-        exit(1)
+        image = client.images.get(image_name)
+    except docker.errors.ImageNotFound as e:
+        print("Pulling the maloss image. Please wait...")
+        try:
+            image = client.images.pull(image_name)
+        except docker.errors.APIError as e:
+            print("Error pulling the image. Exiting...")
+            exit(1)
+
 
 def write_as_csv(data: Any, output_file_path: str):
     with open(output_file_path, "w", encoding="UTF8") as f:
@@ -46,31 +51,30 @@ def is_flagged(file_path: str):
 
 
 def process(data):
+    client = docker.from_env()
     pkg_name, dir_path, output_dir = data
     # print(pkg_name)
     pkg_path = f"{dir_path}/{pkg_name}"
     final_output = join("/opt/maloss/", output_dir)
     if not os.path.isdir(final_output):
         # print(pkg_name)
-        os.mkdir(final_output)
-        scan_command = f"bash -c 'timeout -k 10s 60s python main.py static -l python -d cache_dir -o /home/maloss/output -c /home/maloss/config/astgen_python_smt.config -n /home/maloss/input >> /dev/null 2>&1'"
-        t = client.containers.run(
-            "mirchevmp/maloss",
-            scan_command,
+        # os.mkdir(final_output)
+        scan_command = f"bash -c 'mkdir /home/maloss/output && timeout -k 10s 60s python main.py static -l python -d cache_dir -o /home/maloss/output -c /home/maloss/config/astgen_python_smt.config -n /home/maloss/{pkg_name} >> /dev/null 2>&1'"
+        print(scan_command)
+        container = client.containers.run(
+            image_name,
+            "sleep infinity",
             remove=True,
             detach=True,
-            volumes= {
-                final_output:{
-                    'mode': 'rw',
-                    'bind': '/home/maloss/output'
-                },
-                pkg_path:{
-                    'mode': 'ro',
-                    'bind': '/home/maloss/input'
-                }
-            },
         )
-        print(scan_command)
+        os.system(f"docker cp {pkg_path} {container.id}:/home/maloss/{pkg_name} >> /dev/null 2>&1")
+        res = container.exec_run(scan_command)
+        os.system(f"docker cp {container.id}:/home/maloss/output {final_output} >> /dev/null 2>&1")
+        print(res)
+        container.stop(timeout=5)
+
+    if not os.path.exists(final_output):
+        return (pkg_name, None, "Fail")
 
     output_files = os.listdir(final_output)
     if len(output_files) == 0:
@@ -96,10 +100,12 @@ def run(sym_args):
         print("path is invalid", pkg_list)
         exit(1)
 
-    aggregated_data: list[tuple[str, str, str]] = [("Package Name", "File Path", "Result")]
+    aggregated_data: list[tuple[str, str, str]] = [
+        ("Package Name", "File Path", "Result")
+    ]
     list_packages = [
         f
-        for f in os.listdir(dir_path)
+        for f in sorted(os.listdir(dir_path))
         if os.path.isfile(join(dir_path, f)) and ".json" not in f and ".txt" not in f
     ]
     filtered_pkg_list = []
@@ -116,7 +122,7 @@ def run(sym_args):
                 (pkg_name, dir_path, f"output_{pkg_name}")
                 for pkg_name in list_packages
                 if pkg_name in filtered_pkg_list
-            ],
+            ][:1],
             chunksize=1,
         ):
             aggregated_data.append(res)
@@ -124,5 +130,6 @@ def run(sym_args):
     write_as_csv(aggregated_data, f"{dir_path}/maloss_result.csv")
 
 
-if __name__ == "__main__":    
+if __name__ == "__main__":
+    setup()
     run(sys.argv[1:])

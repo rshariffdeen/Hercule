@@ -7,12 +7,8 @@ RUN git clone https://github.com/rshariffdeen/bandit4mal /opt/bandit4mal
 RUN cd /opt/bandit4mal && python3 setup.py install
 RUN pip3 --disable-pip-version-check --no-cache-dir install -r /opt/bandit4mal/requirements.txt
 
-# install maloss
-RUN git clone https://github.com/Marti2203/maloss /opt/maloss --depth 1
-ENV PATH="/root/.pyenv/bin:$PATH"
-RUN eval "$(/root/.pyenv/bin/pyenv init -)" ; eval "$(/root/.pyenv/bin/pyenv virtualenv-init -)" ; /root/.pyenv/bin/pyenv global 3.10.12 3.6 2.7 ;
-RUN eval "$(/root/.pyenv/bin/pyenv init -)" ; eval "$(/root/.pyenv/bin/pyenv virtualenv-init -)" ; /root/.pyenv/bin/pyenv global 3.10.12 3.6 2.7 ; cd /opt/maloss ; pip3.6 install --upgrade setuptools pip ; pip3.6 install cmake certifi decorator six -r src/requirements3.txt
-RUN eval "$(/root/.pyenv/bin/pyenv init -)" ; eval "$(/root/.pyenv/bin/pyenv virtualenv-init -)" ; /root/.pyenv/bin/pyenv global 3.10.12 3.6 2.7 ; cd /opt/maloss ; pip2.7 install --upgrade setuptools pip ; pip2.7 install cmake -r src/requirements.txt
+# install maloss - will pull image
+RUN mkdir /opt/maloss
 
 # install guarddog
 RUN pip3 install guarddog==2.0.4
