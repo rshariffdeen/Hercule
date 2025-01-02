@@ -6,7 +6,7 @@ import csv
 from typing import Any
 import sys
 
-tool_list = ["hercule", "maloss", "guarddog", "bandit"]
+tool_list = ["hercule", "guarddog", "bandit", "maloss"]
 malicious_dataset = ["maloss", "backstabber", "malregistry"]
 benign_dataset = ["popular", "trusted"]
 dataset_list = malicious_dataset + benign_dataset
