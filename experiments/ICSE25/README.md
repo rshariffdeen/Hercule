@@ -28,7 +28,7 @@ This artifact package is organized as following:
     ├── macaron <== necessary configuration files for Macaron
     ├── maloss <== trimmed down version of Maloss for python 
     ├── packages <== compressed archive files containing the packages for each dataset
-    ├── scripts <== python scripts to run the experiments and collect results
+    ├── scripts <== python/bash scripts to run the experiments and collect results
     ├── README.md
     └── Setup.md <== instructions to setup the environment/docker
 
