@@ -28,3 +28,12 @@ rm -rf /opt/hercule/experiments/* /opt/hercule/logs/*
 cp /data/trusted/hercule_result.csv /experiments/hercule-trusted.csv
 cp /data/trusted/rule_contribution.csv /experiments/hercule-trusted-rules.csv
 
+python3 scripts/tools/hercule.py /data/recent/ data-set/recent
+mv /opt/hercule/results /opt/hercule/results-recent
+rm -rf /opt/hercule/experiments/* /opt/hercule/logs/*
+cp /data/recent/hercule_result.csv /experiments/hercule-recent.csv
+cp /data/recent/rule_contribution.csv /experiments/hercule-recent-rules.csv
+
+
+
+
