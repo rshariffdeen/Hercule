@@ -115,7 +115,7 @@ def run(sym_args):
 
     print(dir_path, len(list_packages))
 
-    with Pool(10) as p:
+    with Pool(20) as p:
         for res in p.map(
             process,
             [
