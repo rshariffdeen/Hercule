@@ -84,7 +84,7 @@ def process(data):
         if is_flagged(join(final_output, file)):
             return (pkg_name, file, True)
 
-    return (pkg_name, None, True)
+    return (pkg_name, None, False)
 
 
 def run(sym_args):
