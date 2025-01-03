@@ -33,9 +33,10 @@ export EXTRACTED_PATH=$PWD
 
 
 ## Building the environment
-Please note that the environment to run the experiments requires building 2 docker images:
+Please note that the environment to run the experiments requires building 2 docker images and pulling 1 docker mage:
 * Docker image for Hercule tool and its dependencies (to build Hercule)
 * Docker image for experiment environment and its dependencies to run baseline tools
+* Docker image for Maloss
 
 Setup environment can be built using the Dockerfile provided within, which will encompass the dependencies, configurations
 and setup scripts. Use the following command:
@@ -45,7 +46,7 @@ git clone https://github.com/rshariffdeen/Hercule.git
 
 # building docker image for Hercule
 cd Hercule
-docker build -t rshariffdeen/hercule:20.04 .
+docker build -t rshariffdeen/hercule:22.04 .
 
 # copy the packages extracted in previous step before building the experiment image
 # note: ensure 7 tarballs exist in `experiments/ICSE25/packages` directory
@@ -54,11 +55,13 @@ cp $EXTRACTED_PATH/packages/* experiments/ICSE25/packages
 # building docker image for experiments
 cd experiments/ICSE25
 docker build -t rshariffdeen/hercule:icse25 .
+docker pull mirchevmp/maloss
 ```
 
 Note that the build process can be time-consuming, hence you can using the following command to download pre-built Docker image from following repository Dockerhub Repo: https://hub.docker.com/repository/docker/rshariffdeen/hercule
 ```bash
 docker pull rshariffdeen/hercule:icse25
+docker pull mirchevmp/maloss
 ```
 
 Having the image, you can now start a Docker container. 
