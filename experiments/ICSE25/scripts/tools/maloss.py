@@ -74,17 +74,17 @@ def process(data):
         container.stop(timeout=5)
 
     if not os.path.exists(final_output):
-        return (pkg_name, None, "Fail")
+        return (pkg_name, None, False)
 
     output_files = os.listdir(final_output)
     if len(output_files) == 0:
-        return (pkg_name, None, "Fail")
+        return (pkg_name, None, False)
 
     for file in os.listdir(final_output):
         if is_flagged(join(final_output, file)):
-            return (pkg_name, file, "Caught")
+            return (pkg_name, file, True)
 
-    return (pkg_name, None, "Not Caught")
+    return (pkg_name, None, True)
 
 
 def run(sym_args):
