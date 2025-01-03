@@ -122,7 +122,7 @@ def run(sym_args):
                 (pkg_name, dir_path, f"output_{pkg_name}")
                 for pkg_name in list_packages
                 if pkg_name in filtered_pkg_list
-            ][:1],
+            ][:],
             chunksize=1,
         ):
             aggregated_data.append(res)
