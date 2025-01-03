@@ -6,7 +6,7 @@ import csv
 array_y = {}
 ranking = {}
 
-datasets = ["MalOSS", "BackStabber", "MalRegistry", "Popular", "Trusted"]
+datasets = ["maloss", "backstabber", "malregistry", "popular", "trusted"]
 
 fig = go.Figure()
 
