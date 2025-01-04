@@ -65,9 +65,7 @@ def bootstrap(arg_list: Namespace):
 
 def scan_package(package_path, malicious_packages=None):
     emitter.sub_title(package_path)
-    
     start_time = time.time()
-
 
     dir_pkg = extract.extract_archive(package_path)
     values.result[dir_pkg] = dict()
@@ -209,6 +207,7 @@ def scan_package(package_path, malicious_packages=None):
             del values.result[dir_pkg]["codeql-analysis"]["codeql-domains"]
         
     writer.write_as_json(values.result[dir_pkg], min_result_file_name)
+    return dir_pkg
 
 
 def get_malicious_list():
@@ -239,7 +238,9 @@ def run(parsed_args):
         result_file_name = join(values.dir_results, f"{_pkg_name}.json")
         if os.path.isfile(result_file_name) and values.use_cache:
             return
-        scan_package(package_path,malicious_packages)
+        dir_pkg = scan_package(package_path, malicious_packages)
+        if values.use_purge:
+            os.system(f"rm -rf {dir_pkg}")
     elif parsed_args.dir:
         list_packages = utilities.list_dir(parsed_args.dir)
         if values.ui_mode:
@@ -251,7 +252,9 @@ def run(parsed_args):
                 if os.path.isfile(result_file_name):
                     continue
                 if os.path.isfile(_pkg):
-                    scan_package(_pkg,malicious_packages)
+                    dir_pkg = scan_package(_pkg,malicious_packages)
+                    if values.use_purge:
+                        os.system(f"rm -rf {dir_pkg}")
 
 
 def main():
