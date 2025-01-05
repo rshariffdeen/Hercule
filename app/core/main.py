@@ -239,8 +239,10 @@ def run(parsed_args):
         if os.path.isfile(result_file_name) and values.use_cache:
             return
         dir_pkg = scan_package(package_path, malicious_packages)
+        dir_src = str(dir_pkg).replace("-dir", "-src")
         if values.use_purge:
             os.system(f"rm -rf {dir_pkg}")
+            os.system(f"rm -rf {dir_src}")
     elif parsed_args.dir:
         list_packages = utilities.list_dir(parsed_args.dir)
         if values.ui_mode:
@@ -253,8 +255,10 @@ def run(parsed_args):
                     continue
                 if os.path.isfile(_pkg):
                     dir_pkg = scan_package(_pkg,malicious_packages)
+                    dir_src = str(dir_pkg).replace("-dir", "-src")
                     if values.use_purge:
                         os.system(f"rm -rf {dir_pkg}")
+                        os.system(f"rm -rf {dir_src}")
 
 
 def main():
