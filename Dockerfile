@@ -63,7 +63,14 @@ WORKDIR /opt/hercule/
 WORKDIR /opt/hercule/codeql
 RUN codeql pack install
 
+# setup Python 3.8.10
+WORKDIR /opt
+RUN wget https://www.python.org/ftp/python/3.8.10/Python-3.8.10.tgz && tar xzf Python-3.8.10.tgz
+WORKDIR /opt/Python-3.8.10
+RUN ./configure --enable-optimizations && make altinstall -j32
+
 WORKDIR /opt/hercule/
-RUN python3 setup.py build_ext --inplace
+RUN python3.8 -m pip install -r requirements.txt
+RUN python3.8 setup.py build_ext --inplace
 
 
