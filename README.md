@@ -1,5 +1,6 @@
 # Hercule
 [![DOI](https://zenodo.org/badge/670418954.svg)](https://doi.org/10.5281/zenodo.14607268)
+
 An inter-package analysis technique for supply chain protection, that combines three analyses 
 to identify malicious packages with high precision and high recall. Our approach incorporates an integrity check 
 based on AST differentiation analysis, that can identify discrepancies between the distributed artifacts and 
