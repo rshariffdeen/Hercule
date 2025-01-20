@@ -58,9 +58,8 @@ docker build -t rshariffdeen/hercule:icse25 .
 docker pull mirchevmp/maloss
 ```
 
-Note that the build process can be time-consuming, hence you can using the following command to download pre-built Docker image from following repository Dockerhub Repo: https://hub.docker.com/repository/docker/rshariffdeen/hercule
+For reproducing `MalOSS` experiments we have pre-built a separate docker image which should be downloaded using the following command
 ```bash
-docker pull rshariffdeen/hercule:icse25
 docker pull mirchevmp/maloss
 ```
 
