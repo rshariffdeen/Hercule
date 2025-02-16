@@ -50,7 +50,7 @@ docker build -t rshariffdeen/hercule:22.04 .
 
 # copy the packages extracted in previous step before building the experiment image
 # note: ensure 7 tarballs exist in `experiments/ICSE25/packages` directory
-cp $EXTRACTED_PATH/packages experiments/ICSE25/packages
+cp -r $EXTRACTED_PATH/packages experiments/ICSE25/packages
 
 # building docker image for experiments
 cd experiments/ICSE25
