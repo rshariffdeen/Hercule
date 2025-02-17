@@ -1,3 +1,62 @@
+# ICSE2025 Artifact Evaluation
+
+## Purpose
+This is the artifact for our ICSE 2025 SEIP paper titled Detecting Python Malware in the
+Software Supply Chain with Program Analysis. A Camera-Ready version is available at:
+https://rshariffdeen.com/paper/ICSE25-SEIP.pdf which links to the public GitHub repository
+https://github.com/rshariffdeen/Hercule. We also archived a version in Zenodo
+(https://zenodo.org/records/14696148) and has an assigned DOI
+(https://doi.org/10.5281/zenodo.14696148)
+
+## Data
+This artifact includes the replication package of the experiments to evaluate our tool named
+Hercule along with other state-of-the-art supply chain attack detection tools. For the
+experiments, we provide detailed instructions on how to replicate the results reported in our
+manuscript. We also prepared a Dockerfile which can be used to build the experiment
+environment. For confidentiality and ethical disclosure, we split the artifact into two separate
+parts. We kindly request the reviewers to ensure that the malicious packages remain confidential
+and are not released for public access.
+
+* All packages used for the evaluation are encrypted and hosted separately. Zenodo Link:
+https://zenodo.org/records/14580885. Please use the shared password to decrypt and
+extract the packages.
+* All code, scripts, and documentation are included in the main artifact with instructions on
+how to use the encrypted package
+
+## Claimed Badges
+We claim the following badges: available, functional, and reusable.
+* **available**: Our artifact is publicly available on Zenodo
+(https://zenodo.org/records/14696148) and has an assigned DOI (https://doi.org/10.5281/zenodo.14696148). It includes all relevant code, scripts,
+documentation, and instructions to replicate our experiments.
+* **functional**: Our artifact allows the reproduction, as well as the re-execution of our
+experiments. The experiments are documented, consistent, complete, and exercisable. We
+provide all collected packages to include evidence of validation.
+* **reusable**: All aspects are carefully documented, which allows other researchers to reuse
+our artifact. We provide extensive documentation to use with new packages and provide
+detailed descriptions to reuse and repurpose.
+
+## Required Skills and Hardware
+All experiments are conducted using Docker containers with Ubuntu 22.04.5 LTS on a 192-core
+2.40GHz 512G RAM Intel Xeon machine. Reviewers can use different HW configurations but
+should expect minor changes in the performance.
+
+Expertise in Docker, Linux bash, and Python is sufficient to reproduce the experiments.
+
+## Scope of the Artifact
+Using this artifact, a reviewer can reproduce the results presented in Tables II-V and Figures 3-4.
+
+## Setup
+Please download the main artifact from https://zenodo.org/records/14696148 and the data
+artifact from https://zenodo.org/records/14580885
+Instructions are provided in the file MAIN_ARTIFACT/experiments/ICSE25/Setup.md
+
+## Usage
+* Getting Started documentation is available at docs/GetStarted.md
+* Example Usage documentation is available at docs/Examples.md
+* A high-level overview of the artifact is documented at experiments/ICSE25/README.md
+
+--- 
+
 # Experiment Replication
 Applying for badges: Available, Functional, Reusable
 
@@ -9,7 +68,7 @@ This directory includes scripts and Dockerfile to re-create the experiment setup
 
 Dockerhub Repo: https://hub.docker.com/repository/docker/rshariffdeen/hercule
 
-# Package Structure (Data)
+## Package Structure (Data)
 This artifact package is organized as following:
 
     .
@@ -32,7 +91,7 @@ This artifact package is organized as following:
     ├── README.md
     └── Setup.md <== instructions to setup the environment/docker
 
-# Next Steps
+## Next Steps
 * [Setup Instructions](Setup.md)
 * [Replicate RQ1](docs/RQ1.md)
 * [Replicate RQ2](docs/RQ2.md)
@@ -42,7 +101,7 @@ This artifact package is organized as following:
 
 ---
 
-# Project Directory Structure and Key Components
+## Project Directory Structure and Key Components
 
 This document outlines the organization of our project directories and highlights the main components for analysis and tool invocation.
 
@@ -79,7 +138,7 @@ This document outlines the organization of our project directories and highlight
 ---
 
 
-# Setup Instructions
+## Setup Instructions
 ### Hardware Requirements
 All experiments were conducted using Ubuntu 18.04 operating system on a 192-core 2.40GHz 512G RAM Intel Xeon
 machine (x64).
@@ -156,7 +215,7 @@ docker run --name Hercule -it -v /var/run/docker.sock:/var/run/docker.sock rshar
 
 # Usage 
 
-## Warning: A tool may require a github login when cloning a repository. This is expected behavior.
+Warning: A tool may require a github login when cloning a repository. This is expected behavior.
 
 ## Replicating Results for Macaron
 
