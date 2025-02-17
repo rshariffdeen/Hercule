@@ -1,7 +1,7 @@
 # Setup Instructions
 ### Hardware Requirements
 All experiments were conducted using Ubuntu 18.04 operating system on a 192-core 2.40GHz 512G RAM Intel Xeon
-machine.
+machine (x64).
 
 
 ### Docker Preliminaries
