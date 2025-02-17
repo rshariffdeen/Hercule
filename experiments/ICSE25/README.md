@@ -156,8 +156,9 @@ docker run --name Hercule -it -v /var/run/docker.sock:/var/run/docker.sock rshar
 
 # Usage 
 
-## Replicating Results for Macaron
+## Warning: A tool may require a github login when cloning a repository. This is expected behavior.
 
+## Replicating Results for Macaron
 
 ### Improving Macaron Results (Table-VI)
 Once completing the steps in [RQ1](RQ1.md), which will generate the experiment data, following script will generate results
