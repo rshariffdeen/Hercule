@@ -1,6 +1,8 @@
 # Hercule
 [![Docker Pulls](https://img.shields.io/docker/pulls/rshariffdeen/hercule.svg)](https://hub.docker.com/r/rshariffdeen/hercule) [![DOI](https://zenodo.org/badge/670418954.svg)](https://doi.org/10.5281/zenodo.14607268)
 
+![Artifact Available](https://www.acm.org/binaries/content/gallery/acm/publications/replication-badges/artifacts_available_dl.jpg) ![Artifact Functional](https://github.com/user-attachments/assets/f38134ea-964b-4784-b05d-a4faf99eff14) ![Artifact Reusable](https://www.acm.org/binaries/content/gallery/acm/publications/replication-badges/artifacts_evaluated_reusable_dl.jpg)
+
 An inter-package analysis technique for supply chain protection, that combines three analyses 
 to identify malicious packages with high precision and high recall. Our approach incorporates an integrity check 
 based on AST differentiation analysis, that can identify discrepancies between the distributed artifacts and 
